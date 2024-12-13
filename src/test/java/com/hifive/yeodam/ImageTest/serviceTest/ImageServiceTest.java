@@ -1,8 +1,6 @@
 package com.hifive.yeodam.ImageTest.serviceTest;
 
 import com.hifive.yeodam.image.service.ImageService;
-import io.findify.s3mock.S3Mock;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
