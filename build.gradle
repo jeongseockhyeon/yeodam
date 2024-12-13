@@ -46,6 +46,7 @@ dependencies {
 
     //S3 추가
     implementation 'io.awspring.cloud:spring-cloud-aws-s3:3.0.2'
+    testImplementation 'io.findify:s3mock_2.13:0.2.6'
 }
 
 tasks.named('test') {
