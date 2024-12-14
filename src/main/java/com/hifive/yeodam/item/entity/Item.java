@@ -23,4 +23,8 @@ public class Item {
     private Long sellerId;
 
     private String itemName;
+
+    public void updateItem(String itemName) {
+        this.itemName = itemName;
+    }
 }

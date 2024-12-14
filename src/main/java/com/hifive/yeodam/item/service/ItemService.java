@@ -1,6 +1,7 @@
 package com.hifive.yeodam.item.service;
 
 import com.hifive.yeodam.item.dto.ItemReqDto;
+import com.hifive.yeodam.item.dto.ItemUpdateReqDto;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,11 @@ import java.util.List;
 @Service
 public class ItemService {
 
-    /*상품 등록*/
+
     private final ItemRepository itemRepository;
     //private final SellerRepository sellerRepository
 
+    /*상품 등록*/
     public Item save(ItemReqDto itemReqDto) {
         //Seller findSeller = sellerRepository.findById(itemReqDto.getSellerId())
                                         // .orElseThrow(() -> new RuntimeException("해당 판매자가 없습니다."));
@@ -39,4 +41,14 @@ public class ItemService {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 상품이 없습니다"));
     }
+
+    /*상품 업데이트*/
+    public Item update(ItemUpdateReqDto itemUpdateReqDto) {
+        Item targetItem = itemRepository.findById(itemUpdateReqDto.getItemId())
+                .orElseThrow(() -> new RuntimeException("해당 상품이 없습니다"));
+
+        targetItem.updateItem(itemUpdateReqDto.getUpdateItemName());
+        return itemRepository.save(targetItem);
+    }
+
 }
