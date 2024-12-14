@@ -33,4 +33,10 @@ public class ItemService {
     public List<Item> findAll() {
         return itemRepository.findAll();
     }
+
+    /*상품 상세 조회*/
+    public Item findById(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 상품이 없습니다"));
+    }
 }
