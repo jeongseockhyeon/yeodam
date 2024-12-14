@@ -29,4 +29,10 @@ public class TourService {
     public List<Tour> findAll() {
         return tourRepository.findAll();
     }
+    /*여행 단일 조회*/
+    public Tour findById(Long id) {
+        return tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+    }
+
 }
