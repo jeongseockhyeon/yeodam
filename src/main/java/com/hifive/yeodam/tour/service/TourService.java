@@ -34,5 +34,15 @@ public class TourService {
         return tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
     }
+    /*여행 업데이트*/
+    public Tour update(Long id,TourReqDto tourReqDto) {
+        Tour targetTour = tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 투어를 찾을 수 없습니다"));
+
+        targetTour.updateTour(tourReqDto.getRegion(),tourReqDto.getPeriod(),tourReqDto.getDescription(),tourReqDto.getPrice());
+
+        return tourRepository.save(targetTour);
+    }
+
 
 }

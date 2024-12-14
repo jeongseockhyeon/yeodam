@@ -26,4 +26,11 @@ public class Tour {
     private String description;
 
     private int price;
+
+    public void updateTour(String region, String period, String description, int price) {
+        this.region = region;
+        this.period = period;
+        this.description = description;
+        this.price = price;
+    }
 }
