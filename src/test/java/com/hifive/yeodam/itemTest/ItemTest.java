@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 public class ItemTest {
@@ -74,6 +75,18 @@ public class ItemTest {
         //then
         assertEquals(itemId, item.getSellerId());
         assertEquals(itemName, item.getItemName());
+    }
+
+    @Test
+    public void itemDeleteTest() {
+        //given
+        Long itemId = 1L;
+
+        //when
+        itemService.deleteItem(itemId);
+
+        //then
+        assertNull(itemService.findById(itemId)); //예외 발생으로 테스트 실패
     }
 
 }
