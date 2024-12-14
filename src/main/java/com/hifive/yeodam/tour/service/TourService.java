@@ -43,6 +43,10 @@ public class TourService {
 
         return tourRepository.save(targetTour);
     }
+    /*여행 삭제*/
+    public void delete(Long id) {
+        tourRepository.deleteById(id);
+    }
 
 
 }
