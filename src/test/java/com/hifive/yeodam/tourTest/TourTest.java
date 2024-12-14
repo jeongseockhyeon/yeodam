@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.hifive.yeodam.tour.entity.Tour;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -32,9 +34,21 @@ public class TourTest {
         //when
         Tour tour = tourService.save(tourReqDto);
 
+        //then
         assertEquals(testRegion,tour.getRegion());
         assertEquals(period,tour.getPeriod());
         assertEquals(des,tour.getDescription());
         assertEquals(price,tour.getPrice());
+    }
+    @Test
+    public void tourFindAll(){
+        //given
+        int count = 1;
+
+        //when
+        List<Tour> tours = tourService.findAll();
+
+        //then
+        assertEquals(count,tours.size());
     }
 }
