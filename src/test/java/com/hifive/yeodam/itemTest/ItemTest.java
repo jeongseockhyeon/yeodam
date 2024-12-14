@@ -63,17 +63,16 @@ public class ItemTest {
     @Test
     public void itemUpdateTest() {
         //given
-        Long itemId = 1L;
+        Long itemId = 2L;
         String itemName = "updateTest";
         ItemUpdateReqDto itemUpdateReqDto = new ItemUpdateReqDto();
-        itemUpdateReqDto.setItemId(itemId);
         itemUpdateReqDto.setUpdateItemName(itemName);
 
         //when
-        Item item = itemService.update(itemUpdateReqDto);
+        Item item = itemService.update(itemId, itemUpdateReqDto);
 
         //then
-        assertEquals(itemId, item.getSellerId());
+        assertEquals(itemId, item.getId());
         assertEquals(itemName, item.getItemName());
     }
 
