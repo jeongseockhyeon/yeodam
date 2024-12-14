@@ -10,6 +10,7 @@ import com.hifive.yeodam.tour.entity.Tour;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class TourTest {
@@ -95,5 +96,17 @@ public class TourTest {
         assertEquals(updatePeriod,tour.getPeriod());
         assertEquals(updateDes,tour.getDescription());
         assertEquals(price,tour.getPrice());
+    }
+
+    @Test
+    public void tourDeleteTest(){
+        //given
+        Long tourId = 1L;
+
+        //when
+        tourService.delete(tourId);
+
+        //then
+        assertThrows(RuntimeException.class,()->tourService.findById(tourId));
     }
 }
