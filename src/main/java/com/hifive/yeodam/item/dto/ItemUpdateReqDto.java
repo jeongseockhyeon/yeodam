@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class ItemUpdateReqDto {
 
-    private Long itemId;
     private String updateItemName;
 }

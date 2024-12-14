@@ -43,8 +43,8 @@ public class ItemService {
     }
 
     /*상품 업데이트*/
-    public Item update(ItemUpdateReqDto itemUpdateReqDto) {
-        Item targetItem = itemRepository.findById(itemUpdateReqDto.getItemId())
+    public Item update(Long id,ItemUpdateReqDto itemUpdateReqDto) {
+        Item targetItem = itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 상품이 없습니다"));
 
         targetItem.updateItem(itemUpdateReqDto.getUpdateItemName());
