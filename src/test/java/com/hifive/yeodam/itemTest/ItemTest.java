@@ -1,12 +1,12 @@
 package com.hifive.yeodam.itemTest;
 
 import com.hifive.yeodam.item.dto.ItemReqDto;
+import com.hifive.yeodam.item.dto.ItemUpdateReqDto;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.service.ItemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -56,6 +56,23 @@ public class ItemTest {
 
         //then
         assertEquals(sellerId, item.getSellerId());
+        assertEquals(itemName, item.getItemName());
+    }
+
+    @Test
+    public void itemUpdateTest() {
+        //given
+        Long itemId = 1L;
+        String itemName = "updateTest";
+        ItemUpdateReqDto itemUpdateReqDto = new ItemUpdateReqDto();
+        itemUpdateReqDto.setItemId(itemId);
+        itemUpdateReqDto.setUpdateItemName(itemName);
+
+        //when
+        Item item = itemService.update(itemUpdateReqDto);
+
+        //then
+        assertEquals(itemId, item.getSellerId());
         assertEquals(itemName, item.getItemName());
     }
 
