@@ -51,4 +51,9 @@ public class ItemService {
         return itemRepository.save(targetItem);
     }
 
+    /*상품 삭제*/
+    public void deleteItem(Long id) {
+        itemRepository.deleteById(id);
+    }
+
 }
