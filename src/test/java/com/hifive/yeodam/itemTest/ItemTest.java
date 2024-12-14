@@ -2,7 +2,6 @@ package com.hifive.yeodam.itemTest;
 
 import com.hifive.yeodam.item.dto.ItemReqDto;
 import com.hifive.yeodam.item.entity.Item;
-import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.item.service.ItemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ public class ItemTest {
     @Test
     public void itemSaveTest() {
         //given
-
         Long sellerId = 1L; //임시 판매자 고유 번호
         String itemName = "test"; //임시 상품 이름
         ItemReqDto itemReqDto = new ItemReqDto();
@@ -32,6 +30,18 @@ public class ItemTest {
         //then
         assertEquals(sellerId, item.getSellerId());
         assertEquals(itemName, item.getItemName());
+    }
+
+    @Test
+    public void allItemFindTest() {
+        //given
+        int testCount = 1;
+
+        //when
+        int listCount = itemService.findAll().size();
+
+        //then
+        assertEquals(testCount, listCount);
     }
 
 }
