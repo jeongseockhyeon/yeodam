@@ -44,4 +44,19 @@ public class ItemTest {
         assertEquals(testCount, listCount);
     }
 
+    @Test
+    public void itemFindTest() {
+        //given
+        Long testItemId = 1L;
+        Long sellerId = 1L; //임시 판매자 고유 번호
+        String itemName = "test"; //임시 상품 이름
+
+        //when
+        Item item = itemService.findById(testItemId);
+
+        //then
+        assertEquals(sellerId, item.getSellerId());
+        assertEquals(itemName, item.getItemName());
+    }
+
 }
