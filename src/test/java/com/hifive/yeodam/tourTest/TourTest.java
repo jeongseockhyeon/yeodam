@@ -51,4 +51,23 @@ public class TourTest {
         //then
         assertEquals(count,tours.size());
     }
+    @Test
+    public void tourFindByIdTest(){
+        //given
+        Long tourId = 1L;
+        String testRegion = "제주";
+        String period = "1일";
+        String des  = "test";
+        int price = 123123;
+
+        //when
+        Tour tour = tourService.findById(tourId);
+
+        //then
+        assertEquals(tourId,tour.getId());
+        assertEquals(testRegion,tour.getRegion());
+        assertEquals(period,tour.getPeriod());
+        assertEquals(des,tour.getDescription());
+        assertEquals(price,tour.getPrice());
+    }
 }
