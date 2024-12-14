@@ -70,4 +70,30 @@ public class TourTest {
         assertEquals(des,tour.getDescription());
         assertEquals(price,tour.getPrice());
     }
+
+    @Test
+    public void tourUpdateTest(){
+
+        //given
+        Long tourId = 1L;
+
+        String updateRegion = "강원도";
+        String updatePeriod = "2일";
+        String updateDes  = "testtest";
+        int price = 123123;
+        TourReqDto tourReqDto = new TourReqDto();
+        tourReqDto.setRegion(updateRegion);
+        tourReqDto.setPeriod(updatePeriod);
+        tourReqDto.setDescription(updateDes);
+        tourReqDto.setPrice(price);
+
+        //when
+        Tour tour = tourService.update(tourId,tourReqDto);
+
+        //then
+        assertEquals(updateRegion,tour.getRegion());
+        assertEquals(updatePeriod,tour.getPeriod());
+        assertEquals(updateDes,tour.getDescription());
+        assertEquals(price,tour.getPrice());
+    }
 }
