@@ -25,4 +25,8 @@ public class TourService {
 
         return tourRepository.save(newTour);
     }
+    /*여행 전체 조회*/
+    public List<Tour> findAll() {
+        return tourRepository.findAll();
+    }
 }
