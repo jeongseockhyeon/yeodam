@@ -143,6 +143,21 @@ public class CategoryTest {
         //then
         result.andExpect(status().isOk());
         assertEquals(updateName, category.getName());
+    }
+
+    @Test
+    @DisplayName("카테고리 삭제 테스트")
+    public void deleteCategoryTest() throws Exception {
+        //given
+        Long categoryId = 4L;
+
+        //when
+        ResultActions result = mockMvc.perform(delete("/api/category/{id}", categoryId));
+
+        //then
+        result.andExpect(status().isNoContent());
+        //하위 카테고리가 존재하는 상위 카테고리 삭제 요청 시 발생하는 오류 추후 예외 처리
+        // -> 하위 카테고리가 존재할 경우 상위 카테고리는 삭제되서는 안됨
 
     }
 
