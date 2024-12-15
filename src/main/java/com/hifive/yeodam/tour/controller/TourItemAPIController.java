@@ -1,6 +1,7 @@
 package com.hifive.yeodam.tour.controller;
 
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
+import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +28,10 @@ public class TourItemAPIController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         return ResponseEntity.ok(tourItemService.findById(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TourItemUpdateReqDto tourItemUpdateReqDto) {
+        return ResponseEntity.ok(tourItemService.update(id, tourItemUpdateReqDto));
     }
 }

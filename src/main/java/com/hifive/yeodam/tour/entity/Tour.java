@@ -24,24 +24,24 @@ public class Tour extends Item {
 
     private String description;
 
-    private int price;
+
 
 /*    @OneToOne
     private Item item;*/
 
     @Builder
     public Tour(Long sellerId, String itemName,String region, String period, String description, int price){
-        super(sellerId,itemName);
+        super(sellerId,itemName,price);
         this.region = region;
         this.period = period;
         this.description = description;
-        this.price = price;
     }
 
-    public void updateTour(String region, String period, String description, int price) {
-        this.region = region;
-        this.period = period;
-        this.description = description;
-        this.price = price;
+
+    @Override
+    public void updateSubItem(String... args) {
+        this.region = args[0];
+        this.period = args[1];
+        this.description = args[2];
     }
 }

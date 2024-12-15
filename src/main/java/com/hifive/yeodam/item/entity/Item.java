@@ -21,13 +21,18 @@ public abstract class Item {
 
     private String itemName;
 
+    private int price;
 
-    public Item(Long sellerId, String itemName) {
+
+    public Item(Long sellerId, String itemName, int price) {
         this.sellerId = sellerId;
         this.itemName = itemName;
+        this.price = price;
     }
 
     public void updateItem(String itemName) {
         this.itemName = itemName;
     }
+
+    public abstract void updateSubItem(String... args);
 }

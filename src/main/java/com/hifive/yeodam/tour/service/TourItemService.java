@@ -2,6 +2,7 @@ package com.hifive.yeodam.tour.service;
 
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.tour.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,16 @@ public class TourItemService {
     public Tour findById(Long id) {
         return tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+    }
+    /*상품_여행 수정*/
+    public Tour update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
+        Tour targetTour = tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+
+        targetTour.updateItem(tourItemUpdateReqDto.getTourName());
+        targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(), tourItemUpdateReqDto.getDescription());
+
+        return tourRepository.save(targetTour);
     }
 
 }
