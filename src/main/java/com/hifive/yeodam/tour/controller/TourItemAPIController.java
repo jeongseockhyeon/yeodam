@@ -34,4 +34,10 @@ public class TourItemAPIController {
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TourItemUpdateReqDto tourItemUpdateReqDto) {
         return ResponseEntity.ok(tourItemService.update(id, tourItemUpdateReqDto));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        tourItemService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }

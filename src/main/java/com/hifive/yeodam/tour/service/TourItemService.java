@@ -49,5 +49,9 @@ public class TourItemService {
 
         return tourRepository.save(targetTour);
     }
+    /*상품_여행 삭제*/
+    public void delete(Long id) {
+        tourRepository.deleteById(id);
+    }
 
 }
