@@ -23,4 +23,9 @@ public class TourItemAPIController {
     public ResponseEntity<?> findAll() {
         return ResponseEntity.ok(tourItemService.findAll());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(tourItemService.findById(id));
+    }
 }
