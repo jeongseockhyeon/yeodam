@@ -1,6 +1,5 @@
 package com.hifive.yeodam.item.service;
 
-import com.hifive.yeodam.item.dto.ItemReqDto;
 import com.hifive.yeodam.item.dto.ItemTourReqDto;
 import com.hifive.yeodam.item.dto.ItemUpdateReqDto;
 import com.hifive.yeodam.item.entity.Item;
