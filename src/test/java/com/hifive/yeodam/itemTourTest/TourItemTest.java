@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,6 +58,11 @@ public class TourItemTest {
         String tourDesc = "test";
         String tourPeriod = "1일";
         String tourRegion = "제주";
+
+        List<Long> categoryIds = new ArrayList<>();
+        categoryIds.add(1L);
+        categoryIds.add(2L);
+
         int tourPrice = 100;
 
         TourItemReqDto tourItemReqDto = new TourItemReqDto();
@@ -66,6 +72,7 @@ public class TourItemTest {
         tourItemReqDto.setTourPeriod(tourPeriod);
         tourItemReqDto.setTourRegion(tourRegion);
         tourItemReqDto.setTourPrice(tourPrice);
+        tourItemReqDto.setCategoryIdList(categoryIds);
 
         String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
@@ -105,6 +112,7 @@ public class TourItemTest {
         assertEquals(testCount, responseList.size());
         resultActions.andExpect(status().isOk());
     }
+
     @Test
     @DisplayName("상품_여행 단일 조회 테스트")
     public void itemFindByIdTest() throws Exception {
