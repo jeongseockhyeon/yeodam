@@ -1,5 +1,6 @@
 package com.hifive.yeodam.tour.entity;
 
+import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.item.entity.Item;
 
 import jakarta.persistence.*;
@@ -7,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +28,8 @@ public class Tour extends Item {
 
     private String description;
 
+    @OneToMany(mappedBy = "tour")
+    private List<TourCategory> tourCategories = new ArrayList<>();
 
 
 /*    @OneToOne
