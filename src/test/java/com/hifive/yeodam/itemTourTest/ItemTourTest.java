@@ -1,7 +1,7 @@
 package com.hifive.yeodam.itemTourTest;
 
-import com.hifive.yeodam.item.dto.ItemTourReqDto;
-import com.hifive.yeodam.item.service.ItemService;
+import com.hifive.yeodam.tour.dto.TourItemReqDto;
+import com.hifive.yeodam.tour.service.TourItemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ItemTourTest {
 
     @Autowired
-    ItemService itemService;
+    TourItemService tourItemService;
 
     @Test
     public void itemTourSaveTest(){
@@ -26,17 +26,17 @@ public class ItemTourTest {
         String tourRegion = "제주";
         int tourPrice = 100;
 
-        ItemTourReqDto itemTourReqDto = new ItemTourReqDto();
-        itemTourReqDto.setSellerId(sellerId);
-        itemTourReqDto.setTourName(tourName);
-        itemTourReqDto.setTourDesc(tourDesc);
-        itemTourReqDto.setTourPeriod(tourPeriod);
-        itemTourReqDto.setTourRegion(tourRegion);
-        itemTourReqDto.setTourPrice(tourPrice);
+        TourItemReqDto tourItemReqDto = new TourItemReqDto();
+        tourItemReqDto.setSellerId(sellerId);
+        tourItemReqDto.setTourName(tourName);
+        tourItemReqDto.setTourDesc(tourDesc);
+        tourItemReqDto.setTourPeriod(tourPeriod);
+        tourItemReqDto.setTourRegion(tourRegion);
+        tourItemReqDto.setTourPrice(tourPrice);
 
 
         //when
-        Tour tour = itemService.saveItemTour(itemTourReqDto);
+        Tour tour = tourItemService.saveTourItem(tourItemReqDto);
 
         //then
         assertEquals(sellerId, tour.getSellerId());
