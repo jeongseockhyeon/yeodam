@@ -6,8 +6,6 @@ import com.hifive.yeodam.tour.entity.Tour;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Service
 public class TourItemService {
