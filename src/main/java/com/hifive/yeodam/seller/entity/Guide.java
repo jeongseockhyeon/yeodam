@@ -11,12 +11,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Seller {
+public class Guide {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long companyId;
+    private Long guideId;
 
-    private String companyName;
-    private String owner;
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Seller seller;
+
+    private String name;
+    private String birth;
+    private String gender;
     private String bio;
 }
