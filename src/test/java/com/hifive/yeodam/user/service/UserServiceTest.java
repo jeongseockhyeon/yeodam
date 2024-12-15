@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,6 +90,22 @@ public class UserServiceTest {
         //verify
         verify(authRepository, times(1)).existsByEmail(email);
         verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    public void 회원목록조회() throws Exception{
+        //given
+        doReturn(Arrays.asList(
+                User.builder().build(),
+                User.builder().build(),
+                User.builder().build()
+        )).when(userRepository).findAll();
+
+        //when
+        List<User> result = target.getUserList();
+
+        //then
+        assertThat(result.size()).isEqualTo(3);
     }
 
     private User user(){

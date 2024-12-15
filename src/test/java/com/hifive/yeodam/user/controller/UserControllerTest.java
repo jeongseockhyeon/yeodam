@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -134,6 +135,26 @@ public class UserControllerTest {
 
         //then
         resultActions.andExpect(status().isCreated());
+    }
+
+    @Test
+    public void 회원목록조회성공() throws Exception{
+        //given
+        String url = "/api/users";
+
+        doReturn(Arrays.asList(
+                User.builder().build(),
+                User.builder().build(),
+                User.builder().build()
+        )).when(userService).getUserList();
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk());
     }
 
     // validation, 유효하지 않은 파라미터들
