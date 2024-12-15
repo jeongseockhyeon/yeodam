@@ -27,4 +27,8 @@ public class Category {
 
     @OneToMany(mappedBy = "parent")
     private List<Category> children;
+
+    public void updateCategory(String name) {
+        this.name = name;
+    }
 }

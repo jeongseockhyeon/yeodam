@@ -32,5 +32,10 @@ public class CategoryApiController {
         return ResponseEntity.ok(categoryService.findCategoryById(id));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody CategoryReqDto categoryReqDto) {
+        return ResponseEntity.ok(categoryService.updateCategory(id, categoryReqDto));
+    }
+
 
 }

@@ -43,5 +43,14 @@ public class CategoryService {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 카테고리는 존재하지 않습니다."));
     }
+    /*카테고리 수정*/
+    public Category updateCategory(Long id, CategoryReqDto categoryReqDto) {
+
+        Category targetCategory = categoryRepository.findById(id)
+                .orElseThrow(()->new RuntimeException("해당 카테고리는 존재하지 않습니다."));
+
+        targetCategory.updateCategory(categoryReqDto.getCategoryName());
+        return categoryRepository.save(targetCategory);
+    }
 
 }
