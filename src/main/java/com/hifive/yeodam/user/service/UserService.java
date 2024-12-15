@@ -65,4 +65,12 @@ public class UserService {
 //        return userRepository.save(user);
         return user;
     }
+
+    public void deleteUser(Long id) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+
+        userRepository.delete(user);
+    }
 }
