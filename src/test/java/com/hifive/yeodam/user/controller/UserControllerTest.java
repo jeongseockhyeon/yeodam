@@ -8,6 +8,8 @@ import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.entity.User;
+import com.hifive.yeodam.user.exception.UserErrorResult;
+import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -147,6 +149,39 @@ public class UserControllerTest {
                 User.builder().build(),
                 User.builder().build()
         )).when(userService).getUserList();
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void 회원상세조회실패_회원이존재하지않음() throws Exception{
+        //given
+        String url = "/api/users/-1";
+        doThrow(new UserException(UserErrorResult.USER_NOT_FOUND))
+                .when(userService).getUser(-1L);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+        );
+
+        //then
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void 회원상세조회성공() throws Exception{
+        //given
+        String url = "/api/users/-1";
+
+        doReturn(User.builder().build())
+                .when(userService).getUser(-1L);
 
         //when
         ResultActions resultActions = mockMvc.perform(

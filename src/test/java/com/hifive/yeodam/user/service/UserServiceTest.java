@@ -6,6 +6,8 @@ import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.user.exception.UserErrorResult;
+import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,6 +109,31 @@ public class UserServiceTest {
 
         //then
         assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void 회원상세조회실패_회원이존재하지않음() throws Exception{
+        //given
+        doReturn(Optional.empty()).when(userRepository).findById(-1L);
+
+        //when
+        UserException result = assertThrows(UserException.class, () -> target.getUser(-1L));
+
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+    }
+
+    @Test
+    public void 회원상세조회성공() throws Exception{
+        //given
+        doReturn(Optional.of(user())).when(userRepository).findById(-1L);
+
+        //when
+        User result = target.getUser(-1L);
+
+        //then
+        assertThat(result.getName()).isEqualTo(name);
+        assertThat(result.getBirthDate()).isEqualTo(birthDate);
     }
 
     private User user(){
