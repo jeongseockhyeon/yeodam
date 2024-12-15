@@ -29,8 +29,6 @@ public class GuideService {
                 .orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
 
         existingGuide.setName(updatedGuide.getName());
-        existingGuide.setBirth(updatedGuide.getBirth());
-        existingGuide.setGender(updatedGuide.getGender());
         existingGuide.setBio(updatedGuide.getBio());
 
         return existingGuide;

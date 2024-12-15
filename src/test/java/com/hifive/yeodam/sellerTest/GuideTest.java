@@ -74,7 +74,7 @@ public class GuideTest {
         Guide result = guideService.updateGuide(guideId, updatedGuide);
 
         // then
-        assertEquals("Jackie", result.getName());
+        assertEquals("after", result.getName());
         assertEquals("Check for updates", result.getBio());
     }
 
