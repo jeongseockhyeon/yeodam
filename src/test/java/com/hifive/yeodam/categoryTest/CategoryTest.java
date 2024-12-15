@@ -21,6 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -80,6 +81,22 @@ public class CategoryTest {
         //then
         assertEquals(testCount, responseList.size());
         result.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("카테고리 단일 조회")
+    public void findCategoryTest() throws Exception {
+        //given
+        String url = "/api/category/{id}";
+        Long categoryId = 1L;
+        String categoryName = "액티비티";
+
+        //when
+        ResultActions result = mockMvc.perform(get(url, categoryId));
+
+        //then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(categoryName));
     }
 
 
