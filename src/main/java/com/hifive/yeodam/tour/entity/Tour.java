@@ -1,9 +1,8 @@
 package com.hifive.yeodam.tour.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.hifive.yeodam.item.entity.Item;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,12 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Builder
 @Entity
-public class Tour {
-    @Id
+public class Tour extends Item {
+
+/*    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;*/
 
     private String region;
 
@@ -26,6 +25,18 @@ public class Tour {
     private String description;
 
     private int price;
+
+/*    @OneToOne
+    private Item item;*/
+
+    @Builder
+    public Tour(Long sellerId, String itemName,String region, String period, String description, int price){
+        super(sellerId,itemName);
+        this.region = region;
+        this.period = period;
+        this.description = description;
+        this.price = price;
+    }
 
     public void updateTour(String region, String period, String description, int price) {
         this.region = region;

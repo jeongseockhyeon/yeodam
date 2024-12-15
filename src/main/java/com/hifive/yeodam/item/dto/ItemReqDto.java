@@ -9,5 +9,6 @@ public class ItemReqDto {
 
     private Long sellerId;
 
+
     private String itemName;
 }

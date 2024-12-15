@@ -1,16 +1,20 @@
 package com.hifive.yeodam.item.service;
 
 import com.hifive.yeodam.item.dto.ItemReqDto;
+import com.hifive.yeodam.item.dto.ItemTourReqDto;
 import com.hifive.yeodam.item.dto.ItemUpdateReqDto;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.hifive.yeodam.tour.entity.Tour;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class ItemService {
 
 
@@ -18,7 +22,7 @@ public class ItemService {
     //private final SellerRepository sellerRepository
 
     /*상품 등록*/
-    public Item save(ItemReqDto itemReqDto) {
+/*    public Item save(ItemReqDto itemReqDto) {
         //Seller findSeller = sellerRepository.findById(itemReqDto.getSellerId())
                                         // .orElseThrow(() -> new RuntimeException("해당 판매자가 없습니다."));
 
@@ -29,7 +33,7 @@ public class ItemService {
                 .build();
 
         return itemRepository.save(item);
-    }
+    }*/
 
     /*상품 전체 조회*/
     public List<Item> findAll() {
@@ -54,6 +58,21 @@ public class ItemService {
     /*상품 삭제*/
     public void deleteItem(Long id) {
         itemRepository.deleteById(id);
+    }
+
+    /*상품_여행 등록*/
+    public Tour saveItemTour(ItemTourReqDto itemTourReqDto) {
+        Tour itemTour = Tour.builder()
+                .sellerId(itemTourReqDto.getSellerId())
+                .itemName(itemTourReqDto.getTourName())
+                .region(itemTourReqDto.getTourRegion())
+                .period(itemTourReqDto.getTourPeriod())
+                .description(itemTourReqDto.getTourDesc())
+                .price(itemTourReqDto.getTourPrice())
+                .build();
+
+        return itemRepository.save(itemTour);
+
     }
 
 }

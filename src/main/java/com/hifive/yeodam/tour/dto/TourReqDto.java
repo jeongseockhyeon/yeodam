@@ -13,4 +13,5 @@ public class TourReqDto {
     private String description;
 
     private int price;
+
 }
