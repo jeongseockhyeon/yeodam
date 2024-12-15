@@ -170,4 +170,18 @@ public class TourItemTest {
                 .andExpect(jsonPath("$.price").value(tourPrice));
 
     }
+
+    @Test
+    @DisplayName("상품_여행 삭제 테스트")
+    public void itemTourDeleteTest() throws Exception {
+        //given
+        String url = "/tour/{id}";
+        Long tourItemId = 1L;
+
+        //when
+        ResultActions resultActions = mockMvc.perform(delete(url,tourItemId));
+
+        //then
+        resultActions.andExpect(status().isNoContent());
+    }
 }
