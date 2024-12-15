@@ -3,13 +3,17 @@ package com.hifive.yeodam.tour.service;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.tour.entity.Tour;
+import com.hifive.yeodam.tour.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class TourItemService {
     private final ItemRepository itemRepository;
+    private final TourRepository tourRepository;
 
     /*상품_여행 등록*/
     public Tour saveTourItem(TourItemReqDto tourItemReqDto) {
@@ -24,4 +28,9 @@ public class TourItemService {
 
         return itemRepository.save(itemTour);
     }
+    /*상품_여행 목록 조회*/
+    public List<Tour> findAll() {
+        return tourRepository.findAll();
+    }
+
 }

@@ -4,10 +4,7 @@ import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -20,5 +17,10 @@ public class TourItemAPIController {
     @PostMapping
     public ResponseEntity<?> save(@RequestBody TourItemReqDto tourItemReqDto) {
         return ResponseEntity.status(CREATED).body(tourItemService.saveTourItem(tourItemReqDto));
+    }
+
+    @GetMapping
+    public ResponseEntity<?> findAll() {
+        return ResponseEntity.ok(tourItemService.findAll());
     }
 }
