@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RequiredArgsConstructor
-@RequestMapping("/tour")
+@RequestMapping("/api/tours")
 @RestController
 public class TourItemAPIController {
     private final TourItemService tourItemService;
