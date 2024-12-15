@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.hifive.yeodam.tour.entity.Tour;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -20,7 +21,8 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -48,7 +50,7 @@ public class TourItemTest {
     }
 
     @Test
-    @DisplayName("itemTourSaveTest 테스트")
+    @DisplayName("상품_여행 등록 테스트")
     public void itemTourSaveTest() throws Exception {
 
         //given
@@ -74,7 +76,7 @@ public class TourItemTest {
         //when
         ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
 
-        List<Tour> tours = tourService.findAll();
+        List<Tour> tours = tourItemService.findAll();
         Tour tour = tours.getLast();
 
         //then
@@ -85,6 +87,25 @@ public class TourItemTest {
         assertEquals(tourPeriod,tour.getPeriod());
         assertEquals(tourRegion,tour.getRegion());
         assertEquals(tourPrice,tour.getPrice());
+    }
+
+    @Test
+    @DisplayName("상품_여행 목록 조회")
+    public void itemFindAllTest() throws Exception {
+        //given
+        String url ="/tour";
+        int testCount = 4;
+
+        //when
+        ResultActions resultActions = mockMvc.perform(get(url));
+
+        MvcResult mvcResult = resultActions.andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        List<?> responseList = objectMapper.readValue(jsonResponse, List.class);
+
+        //then
+        assertEquals(testCount, responseList.size());
+        resultActions.andExpect(status().isOk());
     }
 
 }
