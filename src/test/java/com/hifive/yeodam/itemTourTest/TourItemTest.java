@@ -107,5 +107,27 @@ public class TourItemTest {
         assertEquals(testCount, responseList.size());
         resultActions.andExpect(status().isOk());
     }
+    @Test
+    @DisplayName("상품_여행 단일 조회")
+    public void itemFindByIdTest() throws Exception {
+        //given
+        Long sellerId = 1L;
+        String tourName = "test";
+        String tourDesc = "test";
+        String tourPeriod = "1일";
+        String tourRegion = "제주";
+        int tourPrice = 100;
+        String url = "/tour/{id}";
+        Long tourItemId = 1L;
 
+        ResultActions resultActions = mockMvc.perform(get(url,tourItemId));
+
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.sellerId").value(sellerId))
+                .andExpect(jsonPath("$.itemName").value(tourName))
+                .andExpect(jsonPath("$.description").value(tourDesc))
+                .andExpect(jsonPath("$.period").value(tourPeriod))
+                .andExpect(jsonPath("$.region").value(tourRegion))
+                .andExpect(jsonPath("$.price").value(tourPrice));
+    }
 }
