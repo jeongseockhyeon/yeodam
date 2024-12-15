@@ -10,6 +10,8 @@ import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -31,5 +33,10 @@ public class UserService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public List<User> getUserList() {
+
+        return userRepository.findAll();
     }
 }
