@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter
+@Getter @Setter
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -29,6 +29,5 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "auth_id")
-    @Setter
     private Auth auth;
 }

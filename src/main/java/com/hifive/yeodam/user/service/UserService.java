@@ -4,6 +4,7 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.user.exception.UserErrorResult;
@@ -11,6 +12,7 @@ import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +50,19 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
         User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
 
+        return user;
+    }
+
+    @Transactional
+    public User updateUser(Long id, UserUpdateRequest request) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+
+        user.setName(request.getName());
+        user.setNickname(request.getNickname());
+
+//        return userRepository.save(user);
         return user;
     }
 }

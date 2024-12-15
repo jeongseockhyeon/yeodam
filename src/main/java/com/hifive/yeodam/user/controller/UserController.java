@@ -3,6 +3,7 @@ package com.hifive.yeodam.user.controller;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.service.UserService;
 import jakarta.validation.Valid;
@@ -46,6 +47,16 @@ public class UserController {
         User user = userService.getUser(id);
 
         return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id,
+                                           @RequestBody UserUpdateRequest request) {
+
+        User user = userService.updateUser(id, request);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(user);
     }
 }
 
