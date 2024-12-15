@@ -7,6 +7,7 @@ import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.exception.UserErrorResult;
 import com.hifive.yeodam.user.exception.UserException;
@@ -27,12 +28,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -190,6 +193,59 @@ public class UserControllerTest {
 
         //then
         resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void 회원수정실패_회원이존재하지않음() throws Exception{
+        //given
+        String url = "/api/users/-1";
+
+        doThrow(new UserException(UserErrorResult.USER_NOT_FOUND))
+                .when(userService).updateUser(any(Long.class), any(UserUpdateRequest.class));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.patch(url)
+                        .content(gson.toJson(new UserUpdateRequest()))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void 회원수정성공() throws Exception{
+        //given
+        String url = "/api/users/-1";
+
+        doReturn(User.builder().name("kim").nickname("kim12")
+                .build())
+                .when(userService).updateUser(any(Long.class), any(UserUpdateRequest.class));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.patch(url)
+                        .content(gson.toJson(userUpdateRequest()))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk());
+
+        User response = gson.fromJson(resultActions.andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8), User.class);
+
+        assertThat(response.getName()).isEqualTo("kim");
+        assertThat(response.getNickname()).isEqualTo("kim12");
+    }
+
+    private UserUpdateRequest userUpdateRequest() {
+        return UserUpdateRequest.builder()
+                .name("kim")
+                .nickname("kim12")
+                .build();
     }
 
     // validation, 유효하지 않은 파라미터들

@@ -4,6 +4,7 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.user.exception.UserErrorResult;
@@ -136,6 +137,31 @@ public class UserServiceTest {
         assertThat(result.getBirthDate()).isEqualTo(birthDate);
     }
 
+    @Test
+    public void 회원수정실패_회원존재하지않음() throws Exception{
+        //given
+        doReturn(Optional.empty()).when(userRepository).findById(-1L);
+
+        //when
+        UserException result = assertThrows(UserException.class, () -> target.updateUser(-1L, new UserUpdateRequest()));
+
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+    }
+    
+    @Test
+    public void 회원수정성공() throws Exception{
+        //given
+        doReturn(Optional.of(user())).when(userRepository).findById(-1L);
+
+        //when
+        User result = target.updateUser(-1L, userUpdateRequest());
+
+        //then
+        assertThat(result.getName()).isEqualTo("kim");
+        assertThat(result.getNickname()).isEqualTo("kim12");
+    }
+
     private User user(){
         return User.builder()
                 .id(-1L)
@@ -152,6 +178,13 @@ public class UserServiceTest {
                 .email(email)
                 .password(password)
                 .phone(phone)
+                .build();
+    }
+
+    private UserUpdateRequest userUpdateRequest(){
+        return UserUpdateRequest.builder()
+                .name("kim")
+                .nickname("kim12")
                 .build();
     }
 }
