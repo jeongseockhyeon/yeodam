@@ -67,7 +67,7 @@ public class TourItemTest {
         tourItemReqDto.setTourRegion(tourRegion);
         tourItemReqDto.setTourPrice(tourPrice);
 
-        String url = "/tour";
+        String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
 
 
@@ -91,7 +91,7 @@ public class TourItemTest {
     @DisplayName("상품_여행 목록 조회 테스트")
     public void itemFindAllTest() throws Exception {
         //given
-        String url ="/tour";
+        String url ="/api/tours";
         int testCount = 4;
 
         //when
@@ -115,7 +115,7 @@ public class TourItemTest {
         String tourPeriod = "1일";
         String tourRegion = "제주";
         int tourPrice = 100;
-        String url = "/tour/{id}";
+        String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
         //when
@@ -135,7 +135,7 @@ public class TourItemTest {
     @DisplayName("상품_여행 수정 테스트")
     public void itemTourUpdateTest() throws Exception {
         //given
-        String url = "/tour/{id}";
+        String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
         String tourName = "update name";
@@ -172,7 +172,7 @@ public class TourItemTest {
     @DisplayName("상품_여행 삭제 테스트")
     public void itemTourDeleteTest() throws Exception {
         //given
-        String url = "/tour/{id}";
+        String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
         //when

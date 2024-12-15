@@ -1,5 +1,6 @@
 package com.hifive.yeodam.category.entity;
 
+import com.hifive.yeodam.tour.entity.TourCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,9 @@ public class Category {
 
     @OneToMany(mappedBy = "parent")
     private List<Category> children;
+
+    @OneToMany(mappedBy = "category")
+    private List<TourCategory> tourCategory;
 
     public void updateCategory(String name) {
         this.name = name;

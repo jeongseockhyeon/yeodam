@@ -51,7 +51,7 @@ public class CategoryTest {
         String categoryName = "액티비티";
         CategoryReqDto categoryReqDto = new CategoryReqDto();
         categoryReqDto.setCategoryName(categoryName);
-        String url = "/api/category";
+        String url = "/api/categorys";
 
         String json = objectMapper.writeValueAsString(categoryReqDto);
 
@@ -74,7 +74,7 @@ public class CategoryTest {
         categoryReqDto.setParentCategoryId(parentId);
         categoryReqDto.setCategoryName(categoryName);
 
-        String url = "/api/category";
+        String url = "/api/categorys";
         String json = objectMapper.writeValueAsString(categoryReqDto);
 
         //when
@@ -94,7 +94,7 @@ public class CategoryTest {
     @DisplayName("카테고리 전체 목록 조회 테스트")
     public void findAllCategoryTest() throws Exception {
         //given
-        String url = "/api/category";
+        String url = "/api/categorys";
         int testCount = 1;
 
         //when
@@ -112,7 +112,7 @@ public class CategoryTest {
     @DisplayName("카테고리 단일 조회 테스트")
     public void findCategoryTest() throws Exception {
         //given
-        String url = "/api/category/{id}";
+        String url = "/api/categorys/{id}";
         Long categoryId = 1L;
         String categoryName = "액티비티";
 
@@ -132,7 +132,7 @@ public class CategoryTest {
         String updateName = "공연/전시/체험";
         CategoryReqDto categoryReqDto = new CategoryReqDto();
         categoryReqDto.setCategoryName(updateName);
-        String url = "/api/category/{id}";
+        String url = "/api/categorys/{id}";
         String json = objectMapper.writeValueAsString(categoryReqDto);
 
         //when
@@ -152,7 +152,7 @@ public class CategoryTest {
         Long categoryId = 4L;
 
         //when
-        ResultActions result = mockMvc.perform(delete("/api/category/{id}", categoryId));
+        ResultActions result = mockMvc.perform(delete("/api/categorys/{id}", categoryId));
 
         //then
         result.andExpect(status().isNoContent());
@@ -160,8 +160,5 @@ public class CategoryTest {
         // -> 하위 카테고리가 존재할 경우 상위 카테고리는 삭제되서는 안됨
 
     }
-
-
-
 
 }
