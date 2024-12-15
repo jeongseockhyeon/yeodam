@@ -2,6 +2,8 @@ package com.hifive.yeodam.advice;
 
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
+import com.hifive.yeodam.user.exception.UserErrorResult;
+import com.hifive.yeodam.user.exception.UserException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +55,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return this.makeErrorResponseEntity(exception.getErrorResult());
     }
 
+    @ExceptionHandler({UserException.class})
+    public ResponseEntity<ErrorResponse> handleRestApiException(UserException exception) {
+        log.warn("UserException occur: ", exception);
+
+        return this.makeErrorResponseEntity(exception.getErrorResult());
+    }
+
     private ResponseEntity<ErrorResponse> makeErrorResponseEntity(AuthErrorResult errorResult) {
+        return ResponseEntity.status(errorResult.getHttpStatus())
+                .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
+    }
+
+    private ResponseEntity<ErrorResponse> makeErrorResponseEntity(UserErrorResult errorResult) {
         return ResponseEntity.status(errorResult.getHttpStatus())
                 .body(new ErrorResponse(errorResult.name(), errorResult.getMessage()));
     }

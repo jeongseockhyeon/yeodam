@@ -6,11 +6,14 @@ import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.user.exception.UserErrorResult;
+import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -38,5 +41,13 @@ public class UserService {
     public List<User> getUserList() {
 
         return userRepository.findAll();
+    }
+
+    public User getUser(Long id) {
+
+        Optional<User> optionalUser = userRepository.findById(id);
+        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+
+        return user;
     }
 }

@@ -39,5 +39,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(users);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+
+        User user = userService.getUser(id);
+
+        return ResponseEntity.ok(user);
+    }
 }
 
