@@ -58,15 +58,40 @@ public class CategoryTest {
         //when
         ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
         List<Category> categories = categoryService.findAllCategory();
-        Category category = categories.get(0);
+        Category category = categories.getLast();
 
         //then
         result.andExpect(status().isCreated());
         assertEquals(categoryName, category.getName());
     }
+    @Test
+    @DisplayName("하위 카테고리 생성 테스트")
+    public void saveSubCategoryTest() throws Exception {
+        //given
+        Long parentId = 1L;
+        String categoryName = "레저";
+        CategoryReqDto categoryReqDto = new CategoryReqDto();
+        categoryReqDto.setParentCategoryId(parentId);
+        categoryReqDto.setCategoryName(categoryName);
+
+        String url = "/api/category";
+        String json = objectMapper.writeValueAsString(categoryReqDto);
+
+        //when
+        ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
+        List<Category> categories = categoryService.findAllCategory();
+        Category category = categories.getLast();
+        Category parentCategory = categoryService.findCategoryById(parentId);
+
+        //then
+        result.andExpect(status().isCreated());
+        assertEquals(categoryName, category.getName());
+        assertEquals(parentCategory.getName(),category.getParent().getName());
+
+    }
 
     @Test
-    @DisplayName("카테고리 전체 목록 조회")
+    @DisplayName("카테고리 전체 목록 조회 테스트")
     public void findAllCategoryTest() throws Exception {
         //given
         String url = "/api/category";
@@ -84,7 +109,7 @@ public class CategoryTest {
     }
 
     @Test
-    @DisplayName("카테고리 단일 조회")
+    @DisplayName("카테고리 단일 조회 테스트")
     public void findCategoryTest() throws Exception {
         //given
         String url = "/api/category/{id}";
@@ -97,6 +122,28 @@ public class CategoryTest {
         //then
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(categoryName));
+    }
+
+    @Test
+    @DisplayName("카테고리 수정 테스트")
+    public void updateCategoryTest() throws Exception {
+        //given
+        Long categoryId = 4L;
+        String updateName = "공연/전시/체험";
+        CategoryReqDto categoryReqDto = new CategoryReqDto();
+        categoryReqDto.setCategoryName(updateName);
+        String url = "/api/category/{id}";
+        String json = objectMapper.writeValueAsString(categoryReqDto);
+
+        //when
+        ResultActions result = mockMvc.perform(patch(url, categoryId).contentType(MediaType.APPLICATION_JSON).content(json));
+        List<Category> categories = categoryService.findAllCategory();
+        Category category = categories.getLast();
+
+        //then
+        result.andExpect(status().isOk());
+        assertEquals(updateName, category.getName());
+
     }
 
 
