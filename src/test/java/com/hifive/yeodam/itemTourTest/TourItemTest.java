@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
-import com.hifive.yeodam.tour.service.TourService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,8 +41,6 @@ public class TourItemTest {
     @Autowired
     TourItemService tourItemService;
 
-    @Autowired
-    TourService tourService;
 
     @BeforeEach
     public void setMockMvc(){
