@@ -71,4 +71,21 @@ public class UserRepositoryTest {
         //then
         assertThat(result.size()).isEqualTo(2);
     }
+
+    @Test
+    public void 회원추가후삭제() throws Exception{
+        //given
+        User user = User.builder()
+                .name(username)
+                .birthDate(birthDate)
+                .gender("M")
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        //when
+        userRepository.delete(savedUser);
+
+        //then
+    }
 }

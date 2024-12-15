@@ -162,6 +162,29 @@ public class UserServiceTest {
         assertThat(result.getNickname()).isEqualTo("kim12");
     }
 
+    @Test
+    public void 회원삭제실패_회원존재하지않음() throws Exception{
+        //given
+        doReturn(Optional.empty()).when(userRepository).findById(-1L);
+
+        //when
+        UserException result = assertThrows(UserException.class, () -> target.deleteUser(-1L));
+
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+    }
+
+    @Test
+    public void 회원삭제성공() throws Exception{
+        //given
+        doReturn(Optional.of(user())).when(userRepository).findById(-1L);
+
+        //when
+        target.deleteUser(-1L);
+
+        //then
+    }
+
     private User user(){
         return User.builder()
                 .id(-1L)

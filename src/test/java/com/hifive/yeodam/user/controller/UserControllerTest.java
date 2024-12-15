@@ -241,6 +241,38 @@ public class UserControllerTest {
         assertThat(response.getNickname()).isEqualTo("kim12");
     }
 
+    @Test
+    public void 회원삭제실패_회원존재하지않음() throws Exception{
+        //given
+        String url = "/api/users/-1";
+
+        doThrow(new UserException(UserErrorResult.USER_NOT_FOUND))
+                .when(userService)
+                .deleteUser(-1L);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+        );
+
+        //then
+        resultActions.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void 회원삭제성공() throws Exception{
+        //given
+        String url = "/api/users/-1";
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(url)
+        );
+
+        //then
+        resultActions.andExpect(status().isNoContent());
+    }
+
     private UserUpdateRequest userUpdateRequest() {
         return UserUpdateRequest.builder()
                 .name("kim")
