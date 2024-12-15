@@ -2,6 +2,7 @@ package com.hifive.yeodam.itemTourTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
+import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
 import com.hifive.yeodam.tour.service.TourService;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +91,7 @@ public class TourItemTest {
     }
 
     @Test
-    @DisplayName("상품_여행 목록 조회")
+    @DisplayName("상품_여행 목록 조회 테스트")
     public void itemFindAllTest() throws Exception {
         //given
         String url ="/tour";
@@ -108,7 +109,7 @@ public class TourItemTest {
         resultActions.andExpect(status().isOk());
     }
     @Test
-    @DisplayName("상품_여행 단일 조회")
+    @DisplayName("상품_여행 단일 조회 테스트")
     public void itemFindByIdTest() throws Exception {
         //given
         Long sellerId = 1L;
@@ -120,8 +121,10 @@ public class TourItemTest {
         String url = "/tour/{id}";
         Long tourItemId = 1L;
 
+        //when
         ResultActions resultActions = mockMvc.perform(get(url,tourItemId));
 
+        //then
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$.sellerId").value(sellerId))
                 .andExpect(jsonPath("$.itemName").value(tourName))
@@ -129,5 +132,42 @@ public class TourItemTest {
                 .andExpect(jsonPath("$.period").value(tourPeriod))
                 .andExpect(jsonPath("$.region").value(tourRegion))
                 .andExpect(jsonPath("$.price").value(tourPrice));
+    }
+
+    @Test
+    @DisplayName("상품_여행 수정 테스트")
+    public void itemTourUpdateTest() throws Exception {
+        //given
+        String url = "/tour/{id}";
+        Long tourItemId = 1L;
+
+        String tourName = "update name";
+        String tourDesc = "update desc";
+        String tourPeriod = "반나절";
+        String tourRegion = "강원도";
+        int tourPrice = 100;
+
+        TourItemUpdateReqDto tourItemUpdateReqDto = new TourItemUpdateReqDto();
+
+        tourItemUpdateReqDto.setTourName(tourName);
+        tourItemUpdateReqDto.setDescription(tourDesc);
+        tourItemUpdateReqDto.setPeriod(tourPeriod);
+        tourItemUpdateReqDto.setRegion(tourRegion);
+        tourItemUpdateReqDto.setPrice(tourPrice);
+
+        String json = objectMapper.writeValueAsString(tourItemUpdateReqDto);
+
+
+        //when
+        ResultActions resultActions = mockMvc.perform(patch(url,tourItemId).contentType(MediaType.APPLICATION_JSON).content(json));
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.itemName").value(tourName))
+                .andExpect(jsonPath("$.description").value(tourDesc))
+                .andExpect(jsonPath("$.period").value(tourPeriod))
+                .andExpect(jsonPath("$.region").value(tourRegion))
+                .andExpect(jsonPath("$.price").value(tourPrice));
+
     }
 }
