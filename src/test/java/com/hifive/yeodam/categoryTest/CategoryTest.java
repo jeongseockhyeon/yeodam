@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -19,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -62,6 +63,25 @@ public class CategoryTest {
         result.andExpect(status().isCreated());
         assertEquals(categoryName, category.getName());
     }
+
+    @Test
+    @DisplayName("카테고리 전체 목록 조회")
+    public void findAllCategoryTest() throws Exception {
+        //given
+        String url = "/api/category";
+        int testCount = 1;
+
+        //when
+        ResultActions result = mockMvc.perform(get(url));
+        MvcResult mvcResult = result.andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        List<?> responseList = objectMapper.readValue(jsonResponse, List.class);
+
+        //then
+        assertEquals(testCount, responseList.size());
+        result.andExpect(status().isOk());
+    }
+
 
 
 
