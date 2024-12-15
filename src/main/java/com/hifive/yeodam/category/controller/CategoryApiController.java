@@ -37,5 +37,11 @@ public class CategoryApiController {
         return ResponseEntity.ok(categoryService.updateCategory(id, categoryReqDto));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

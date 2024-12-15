@@ -52,5 +52,11 @@ public class CategoryService {
         targetCategory.updateCategory(categoryReqDto.getCategoryName());
         return categoryRepository.save(targetCategory);
     }
+    /*카테고리 삭제*/
+    public void deleteCategory(Long id) {
+        //하위 카테고리가 존재하는 상위 카테고리 삭제 요청 시 발생하는 오류 추후 예외 처리
+        // -> 하위 카테고리가 존재할 경우 상위 카테고리는 삭제되서는 안됨
+        categoryRepository.deleteById(id);
+    }
 
 }
