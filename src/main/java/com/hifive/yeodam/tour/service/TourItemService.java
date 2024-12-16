@@ -60,8 +60,7 @@ public class TourItemService {
     public Tour update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
         Tour targetTour = tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
-
-        targetTour.updateItem(tourItemUpdateReqDto.getTourName());
+        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getPrice());
         targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(), tourItemUpdateReqDto.getDescription());
 
         return tourRepository.save(targetTour);
