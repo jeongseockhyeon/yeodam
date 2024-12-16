@@ -1,5 +1,6 @@
 package com.hifive.yeodam.sellerTest;
 
+import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.service.SellerService;
 import org.junit.jupiter.api.Test;
@@ -53,11 +54,14 @@ public class SellerTest {
         Seller originalSeller = new Seller(null, "original", "Ellie", "Legend seller");
         sellerService.createSeller(originalSeller);
 
-        Seller updatedSeller = new Seller(null, "update", "Elice", "The company was taken away");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest();
+        updateRequest.setCompanyName("update");
+        updateRequest.setOwner("Elice");
+        updateRequest.setBio("The company was taken away");
 
         // when
         Long sellerId = originalSeller.getCompanyId();
-        Seller result = sellerService.updateSeller(sellerId, updatedSeller);
+        Seller result = sellerService.updateSeller(sellerId, updateRequest);
 
         // then
         assertEquals("update", result.getCompanyName());

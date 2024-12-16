@@ -1,5 +1,6 @@
 package com.hifive.yeodam.seller.service;
 
+import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.SellerRepository;
 import org.springframework.stereotype.Service;
@@ -24,15 +25,14 @@ public class SellerService {
 
     // 판매자 정보 수정
     @Transactional
-    public Seller updateSeller(Long id, Seller updatedSeller) {
-        Seller existingSeller = sellerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+    public Seller updateSeller(Long id, SellerUpdateRequest updateRequest) {
+        Seller existingSeller = sellerRepository.findById(id).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
 
-        existingSeller.setOwner(updatedSeller.getOwner());
-        existingSeller.setCompanyName(updatedSeller.getCompanyName());
-        existingSeller.setBio(updatedSeller.getBio());
+        existingSeller.setCompanyName(updateRequest.getCompanyName());
+        existingSeller.setOwner(updateRequest.getOwner());
+        existingSeller.setBio(updateRequest.getBio());
 
-        return existingSeller;
+        return sellerRepository.save(existingSeller);
     }
 
     // 판매자 삭제

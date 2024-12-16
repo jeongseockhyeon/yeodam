@@ -1,5 +1,6 @@
 package com.hifive.yeodam.seller.service;
 
+import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import org.springframework.stereotype.Service;
@@ -24,14 +25,13 @@ public class GuideService {
 
     // 가이드 정보 수정
     @Transactional
-    public Guide updateGuide(Long id, Guide updatedGuide) {
-        Guide existingGuide = guideRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
+    public Guide updateGuide(Long id, GuideUpdateRequest updateRequest) {
+        Guide existingGuide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
 
-        existingGuide.setName(updatedGuide.getName());
-        existingGuide.setBio(updatedGuide.getBio());
+        existingGuide.setName(updateRequest.getName());
+        existingGuide.setBio(updateRequest.getBio());
 
-        return existingGuide;
+        return guideRepository.save(existingGuide);
     }
 
     // 가이드 삭제

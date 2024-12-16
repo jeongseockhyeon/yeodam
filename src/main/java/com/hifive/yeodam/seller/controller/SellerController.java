@@ -1,5 +1,6 @@
 package com.hifive.yeodam.seller.controller;
 
+import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.service.SellerService;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,9 @@ public class SellerController {
 
     // 판매자 정보 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Seller> updateSeller(@PathVariable Long id, @RequestBody Seller seller) {
-        Seller updatedSeller = sellerService.updateSeller(id, seller);
+    public ResponseEntity<Seller> updateSeller(@PathVariable Long id, @RequestBody SellerUpdateRequest updateRequest) {
+
+        Seller updatedSeller = sellerService.updateSeller(id, updateRequest);
         return ResponseEntity.ok(updatedSeller);
     }
 

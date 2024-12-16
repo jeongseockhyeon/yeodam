@@ -1,5 +1,6 @@
 package com.hifive.yeodam.sellerTest;
 
+import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.service.GuideService;
@@ -62,20 +63,23 @@ public class GuideTest {
     @Test
     public void updateGuideTest() {
         // given
-        Seller seller = new Seller(null, "updateCompany", "Ellie", "Legend seller");
+        Seller seller = new Seller(null, "Company", "Owner", "Bio");
         sellerService.createSeller(seller);
-        Guide originalGuide = new Guide(null, seller, "before", "1985-05-05", "Male", "Guide");
+
+        Guide originalGuide = new Guide(null, seller, "JK", "1997-09-01", "Male", "Bio");
         guideService.createGuide(originalGuide);
 
-        Guide updatedGuide = new Guide(null, seller, "after", "1985-05-05", "Male", "Check for updates");
+        GuideUpdateRequest updateRequest = new GuideUpdateRequest();
+        updateRequest.setName("Jeon");
+        updateRequest.setBio("Updated Bio");
 
         // when
         Long guideId = originalGuide.getGuideId();
-        Guide result = guideService.updateGuide(guideId, updatedGuide);
+        Guide updatedGuide = guideService.updateGuide(guideId, updateRequest);
 
         // then
-        assertEquals("after", result.getName());
-        assertEquals("Check for updates", result.getBio());
+        assertEquals("Jeon", updatedGuide.getName());
+        assertEquals("Updated Bio", updatedGuide.getBio());
     }
 
     // 가이드 삭제

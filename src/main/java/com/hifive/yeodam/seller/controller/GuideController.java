@@ -1,5 +1,6 @@
 package com.hifive.yeodam.seller.controller;
 
+import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.service.GuideService;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,8 @@ public class GuideController {
 
     // 가이드 정보 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Guide> updateGuide(@PathVariable Long id, @RequestBody Guide guide) {
-        Guide updatedGuide = guideService.updateGuide(id, guide);
+    public ResponseEntity<Guide> updateGuide(@PathVariable Long id, @RequestBody GuideUpdateRequest updateRequest) {
+        Guide updatedGuide = guideService.updateGuide(id, updateRequest);
         return ResponseEntity.ok(updatedGuide);
     }
 
