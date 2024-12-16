@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "item_type")
 @Entity
@@ -30,8 +32,10 @@ public abstract class Item {
         this.price = price;
     }
 
-    public void updateItem(String itemName) {
+    public void updateItem(String itemName,int price) {
+
         this.itemName = itemName;
+        this.price = price;
     }
 
     public abstract void updateSubItem(String... args);

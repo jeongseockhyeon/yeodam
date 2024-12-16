@@ -1,69 +1,70 @@
 package com.hifive.yeodam.itemTourTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.tour.controller.TourItemAPIController;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import com.hifive.yeodam.tour.entity.Tour;
+import org.mockito.MockitoAnnotations;
+
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 public class TourItemTest {
+    private final static Long sellerId = 1L;
+    private final static String tourName = "test";
+    private final static String tourDesc = "test";
+    private final static String tourPeriod = "1일";
+    private final static String tourRegion = "제주";
+    private final static int tourPrice = 100;
 
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+    @Mock
+    private TourItemService tourItemService;
 
+    @Mock
+    private ItemRepository itemRepository;
 
-    @Autowired
-    TourItemService tourItemService;
-
+    @InjectMocks
+    private TourItemAPIController tourItemAPIController;
 
     @BeforeEach
-    public void setMockMvc(){
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(tourItemAPIController).build();
     }
+
 
     @Test
     @DisplayName("상품_여행 등록 테스트")
     public void itemTourSaveTest() throws Exception {
 
         //given
-        Long sellerId = 1L;
-        String tourName = "test";
-        String tourDesc = "test";
-        String tourPeriod = "1일";
-        String tourRegion = "제주";
-
         List<Long> categoryIds = new ArrayList<>();
         categoryIds.add(1L);
         categoryIds.add(2L);
 
-        int tourPrice = 100;
 
         TourItemReqDto tourItemReqDto = new TourItemReqDto();
         tourItemReqDto.setSellerId(sellerId);
@@ -77,21 +78,25 @@ public class TourItemTest {
         String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
 
+        Tour expectedTour = Tour.builder()
+                .sellerId(sellerId)
+                .itemName(tourName)
+                .description(tourDesc)
+                .region(tourRegion)
+                .period(tourPeriod)
+                .price(tourPrice)
+                .build();
+
+        when(tourItemService.saveTourItem(tourItemReqDto)).thenReturn(expectedTour);
+
 
         //when
         ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
 
-        List<Tour> tours = tourItemService.findAll();
-        Tour tour = tours.getLast();
 
         //then
         result.andExpect(status().isCreated());
-        assertEquals(sellerId, tour.getSellerId());
-        assertEquals(tourName,tour.getItemName());
-        assertEquals(tourDesc,tour.getDescription());
-        assertEquals(tourPeriod,tour.getPeriod());
-        assertEquals(tourRegion,tour.getRegion());
-        assertEquals(tourPrice,tour.getPrice());
+        verify(tourItemService, times(1)).saveTourItem(any(TourItemReqDto.class));
     }
 
     @Test
@@ -100,6 +105,12 @@ public class TourItemTest {
         //given
         String url ="/api/tours";
         int testCount = 4;
+        List<Tour> mockTourList = new ArrayList<>();
+        for (int i = 0; i < testCount; i++) {
+            Tour tour = new Tour();
+            mockTourList.add(tour);
+        }
+        when(tourItemService.findAll()).thenReturn(mockTourList);
 
         //when
         ResultActions resultActions = mockMvc.perform(get(url));
@@ -117,26 +128,34 @@ public class TourItemTest {
     @DisplayName("상품_여행 단일 조회 테스트")
     public void itemFindByIdTest() throws Exception {
         //given
-        Long sellerId = 1L;
-        String tourName = "test";
-        String tourDesc = "test";
-        String tourPeriod = "1일";
-        String tourRegion = "제주";
-        int tourPrice = 100;
         String url = "/api/tours/{id}";
         Long tourItemId = 1L;
+
+        Tour expectedTour = Tour.builder()
+                .sellerId(sellerId)
+                .itemName(tourName)
+                .description(tourDesc)
+                .region(tourRegion)
+                .period(tourPeriod)
+                .price(tourPrice)
+                .build();
+
+        when(tourItemService.findById(tourItemId)).thenReturn(expectedTour);
 
         //when
         ResultActions resultActions = mockMvc.perform(get(url,tourItemId));
 
+        MvcResult mvcResult = resultActions.andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        Tour resultTour = objectMapper.readValue(jsonResponse, Tour.class);
+
         //then
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.sellerId").value(sellerId))
-                .andExpect(jsonPath("$.itemName").value(tourName))
-                .andExpect(jsonPath("$.description").value(tourDesc))
-                .andExpect(jsonPath("$.period").value(tourPeriod))
-                .andExpect(jsonPath("$.region").value(tourRegion))
-                .andExpect(jsonPath("$.price").value(tourPrice));
+        resultActions.andExpect(status().isOk());
+        assertEquals(sellerId, resultTour.getSellerId());
+        assertEquals(tourName, resultTour.getItemName());
+        assertEquals(tourDesc, resultTour.getDescription());
+        assertEquals(tourPeriod, resultTour.getPeriod());
+        assertEquals(tourPrice, resultTour.getPrice());
     }
 
     @Test
@@ -146,34 +165,44 @@ public class TourItemTest {
         String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
-        String tourName = "update name";
-        String tourDesc = "update desc";
-        String tourPeriod = "반나절";
-        String tourRegion = "강원도";
-        int tourPrice = 100;
+        String updateTourName = "update name";
+        String updateTourDesc = "update desc";
+        String updateTourPeriod = "반나절";
+        String updateTourRegion = "강원도";
+        int updateTourPrice = 100;
 
         TourItemUpdateReqDto tourItemUpdateReqDto = new TourItemUpdateReqDto();
 
-        tourItemUpdateReqDto.setTourName(tourName);
-        tourItemUpdateReqDto.setDescription(tourDesc);
-        tourItemUpdateReqDto.setPeriod(tourPeriod);
-        tourItemUpdateReqDto.setRegion(tourRegion);
-        tourItemUpdateReqDto.setPrice(tourPrice);
+        tourItemUpdateReqDto.setTourName(updateTourName);
+        tourItemUpdateReqDto.setPrice(updateTourPrice);
+        tourItemUpdateReqDto.setDescription(updateTourDesc);
+        tourItemUpdateReqDto.setPeriod(updateTourPeriod);
+        tourItemUpdateReqDto.setRegion(updateTourRegion);
 
         String json = objectMapper.writeValueAsString(tourItemUpdateReqDto);
 
+        Tour expectedTour = Tour.builder()
+                .itemName(updateTourName)
+                .description(updateTourDesc)
+                .region(updateTourRegion)
+                .period(updateTourPeriod)
+                .price(updateTourPrice)
+                .build();
+
+        when(tourItemService.update(tourItemId,tourItemUpdateReqDto)).thenReturn(expectedTour);
 
         //when
         ResultActions resultActions = mockMvc.perform(patch(url,tourItemId).contentType(MediaType.APPLICATION_JSON).content(json));
+        MvcResult mvcResult = resultActions.andReturn();
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        Tour resultTour = objectMapper.readValue(jsonResponse, Tour.class);
 
         //then
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.itemName").value(tourName))
-                .andExpect(jsonPath("$.description").value(tourDesc))
-                .andExpect(jsonPath("$.period").value(tourPeriod))
-                .andExpect(jsonPath("$.region").value(tourRegion))
-                .andExpect(jsonPath("$.price").value(tourPrice));
-
+        resultActions.andExpect(status().isOk());
+        assertEquals(updateTourName, resultTour.getItemName());
+        assertEquals(updateTourDesc, resultTour.getDescription());
+        assertEquals(updateTourPeriod, resultTour.getPeriod());
+        assertEquals(updateTourPrice, resultTour.getPrice());
     }
 
     @Test
@@ -183,10 +212,12 @@ public class TourItemTest {
         String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
+
         //when
         ResultActions resultActions = mockMvc.perform(delete(url,tourItemId));
 
         //then
         resultActions.andExpect(status().isNoContent());
+        verify(tourItemService,times(1)).delete(tourItemId);
     }
 }
