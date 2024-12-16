@@ -40,7 +40,7 @@ public class Cart {
 
     //티켓 타입 수량 변경
     public void updateCount(int count) {
-        if (item.getItemType() != ItemType.TICKET) {
+        if (item.getItemType() == ItemType.RESERVATION) {
             throw new IllegalStateException("예약 상품은 수량 변경이 불가능합니다.");
         }
         this.count = count;
@@ -48,7 +48,7 @@ public class Cart {
 
     //수량 변경 가능 여부 확인
     public boolean isCountModifiable() {
-        return item.getItemType() == ItemType.TICKET;
+        return item.getItemType() != ItemType.RESERVATION;
     }
 
 }
