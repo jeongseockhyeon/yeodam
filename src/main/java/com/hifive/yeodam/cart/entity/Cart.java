@@ -1,6 +1,8 @@
 package com.hifive.yeodam.cart.entity;
 
 
+import com.hifive.yeodam.item.entity.Item;
+import com.hifive.yeodam.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

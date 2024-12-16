@@ -15,7 +15,7 @@ public class CartResponseDto {
     public CartResponseDto(Cart cart) {
         this.cartId = cart.getId();
         this.itemId = cart.getItem().getId();
-        this.itemName = cart.getItem().getName();
+        this.itemName = cart.getItem().getItemName();
         this.price = cart.getPrice();
         this.count = cart.getCount();
         this.countModifiable = cart.isCountModifiable();
