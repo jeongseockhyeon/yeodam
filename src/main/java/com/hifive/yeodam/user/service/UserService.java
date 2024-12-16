@@ -1,13 +1,10 @@
 package com.hifive.yeodam.user.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.user.exception.UserErrorResult;
 import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
@@ -23,12 +20,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private final AuthRepository authRepository;
     private final UserRepository userRepository;
 
     public UserResponse addUser(JoinRequest request, Auth auth) {
-        if(authRepository.existsByEmail(request.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
+
+        if(userRepository.existsByNickname(request.getNickname())) {
+            throw new UserException(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
         }
 
         User user = User.builder()
