@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class CancelOrderRequest {
-    private String orderNumber;
+    private String orderUid;
 }
