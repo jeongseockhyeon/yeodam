@@ -21,7 +21,7 @@ public class Tour extends Item {
 
     private String description;
 
-    @OneToMany(mappedBy = "tour",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();
 
 

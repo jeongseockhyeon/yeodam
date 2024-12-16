@@ -2,6 +2,7 @@ package com.hifive.yeodam.tour.service;
 
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
+import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
@@ -33,6 +34,8 @@ public class TourItemService {
                 .price(tourItemReqDto.getTourPrice())
                 .build();
 
+        Tour savedTour = tourRepository.save(itemTour);
+
         /*여행_카테고리 저장*/
         for(Long categoryId : tourItemReqDto.getCategoryIdList()){
             Category category = categoryRepository.findById(categoryId)
@@ -44,7 +47,7 @@ public class TourItemService {
             tourCategoryRepository.save(tourCategory);
         }
 
-        return itemRepository.save(itemTour);
+        return savedTour;
     }
     /*상품_여행 목록 조회*/
     public List<Tour> findAll() {
