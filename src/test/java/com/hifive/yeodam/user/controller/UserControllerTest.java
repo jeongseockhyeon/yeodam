@@ -7,6 +7,7 @@ import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.exception.UserErrorResult;
@@ -120,16 +121,18 @@ public class UserControllerTest {
         //given
         String url = "/api/users";
 
-        User user = User.builder()
-                .id(-1L).name(name).nickname(nickname).birthDate(birthDate).gender("M")
-                .build();
-
         Auth auth = Auth.builder()
                 .id(-1L).email(email).password(password).phone(phone)
                 .build();
 
+        User user = User.builder()
+                .id(-1L).name(name).nickname(nickname).birthDate(birthDate).gender("M").auth(auth)
+                .build();
+
+        UserResponse userResponse = new UserResponse(user);
+
         doReturn(auth).when(authService).addAuth(any(JoinRequest.class));
-        doReturn(user).when(userService).addUser(any(JoinRequest.class), any(Auth.class));
+        doReturn(userResponse).when(userService).addUser(any(JoinRequest.class), any(Auth.class));
 
         //when
         ResultActions resultActions = mockMvc.perform(
@@ -148,9 +151,9 @@ public class UserControllerTest {
         String url = "/api/users";
 
         doReturn(Arrays.asList(
-                User.builder().build(),
-                User.builder().build(),
-                User.builder().build()
+                new UserResponse(User.builder().build()),
+                new UserResponse(User.builder().build()),
+                new UserResponse(User.builder().build())
         )).when(userService).getUserList();
 
         //when
@@ -183,7 +186,7 @@ public class UserControllerTest {
         //given
         String url = "/api/users/-1";
 
-        doReturn(User.builder().build())
+        doReturn(new UserResponse(User.builder().build()))
                 .when(userService).getUser(-1L);
 
         //when
@@ -219,8 +222,8 @@ public class UserControllerTest {
         //given
         String url = "/api/users/-1";
 
-        doReturn(User.builder().name("kim").nickname("kim12")
-                .build())
+        doReturn(new UserResponse(User.builder().name("kim").nickname("kim12")
+                .build()))
                 .when(userService).updateUser(any(Long.class), any(UserUpdateRequest.class));
 
         //when

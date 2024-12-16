@@ -3,6 +3,7 @@ package com.hifive.yeodam.user.controller;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.service.UserService;
@@ -23,40 +24,40 @@ public class UserController {
     private final AuthService authService;
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody @Valid JoinRequest request) {
+    public ResponseEntity<UserResponse> addUser(@RequestBody @Valid JoinRequest request) {
 
         Auth auth = authService.addAuth(request);
-        User user = userService.addUser(request, auth);
+        UserResponse userResponse = userService.addUser(request, auth);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(user);
+                .body(userResponse);
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<UserResponse>> getUsers() {
 
-        List<User> users = userService.getUserList();
+        List<UserResponse> users = userService.getUserList();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
 
-        User user = userService.getUser(id);
+        UserResponse userResponse = userService.getUser(id);
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userResponse);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id,
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id,
                                            @RequestBody UserUpdateRequest request) {
 
-        User user = userService.updateUser(id, request);
+        UserResponse userResponse = userService.updateUser(id, request);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(user);
+                .body(userResponse);
     }
 
     @DeleteMapping("/{id}")

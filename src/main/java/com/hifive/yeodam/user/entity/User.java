@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Getter @Setter
+@Getter
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -19,10 +19,12 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
+    @Setter
     private String name;
 
     private LocalDate birthDate;
 
+    @Setter
     private String nickname;
 
     private String gender;

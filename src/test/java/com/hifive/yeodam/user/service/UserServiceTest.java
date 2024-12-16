@@ -4,6 +4,7 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.auth.repository.AuthRepository;
@@ -66,13 +67,11 @@ public class UserServiceTest {
         doReturn(user()).when(userRepository).save(any(User.class));
 
         //when
-        User result = target.addUser(joinRequest, auth());
+        UserResponse result = target.addUser(joinRequest, auth());
 
         //then
-        assertThat(result.getId()).isNotNull();
-        assertThat(result.getName()).isEqualTo(name);
-        assertThat(result.getBirthDate()).isEqualTo(birthDate);
-        assertThat(result.getGender()).isEqualTo("M");
+        assertThat(result.getId()).isEqualTo(user().getId());
+        assertThat(result.getAuth().getId()).isEqualTo(auth().getId());
 
         //verify
         verify(authRepository, times(1)).existsByEmail(email);
@@ -86,7 +85,7 @@ public class UserServiceTest {
         doReturn(user()).when(userRepository).save(any(User.class));
 
         //when
-        User result = target.addUser(joinRequest, auth());
+        UserResponse result = target.addUser(joinRequest, auth());
 
         //then
         assertThat(result.getAuth().getId()).isEqualTo(auth().getId());
@@ -106,7 +105,7 @@ public class UserServiceTest {
         )).when(userRepository).findAll();
 
         //when
-        List<User> result = target.getUserList();
+        List<UserResponse> result = target.getUserList();
 
         //then
         assertThat(result.size()).isEqualTo(3);
@@ -130,7 +129,7 @@ public class UserServiceTest {
         doReturn(Optional.of(user())).when(userRepository).findById(-1L);
 
         //when
-        User result = target.getUser(-1L);
+        UserResponse result = target.getUser(-1L);
 
         //then
         assertThat(result.getName()).isEqualTo(name);
@@ -158,7 +157,7 @@ public class UserServiceTest {
                 .when(userRepository).save(any(User.class));
 
         //when
-        User result = target.updateUser(-1L, userUpdateRequest());
+        UserResponse result = target.updateUser(-1L, userUpdateRequest());
 
         //then
         assertThat(result.getName()).isEqualTo("kim");

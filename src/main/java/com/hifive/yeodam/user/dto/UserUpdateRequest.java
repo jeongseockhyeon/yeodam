@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +14,8 @@ public class UserUpdateRequest {
     private String name;
 
     private String nickname;
+
+    private String password;
+
+    private String phone;
 }
