@@ -29,7 +29,7 @@ public class Category {
     @OneToMany(mappedBy = "parent")
     private List<Category> children;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<TourCategory> tourCategory;
 
     public void updateCategory(String name) {

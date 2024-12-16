@@ -1,13 +1,9 @@
 package com.hifive.yeodam.tour.entity;
 
-import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.item.entity.Item;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Entity
 public class Tour extends Item {
-
-/*    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;*/
 
     private String region;
 
@@ -28,12 +21,9 @@ public class Tour extends Item {
 
     private String description;
 
-    @OneToMany(mappedBy = "tour")
+    @OneToMany(mappedBy = "tour",fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();
 
-
-/*    @OneToOne
-    private Item item;*/
 
     @Builder
     public Tour(Long sellerId, String itemName,String region, String period, String description, int price){
