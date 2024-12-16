@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hifive.yeodam.order.dto.AddOrderRequest.*;
+import static com.hifive.yeodam.order.dto.AddOrderRequest.ItemRequest;
 
 
 @Service
@@ -28,9 +28,28 @@ public class OrderService {
     private final MockUserRespiratory userRespiratory;
 
     @Transactional
-    public Long order(AddOrderRequest request) {
+    public String order(AddOrderRequest request) {
+
         MockUser user = userRespiratory.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원이 없습니다"));
+
+        List<OrderDetail> orderDetails = createOrderDetails(request);
+
+        Order order = Order.createOrder(user.getUserId(), orderDetails);
+        orderRepository.save(order);
+
+        return order.getOrderUid();
+    }
+
+    @Transactional
+    public void cancelOrder(String orderUid) {
+        Order order = orderRepository.findByOrderUid(orderUid)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다"));
+
+        order.cancelOrder();
+    }
+
+    private List<OrderDetail> createOrderDetails(AddOrderRequest request) {
 
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (ItemRequest requestItem : request.getItems()) {
@@ -41,22 +60,6 @@ public class OrderService {
             OrderDetail orderDetail = OrderDetail.create(item.getItemId(), requestItem.getCount(), item.getPrice());
             orderDetails.add(orderDetail);
         }
-
-        Order order = Order.createOrder(user.getUserId(), orderDetails);
-        orderRepository.save(order);
-
-        return order.getId();
-    }
-
-    @Transactional
-    public void cancelOrder(String orderNumber) {
-        Order order = orderRepository.findByOrderNumber(orderNumber)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다"));
-
-        order.cancelOrder();
-    }
-
-    public List<Order> findOrders() {
-        return orderRepository.findAll();
+        return orderDetails;
     }
 }
