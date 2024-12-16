@@ -62,8 +62,7 @@ public class UserService {
         user.setName(request.getName());
         user.setNickname(request.getNickname());
 
-//        return userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
     public void deleteUser(Long id) {

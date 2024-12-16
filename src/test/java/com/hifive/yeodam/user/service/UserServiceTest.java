@@ -153,6 +153,9 @@ public class UserServiceTest {
     public void 회원수정성공() throws Exception{
         //given
         doReturn(Optional.of(user())).when(userRepository).findById(-1L);
+        doReturn(User.builder().name("kim").nickname("kim12")
+                .build())
+                .when(userRepository).save(any(User.class));
 
         //when
         User result = target.updateUser(-1L, userUpdateRequest());
