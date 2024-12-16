@@ -3,6 +3,7 @@ package com.hifive.yeodam.cart.controller;
 import com.hifive.yeodam.cart.dto.CartRequestDto;
 import com.hifive.yeodam.cart.dto.CartResponseDto;
 import com.hifive.yeodam.cart.dto.CartTotalPriceDto;
+import com.hifive.yeodam.cart.dto.CartUpdateCountDto;
 import com.hifive.yeodam.cart.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,21 @@ public class CartApiController {
         return ResponseEntity.ok(responseDto);
     }
 
+    //장바구니 상품 수량 변경
+    @PatchMapping("/{id}/count")
+    public ResponseEntity<CartResponseDto> updateCartCount(
+            @PathVariable Long cartId, @RequestBody CartUpdateCountDto updateDto) {
+        try {
+            CartResponseDto responseDto = cartService.updateCartCount(cartId, updateDto);
+            return ResponseEntity.ok(responseDto);
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
     //장바구니 상품 삭제
-    @DeleteMapping("/{cartId}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeCart(@PathVariable Long cartId) {
         cartService.removeCart(cartId);
         return ResponseEntity.ok().build();
@@ -39,7 +53,7 @@ public class CartApiController {
     }
 
     //장바구니 선택 조회
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<CartTotalPriceDto> getSelectedPrice(@RequestBody List<Long> cartIds) {
         CartTotalPriceDto selectedPrice = cartService.getSelectedPrice(cartIds);
         return ResponseEntity.ok(selectedPrice);
