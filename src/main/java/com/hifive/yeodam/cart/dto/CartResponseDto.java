@@ -1,9 +1,7 @@
 package com.hifive.yeodam.cart.dto;
 
 import com.hifive.yeodam.cart.entity.Cart;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class CartResponseDto {

@@ -1,5 +1,8 @@
 package com.hifive.yeodam.cart.dto;
 
+import lombok.Getter;
+
+@Getter
 public class CartTotalPriceDto {
     private int totalPrice;
 
