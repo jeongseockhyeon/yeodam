@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Registration</title>
+</head>
+<body>
+<h2>판매자 가입</h2>
+<form action="/sellers" method="POST" id="sellerJoinForm">
+    <div>
+        <label for="email">이메일</label>
+        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
+    </div>
+
+    <div>
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required minlength="8">
+    </div>
+
+    <div>
+        <label for="phone">전화번호</label>
+        <input type="text" id="phone" name="phone" placeholder="전화번호를 입력하세요" required pattern="^\d{2,3}-\d{3,4}-\d{4}$"
+               title="전화번호는 xxx-xxxx-xxxx 형식이어야 합니다.">
+    </div>
+
+    <div>
+        <label for="companyName">회사명</label>
+        <input type="text" id="companyName" name="companyName" placeholder="회사명을 입력하세요" required>
+    </div>
+
+    <div>
+        <label for="owner">대표자명</label>
+        <input type="text" id="owner" name="owner" placeholder="대표자명을 입력하세요" required>
+    </div>
+
+    <div>
+        <label for="bio">자기소개</label>
+        <textarea id="bio" name="bio" placeholder="회사소개를 입력하세요" required></textarea>
+    </div>
+
+    <div>
+        <button type="submit">가입하기</button>
+    </div>
+</form>
+</body>
+</html>
