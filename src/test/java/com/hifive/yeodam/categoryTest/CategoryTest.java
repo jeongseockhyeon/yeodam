@@ -121,7 +121,7 @@ public class CategoryTest {
 
         List<Category> mockCategoryList = new ArrayList<>();
         for (int i = 0; i < testCount; i++) {
-            Category category = new Category();
+            Category category = Category.builder().build();
             mockCategoryList.add(category);
         }
         when(categoryService.findAllCategory()).thenReturn(mockCategoryList);
@@ -186,6 +186,8 @@ public class CategoryTest {
 
         //then
         result.andExpect(status().isOk());
+        verify(categoryService, times(1)).updateCategory(any(Long.class), any(CategoryReqDto.class));
+
     }
 
     @Test

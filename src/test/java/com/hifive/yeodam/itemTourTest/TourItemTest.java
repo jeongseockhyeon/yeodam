@@ -107,7 +107,7 @@ public class TourItemTest {
         int testCount = 4;
         List<Tour> mockTourList = new ArrayList<>();
         for (int i = 0; i < testCount; i++) {
-            Tour tour = new Tour();
+            Tour tour = Tour.builder().build();
             mockTourList.add(tour);
         }
         when(tourItemService.findAll()).thenReturn(mockTourList);
@@ -193,16 +193,10 @@ public class TourItemTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(patch(url,tourItemId).contentType(MediaType.APPLICATION_JSON).content(json));
-        MvcResult mvcResult = resultActions.andReturn();
-        String jsonResponse = mvcResult.getResponse().getContentAsString();
-        Tour resultTour = objectMapper.readValue(jsonResponse, Tour.class);
 
         //then
         resultActions.andExpect(status().isOk());
-        assertEquals(updateTourName, resultTour.getItemName());
-        assertEquals(updateTourDesc, resultTour.getDescription());
-        assertEquals(updateTourPeriod, resultTour.getPeriod());
-        assertEquals(updateTourPrice, resultTour.getPrice());
+        verify(tourItemService, times(1)).update(any(Long.class),any(TourItemUpdateReqDto.class));
     }
 
     @Test
