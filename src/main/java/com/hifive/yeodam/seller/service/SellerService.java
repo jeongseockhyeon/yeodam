@@ -1,25 +1,39 @@
 package com.hifive.yeodam.seller.service;
 
+import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.exception.AuthException;
+import com.hifive.yeodam.auth.exception.AuthErrorResult;
+import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.SellerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class SellerService {
 
     private final SellerRepository sellerRepository;
-
-    public SellerService(SellerRepository sellerRepository) {
-        this.sellerRepository = sellerRepository;
-    }
+    private final AuthRepository authRepository;
 
     // 판매자 등록
-    @Transactional
-    public Seller createSeller(Seller seller) {
+    @Transactional(rollbackFor = AuthException.class)
+    public Seller createSeller(SellerJoinRequest joinRequest, Auth auth) {
+        if(authRepository.existsByEmail(joinRequest.getEmail())) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
+        }
+
+        Seller seller = new Seller();
+        seller.setAuth(auth);
+        seller.setCompanyName(joinRequest.getCompanyName());
+        seller.setOwner(joinRequest.getOwner());
+        seller.setBio(joinRequest.getBio());
+
         return sellerRepository.save(seller);
     }
 
