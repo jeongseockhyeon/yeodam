@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hifive.yeodam.order.dto.AddOrderRequest.ItemRequest;
 
 
 @Service
@@ -33,7 +32,7 @@ public class OrderService {
         MockUser user = userRespiratory.findById(request.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원이 없습니다"));
 
-        List<OrderDetail> orderDetails = createOrderDetails(request);
+        List<OrderDetail> orderDetails =  null;/*createOrderDetails(request);*/
 
         Order order = Order.createOrder(user.getUserId(), orderDetails);
         orderRepository.save(order);
@@ -49,11 +48,11 @@ public class OrderService {
         order.cancelOrder();
     }
 
-    private List<OrderDetail> createOrderDetails(AddOrderRequest request) {
+   /* private List<OrderDetail> createOrderDetails(AddOrderRequest request) {
 
         List<OrderDetail> orderDetails = new ArrayList<>();
-        for (ItemRequest requestItem : request.getItems()) {
-            MockItem item = itemRepository.findById(requestItem.getItemId())
+        for (AddOrderRequest.ItemRequest requestItem : request.getItems()) {
+            MockItem item = itemRepository.findById(request.getItems())
                     .orElseThrow(() -> new IllegalArgumentException("일치하는 상품이 없습니다"));
 
             //원래는 item을 반환해야 하지만 아직 상품이 없어 키를 반환
@@ -61,5 +60,5 @@ public class OrderService {
             orderDetails.add(orderDetail);
         }
         return orderDetails;
-    }
+    }*/
 }

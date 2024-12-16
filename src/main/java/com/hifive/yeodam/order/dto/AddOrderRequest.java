@@ -10,7 +10,7 @@ public class AddOrderRequest {
     private List<ItemRequest> items;
 
     @Data
-    public static class ItemRequest {
+    static class ItemRequest {
         private Long itemId;
         private int count;
     }
