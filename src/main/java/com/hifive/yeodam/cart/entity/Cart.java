@@ -16,24 +16,21 @@ public class Cart {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private UserCart userCart;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private int count; //티켓과 같은 수량 상품의 경우 수량 저장
+    private int count; //티켓 타입 수량
 
-    public Cart(Item item) {
+    public Cart(User user, Item item) {
+        this.user = user;
         this.item = item;
-        this.count = 1; //기본 수량 1로 설정
+        this.count = 1; //기본 수량
     }
 
-
-    // UserCart 설정 메서드
-    protected void setUserCart(UserCart userCart) {
-        this.userCart = userCart;
-    }
 
     //상품의 현재 가격 실시간 반환
     public int getPrice(){
@@ -41,7 +38,7 @@ public class Cart {
     }
 
 
-    //티켓 예시 수량 변경 메서드
+    //티켓 타입 수량 변경
     public void updateCount(int count) {
         if (item.getItemType() != ItemType.TICKET) {
             throw new IllegalStateException("예약 상품은 수량 변경이 불가능합니다.");
