@@ -315,10 +315,20 @@ public class UserControllerTest {
                 Arguments.of(null, password, name, nickname, phone, birthDate, "M"), //이메일이 Null
                 Arguments.of("username", password, name, nickname, phone, birthDate, "M"), //이메일의 형식이 아닌 경우
                 Arguments.of("username@", password, name, nickname, phone, birthDate, "M"), //이메일의 형식이 잘못된 경우
+                Arguments.of("username@.", password, name, nickname, phone, birthDate, "M"), //이메일의 형식이 잘못된 경우
                 Arguments.of(email, null, name, nickname, phone, birthDate, "M"), //비밀번호가 Null
+                Arguments.of(email, "1111111", name, nickname, phone, birthDate, "M"), //비밀번호가 8자 미만인 경우
+                Arguments.of(email, "1234dawdsd@!Adsws2", name, nickname, phone, birthDate, "M"), //비밀번호가 16자 초과인 경우
+                Arguments.of(email, "passw0rd!", name, nickname, phone, birthDate, "M"), //비밀번호가 영대문자가 없는 경우
+                Arguments.of(email, "PASSW0RD!", name, nickname, phone, birthDate, "M"), //비밀번호가 영소문자가 없는 경우
+                Arguments.of(email, "Password!", name, nickname, phone, birthDate, "M"), //비밀번호가 숫자가 없는 경우
+                Arguments.of(email, "Passw0rd1", name, nickname, phone, birthDate, "M"), //비밀번호가 특수문자가 없는 경우
                 Arguments.of(email, password, null, nickname, phone, birthDate, "M"), //이름이 Null
+                Arguments.of(email, password, "son", nickname, phone, birthDate, "M"), //이름에 한글만 유효
                 Arguments.of(email, password, name, null, phone, birthDate, "M"), //닉네임이 Null
                 Arguments.of(email, password, name, nickname, null, birthDate, "M"), //전화번호가 Null
+                Arguments.of(email, password, name, nickname, "0101234567", birthDate, "M"), //전화번호 형식이 잘못된 경우 (10자리)
+                Arguments.of(email, password, name, nickname, "010123456789", birthDate, "M"), //전화번호 형식이 잘못된 경우 (12자리)
                 Arguments.of(email, password, name, nickname, phone, birthDate, null) //성별이 Null
         );
     }
