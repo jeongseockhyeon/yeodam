@@ -54,6 +54,11 @@ public class TourItemService {
         return tourRepository.findAll();
     }
 
+    /*카테고리 적용 조회*/
+    public List<Tour> getSearchFilterTour(SearchFilterDto searchFilterDto) {
+        return tourRepository.searchByFilter(searchFilterDto);
+    }
+
     /*상품_여행 단일 조회*/
     public Tour findById(Long id) {
         return tourRepository.findById(id)

@@ -1,6 +1,7 @@
 package com.hifive.yeodam.itemTourTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.tour.controller.TourItemAPIController;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
@@ -123,6 +124,22 @@ public class TourItemTest {
         assertEquals(testCount, responseList.size());
         resultActions.andExpect(status().isOk());
     }
+    @Test
+    @DisplayName("카테고리 필터링 테스트")
+    public void itemTourSearchFilterTest() throws Exception {
+        //given
+        String url ="/api/tours";
+        int testCount = 4;
+        String filterCategory = "액티비티";
+        Category category  = Category.builder()
+                .name(filterCategory)
+                .build();
+        List<Tour> mockTourList = new ArrayList<>();
+        for (int i = 0; i < testCount; i++) {
+            Tour tour = Tour.builder().build();
+            mockTourList.add(tour);
+        }
+    }
 
     @Test
     @DisplayName("상품_여행 단일 조회 테스트")
@@ -214,4 +231,6 @@ public class TourItemTest {
         resultActions.andExpect(status().isNoContent());
         verify(tourItemService,times(1)).delete(tourItemId);
     }
+
+
 }
