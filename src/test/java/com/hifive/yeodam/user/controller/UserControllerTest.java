@@ -38,16 +38,15 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTest {
 
     private static final String email = "emailName@domain.com";
-    private static final String password = "1234";
-    private static final String name = "son";
+    private static final String password = "Passw0rd!";
+    private static final String name = "손홍인";
     private static final String nickname = "sonny";
     private static final String phone = "01011112222";
     private static final LocalDate birthDate = LocalDate.of(2000, 3, 16);
@@ -103,6 +102,32 @@ public class UserControllerTest {
         String url = "/api/users";
         doThrow(new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN))
                 .when(authService).addAuth(any(JoinRequest.class));
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(gson.toJson(joinRequest(email, password, name,
+                                nickname, phone, birthDate, "M")))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 유저등록실패_UserService에서에러Throw() throws Exception{
+        //given
+        String url = "/api/users";
+
+        Auth auth = Auth.builder()
+                .id(-1L).email(email).password(password).phone(phone)
+                .build();
+
+        doReturn(auth).when(authService).addAuth(any(JoinRequest.class));
+        doThrow(new UserException(UserErrorResult.DUPLICATED_NICKNAME_JOIN))
+                .when(userService)
+                .addUser(any(JoinRequest.class), any(Auth.class));
 
         //when
         ResultActions resultActions = mockMvc.perform(

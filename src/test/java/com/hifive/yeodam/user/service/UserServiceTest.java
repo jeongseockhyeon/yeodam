@@ -42,28 +42,25 @@ public class UserServiceTest {
     private UserService target;
 
     @Mock
-    private AuthRepository authRepository;
-
-    @Mock
     private UserRepository userRepository;
 
     @Test
-    public void 유저등록실패_이미인증정보존재() throws Exception{
+    public void 유저등록실패_닉네임존재() throws Exception{
         //given
-        doReturn(true).when(authRepository).existsByEmail(email);
+        doReturn(true).when(userRepository).existsByNickname(nickname);
 
         //when
-        AuthException result = assertThrows(AuthException.class,
+        UserException result = assertThrows(UserException.class,
                 () -> target.addUser(joinRequest, auth()));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_AUTH_JOIN);
+        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
     }
 
     @Test
     public void 유저등록성공() throws Exception{
         //given
-        doReturn(false).when(authRepository).existsByEmail(email);
+        doReturn(false).when(userRepository).existsByNickname(nickname);
         doReturn(user()).when(userRepository).save(any(User.class));
 
         //when
@@ -74,14 +71,13 @@ public class UserServiceTest {
         assertThat(result.getAuth().getId()).isEqualTo(auth().getId());
 
         //verify
-        verify(authRepository, times(1)).existsByEmail(email);
+        verify(userRepository, times(1)).existsByNickname(nickname);
         verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
     public void 유저와인증의연관관계저장() throws Exception{
         //given
-        doReturn(false).when(authRepository).existsByEmail(email);
         doReturn(user()).when(userRepository).save(any(User.class));
 
         //when
@@ -91,7 +87,6 @@ public class UserServiceTest {
         assertThat(result.getAuth().getId()).isEqualTo(auth().getId());
 
         //verify
-        verify(authRepository, times(1)).existsByEmail(email);
         verify(userRepository, times(1)).save(any(User.class));
     }
 
