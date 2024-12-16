@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,15 +20,11 @@ public class OrderController {
         return "order/orderForm";
     }
 
-    @GetMapping("/orders")
-    public String orderList(Model model) {
-        model.addAttribute("orders", orderService.findOrders());
-        return "order/orderList";
-    }
-
     @PostMapping("/order")
-    public String order(AddOrderRequest request) {
-        orderService.order(request);
-        return "redirect:/order/orderList";
+    public String order(AddOrderRequest request, RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addAttribute("orderUid", orderService.order(request));
+        return "redirect:/payment?orderUid={orderUid}";
+
     }
 }
