@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.hifive.yeodam.order.domain.OrderStatus.CANCEL;
-import static com.hifive.yeodam.order.domain.OrderStatus.ORDER;
-import static jakarta.persistence.CascadeType.PERSIST;
+import static com.hifive.yeodam.order.domain.OrderStatus.*;
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -32,12 +31,16 @@ public class Order {
     @Enumerated(STRING)
     private OrderStatus status;
 
-    @OneToMany(mappedBy = "order", cascade = PERSIST)
+    //주문 정보 추가
+    private String orderUid;
+
+    @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     private Order(Long userId, List<OrderDetail> orderDetails) {
         this.userId = userId;
-        this.status = ORDER;
+        this.status = PENDING;
+        this.orderUid = createOrderUid();
         orderDetails
                 .forEach(this::addOrderDetail);
 
@@ -47,14 +50,21 @@ public class Order {
         return new Order(userId, orderDetails);
     }
 
+    private String createOrderUid() {
+        return UUID.randomUUID().toString();
+    }
+
     //연관관계 메서드
     private void addOrderDetail(OrderDetail orderDetail) {
         orderDetails.add(orderDetail);
         orderDetail.setOrder(this);
     }
-    public void cancelOrder() {
-        this.status = CANCEL;
+
+    public void successOrder() {
+        this.status = COMPLETED;
     }
 
-
+    public void cancelOrder() {
+        this.status = CANCELED;
+    }
 }
