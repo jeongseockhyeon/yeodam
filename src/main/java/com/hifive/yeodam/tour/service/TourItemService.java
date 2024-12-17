@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class TourItemService {
+
     private final TourRepository tourRepository;
     private final CategoryRepository categoryRepository;
     private final TourCategoryRepository tourCategoryRepository;
@@ -30,10 +31,15 @@ public class TourItemService {
     private final GuideRepository guideRepository;
     private final TourGuideRepository tourGuideRepository;
 
+    private final static int tourStock = 1;
+    private final static boolean reservation = true;
+
     /*상품_여행 등록*/
     public Tour saveTourItem(TourItemReqDto tourItemReqDto) {
+
         Seller seller = sellerRepository.findById(tourItemReqDto.getSellerId())
                 .orElseThrow(() -> new RuntimeException("해당 가이드가 존재하지 않습니다"));
+
         Tour itemTour = Tour.builder()
                 .seller(seller)
                 .itemName(tourItemReqDto.getTourName())
@@ -41,13 +47,16 @@ public class TourItemService {
                 .period(tourItemReqDto.getTourPeriod())
                 .description(tourItemReqDto.getTourDesc())
                 .price(tourItemReqDto.getTourPrice())
-                .reservation(true)
+                .maximum(tourItemReqDto.getMaximum())
+                .stock(tourStock)
+                .reservation(reservation)
+
                 .build();
 
         Tour savedTour = tourRepository.save(itemTour);
 
         /*여행_카테고리 저장*/
-        if(tourItemReqDto.getCategoryIdList() != null || !tourItemReqDto.getCategoryIdList().isEmpty()) {
+        if(tourItemReqDto.getCategoryIdList() != null ) {
             for(Long categoryId : tourItemReqDto.getCategoryIdList()){
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new RuntimeException("해당 카테고리는 존재하지 않습니다."));
@@ -59,7 +68,7 @@ public class TourItemService {
             }
         }
         /*여행_가이드 저장*/
-        if(tourItemReqDto.getGuideIdList() != null || !tourItemReqDto.getGuideIdList().isEmpty()) {
+        if(tourItemReqDto.getGuideIdList() != null ) {
             for(Long guideId : tourItemReqDto.getGuideIdList()){
                 Guide guide = guideRepository.findById(guideId)
                         .orElseThrow(() -> new RuntimeException("해당 가이드가 존재하지 않습니다"));

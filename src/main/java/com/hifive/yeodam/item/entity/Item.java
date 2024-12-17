@@ -25,13 +25,16 @@ public abstract class Item {
 
     private int price;
 
+    private int stock;
+
     private boolean reservation;
 
-    public Item(Seller seller, String itemName, int price, boolean reservation) {
+    public Item(Seller seller, String itemName, int price, boolean reservation, int stock) {
         this.seller = seller;
         this.itemName = itemName;
         this.price = price;
         this.reservation = reservation;
+        this.stock = stock;
     }
 
     public void updateItem(String itemName,int price) {

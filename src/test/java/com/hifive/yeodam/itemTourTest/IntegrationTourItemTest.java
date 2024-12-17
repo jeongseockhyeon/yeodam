@@ -63,6 +63,7 @@ public class IntegrationTourItemTest {
         String tourDesc = "test";
         String tourPeriod = "1일";
         String tourRegion = "제주";
+        int maximum = 2;
 
         List<Long> categoryIds = new ArrayList<>();
         categoryIds.add(1L);
@@ -80,6 +81,7 @@ public class IntegrationTourItemTest {
         tourItemReqDto.setTourPeriod(tourPeriod);
         tourItemReqDto.setTourRegion(tourRegion);
         tourItemReqDto.setTourPrice(tourPrice);
+        tourItemReqDto.setMaximum(maximum);
         tourItemReqDto.setCategoryIdList(categoryIds);
         tourItemReqDto.setGuideIdList(guideIds);
 

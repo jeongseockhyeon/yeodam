@@ -37,6 +37,7 @@ public class TourItemTest {
     private final static String tourPeriod = "1일";
     private final static String tourRegion = "제주";
     private final static int tourPrice = 100;
+    private final static int tourMaximum = 2;
 
     private MockMvc mockMvc;
 
@@ -78,6 +79,7 @@ public class TourItemTest {
         tourItemReqDto.setTourPeriod(tourPeriod);
         tourItemReqDto.setTourRegion(tourRegion);
         tourItemReqDto.setTourPrice(tourPrice);
+        tourItemReqDto.setMaximum(tourMaximum);
         tourItemReqDto.setCategoryIdList(categoryIds);
         tourItemReqDto.setGuideIdList(guideIds);
 
@@ -95,6 +97,7 @@ public class TourItemTest {
                 .region(tourRegion)
                 .period(tourPeriod)
                 .price(tourPrice)
+                .maximum(tourMaximum)
                 .build();
 
         when(tourItemService.saveTourItem(tourItemReqDto)).thenReturn(expectedTour);

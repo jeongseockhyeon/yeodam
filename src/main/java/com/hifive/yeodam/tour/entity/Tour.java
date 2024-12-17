@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 @Entity
 public class Tour extends Item {
 
@@ -22,16 +21,30 @@ public class Tour extends Item {
 
     private String description;
 
+    private int maximum;
+
+
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();
 
 
     @Builder
-    public Tour(Seller seller, String itemName, String region, String period, String description, int price, boolean reservation){
-        super(seller,itemName,price,reservation);
+    public Tour(Seller seller,
+                String itemName,
+                String region,
+                String period,
+                String description,
+                int price,
+                boolean reservation,
+                int maximum,
+                int stock
+                )
+    {
+        super(seller,itemName,price,reservation,stock);
         this.region = region;
         this.period = period;
         this.description = description;
+        this.maximum = maximum;
     }
 
 
