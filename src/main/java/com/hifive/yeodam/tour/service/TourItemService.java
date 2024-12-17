@@ -2,13 +2,18 @@ package com.hifive.yeodam.tour.service;
 
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
+import com.hifive.yeodam.seller.entity.Guide;
+import com.hifive.yeodam.seller.entity.Seller;
+import com.hifive.yeodam.seller.repository.GuideRepository;
+import com.hifive.yeodam.seller.repository.SellerRepository;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
-import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.tour.entity.TourCategory;
+import com.hifive.yeodam.tour.entity.TourGuide;
 import com.hifive.yeodam.tour.repository.TourCategoryRepository;
+import com.hifive.yeodam.tour.repository.TourGuideRepository;
 import com.hifive.yeodam.tour.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,15 +23,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class TourItemService {
-    private final ItemRepository itemRepository;
     private final TourRepository tourRepository;
     private final CategoryRepository categoryRepository;
     private final TourCategoryRepository tourCategoryRepository;
+    private final SellerRepository sellerRepository;
+    private final GuideRepository guideRepository;
+    private final TourGuideRepository tourGuideRepository;
 
     /*상품_여행 등록*/
     public Tour saveTourItem(TourItemReqDto tourItemReqDto) {
+        Seller seller = sellerRepository.findById(tourItemReqDto.getSellerId())
+                .orElseThrow(() -> new RuntimeException("해당 가이드가 존재하지 않습니다"));
         Tour itemTour = Tour.builder()
-                .sellerId(tourItemReqDto.getSellerId())
+                .seller(seller)
                 .itemName(tourItemReqDto.getTourName())
                 .region(tourItemReqDto.getTourRegion())
                 .period(tourItemReqDto.getTourPeriod())
@@ -48,6 +57,19 @@ public class TourItemService {
                         .build();
                 tourCategoryRepository.save(tourCategory);
             }
+        }
+        /*여행_가이드 저장*/
+        if(tourItemReqDto.getGuideIdList() != null || !tourItemReqDto.getGuideIdList().isEmpty()) {
+            for(Long guideId : tourItemReqDto.getGuideIdList()){
+                Guide guide = guideRepository.findById(guideId)
+                        .orElseThrow(() -> new RuntimeException("해당 가이드가 존재하지 않습니다"));
+                TourGuide tourGuide = TourGuide.builder()
+                        .tour(itemTour)
+                        .guide(guide)
+                        .build();
+                tourGuideRepository.save(tourGuide);
+            }
+
         }
         return savedTour;
     }

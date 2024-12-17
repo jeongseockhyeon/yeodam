@@ -22,4 +22,6 @@ public class TourItemReqDto {
     private int tourPrice;
 
     private List<Long> categoryIdList;
+
+    private List<Long> guideIdList;
 }

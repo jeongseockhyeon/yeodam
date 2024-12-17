@@ -3,6 +3,7 @@ package com.hifive.yeodam.itemTourTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.tour.controller.TourItemAPIController;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
@@ -66,6 +67,9 @@ public class TourItemTest {
         categoryIds.add(1L);
         categoryIds.add(2L);
 
+        List<Long> guideIds = new ArrayList<>();
+        guideIds.add(1L);
+
 
         TourItemReqDto tourItemReqDto = new TourItemReqDto();
         tourItemReqDto.setSellerId(sellerId);
@@ -75,12 +79,17 @@ public class TourItemTest {
         tourItemReqDto.setTourRegion(tourRegion);
         tourItemReqDto.setTourPrice(tourPrice);
         tourItemReqDto.setCategoryIdList(categoryIds);
+        tourItemReqDto.setGuideIdList(guideIds);
 
         String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
 
+        Seller seller = new Seller();
+
+
+
         Tour expectedTour = Tour.builder()
-                .sellerId(sellerId)
+                .seller(seller)
                 .itemName(tourName)
                 .description(tourDesc)
                 .region(tourRegion)
@@ -148,8 +157,9 @@ public class TourItemTest {
         String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
+        Seller seller = new Seller();
         Tour expectedTour = Tour.builder()
-                .sellerId(sellerId)
+                .seller(seller)
                 .itemName(tourName)
                 .description(tourDesc)
                 .region(tourRegion)
@@ -168,7 +178,7 @@ public class TourItemTest {
 
         //then
         resultActions.andExpect(status().isOk());
-        assertEquals(sellerId, resultTour.getSellerId());
+        assertEquals(seller, resultTour.getSeller());
         assertEquals(tourName, resultTour.getItemName());
         assertEquals(tourDesc, resultTour.getDescription());
         assertEquals(tourPeriod, resultTour.getPeriod());

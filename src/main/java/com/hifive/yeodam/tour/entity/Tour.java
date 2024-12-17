@@ -2,6 +2,7 @@ package com.hifive.yeodam.tour.entity;
 
 import com.hifive.yeodam.item.entity.Item;
 
+import com.hifive.yeodam.seller.entity.Seller;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,8 +27,8 @@ public class Tour extends Item {
 
 
     @Builder
-    public Tour(Long sellerId, String itemName,String region, String period, String description, int price, boolean reservation){
-        super(sellerId,itemName,price,reservation);
+    public Tour(Seller seller, String itemName, String region, String period, String description, int price, boolean reservation){
+        super(seller,itemName,price,reservation);
         this.region = region;
         this.period = period;
         this.description = description;

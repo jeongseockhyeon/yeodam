@@ -1,5 +1,7 @@
 package com.hifive.yeodam.item.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hifive.yeodam.seller.entity.Seller;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,8 +17,9 @@ public abstract class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //private Seller seller
-    private Long sellerId;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Seller seller;
 
     private String itemName;
 
@@ -24,8 +27,8 @@ public abstract class Item {
 
     private boolean reservation;
 
-    public Item(Long sellerId, String itemName, int price, boolean reservation) {
-        this.sellerId = sellerId;
+    public Item(Seller seller, String itemName, int price, boolean reservation) {
+        this.seller = seller;
         this.itemName = itemName;
         this.price = price;
         this.reservation = reservation;
