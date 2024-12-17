@@ -17,12 +17,12 @@ import java.util.List;
 public class CartViewController {
     private final CartService cartService;
 
-//    @GetMapping
-//    public String cartList(Model model){
-//        List<Cart> cartList = cartService.getCartList();
-//        CartTotalPriceDto totalPrice = cartService.getTotalPrice();
-//        model.addAttribute("carts", cartList);
-//        model.addAttribute("totalPrice", totalPrice);
-//        return "cartList";
-//    }
+    @GetMapping
+    public String cartList(Model model){
+        List<Cart> cartList = cartService.getCartList();
+        CartTotalPriceDto totalPrice = cartService.getTotalPrice();
+        model.addAttribute("carts", cartList);
+        model.addAttribute("totalPrice", totalPrice);
+        return "cartList";
+    }
 }
