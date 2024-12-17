@@ -6,6 +6,7 @@ import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,9 @@ public class AuthService {
 
     public Auth addAuth(JoinRequest request) {
 
-        checkDuplicatedEmail(request.getEmail());
+        if(checkDuplicatedEmail(request.getEmail())) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+        }
 
         Auth auth = Auth.builder()
                 .email(request.getEmail())
@@ -40,9 +43,7 @@ public class AuthService {
         return authRepository.save(auth);
     }
 
-    public void checkDuplicatedEmail(String email) {
-        if(authRepository.existsByEmail(email)) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
-        }
+    public boolean checkDuplicatedEmail(String email) {
+        return authRepository.existsByEmail(email);
     }
 }
