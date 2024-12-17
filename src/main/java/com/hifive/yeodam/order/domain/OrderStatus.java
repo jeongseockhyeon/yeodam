@@ -1,5 +1,5 @@
 package com.hifive.yeodam.order.domain;
 
 public enum OrderStatus {
-    PENDING, COMPLETED, CANCELED
+    PENDING, COMPLETED, CANCELED, FAILED
 }
