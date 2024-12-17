@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.any;
@@ -41,11 +42,11 @@ public class AuthServiceTest {
         doReturn(true).when(authRepository).existsByEmail(email);
 
         //when
-        AuthException result = Assertions.assertThrows(AuthException.class,
+        AuthException result = assertThrows(AuthException.class,
                 () -> target.addAuth(new JoinRequest(email, password, name, nickname, phone, birthDate, "M")));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_AUTH_JOIN);
+        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
     }
 
     @Test
@@ -61,6 +62,18 @@ public class AuthServiceTest {
         assertThat(result.getEmail()).isEqualTo(email);
         assertThat(result.getPassword()).isEqualTo(password);
         assertThat(result.getPhone()).isEqualTo(phone);
+    }
+
+    @Test
+    public void 이메일중복체크() throws Exception{
+        //given
+        doReturn(true).when(authRepository).existsByEmail(email);
+
+        //when
+        AuthException result = assertThrows(AuthException.class, () -> target.checkDuplicatedEmail(email));
+
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
     }
 
     private Auth auth() {

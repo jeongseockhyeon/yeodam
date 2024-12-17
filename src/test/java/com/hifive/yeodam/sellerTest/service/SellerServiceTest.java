@@ -81,7 +81,7 @@ class SellerServiceTest {
             sellerService.createSeller(joinRequest, auth);
         });
 
-        assertEquals(AuthErrorResult.DUPLICATED_AUTH_JOIN, exception.getErrorResult());
+        assertEquals(AuthErrorResult.DUPLICATED_EMAIL_JOIN, exception.getErrorResult());
         verify(authRepository, times(1)).existsByEmail(anyString());
         verify(sellerRepository, never()).save(any(Seller.class));
     }
