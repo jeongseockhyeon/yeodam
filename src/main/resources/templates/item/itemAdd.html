@@ -2,9 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>상품 등록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        .tab { display: none; }
+        .active-tab { display: block; }
+        .menu-button { cursor: pointer; padding: 10px; margin: 5px; background-color: lightgray; }
+        .menu-button.active { background-color: gray; color: white; }
+    </style>
 </head>
 <body>
-상품 등록 페이지 입니다.
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("submitBtn").addEventListener("click", () => {
+            const formData = {
+                sellerId: document.getElementById("sellerId").value,
+                tourName: document.getElementById("tourName").value,
+                tourDesc: document.getElementById("tourDesc").value,
+                tourPeriod: document.getElementById("tourPeriod").value,
+                tourRegion: document.getElementById("tourRegion").value,
+                tourPrice: parseInt(document.getElementById("tourPrice").value),
+                categoryIdList: document.getElementById("categoryIdList").value
+                    .split(",")
+                    .map(id => parseInt(id.trim()))
+            };
+
+            fetch("/api/tours", { // 상대 경로 사용
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`서버 오류: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert("상품이 성공적으로 등록되었습니다!");
+                    console.log("Response:", data);
+                })
+                .catch(error => {
+                    alert("등록 중 오류가 발생했습니다.");
+                    console.error("Error:", error);
+                });
+        });
+    });
+    function showTab(tabName) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active-tab'));
+        document.querySelector(`#${tabName}`).classList.add('active-tab');
+        document.querySelectorAll('.menu-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-tab=${tabName}]`).classList.add('active');
+    }
+</script>
+    <h1>상품 등록 페이지</h1>
+<!-- 왼쪽 메뉴 -->
+<div>
+    <div class="menu-button active" data-tab="intro" onclick="showTab('intro')">상품 소개</div>
+    <div class="menu-button" data-tab="info" onclick="showTab('info')">필수 정보</div>
+    <div class="menu-button" data-tab="photo" onclick="showTab('photo')">상품 사진</div>
+</div>
+    <form id="tourItemForm">
+        <!-- 상품 소개 -->
+        <div id="intro" class="tab active-tab">
+            <h2>상품 소개</h2>
+
+            <label for="sellerId">판매자 ID</label>
+            <input type="number" id="sellerId" name="sellerId" required>
+
+            <label for="tourName">여행 상품명</label>
+            <input type="text" id="tourName" name="tourName" required>
+
+            <label for="tourDesc">여행 설명</label>
+            <textarea id="tourDesc" name="tourDesc" rows="4" required></textarea>
+        </div>
+
+        <!--필수 정보-->
+        <div id = "info" class = "tab">
+            <h2>필수 정보</h2>
+            <label for="tourPeriod">여행 기간</label>
+            <input type="text" id="tourPeriod" name="tourPeriod" required>
+
+            <label for="tourRegion">여행 지역</label>
+            <input type="text" id="tourRegion" name="tourRegion" required>
+
+            <!--가이드 정보도 넣어야 함-->
+
+            <label for="tourPrice">여행 가격</label>
+            <input type="number" id="tourPrice" name="tourPrice" required>
+
+            <label for="categoryIdList">카테고리 ID 리스트 (콤마로 구분)</label>
+            <input type="text" id="categoryIdList" name="categoryIdList" placeholder="예: 1,2,3" required>
+        </div>
+        <!-- 상품 사진 -->
+        <div id="photo" class="tab">
+            <h2>상품 사진</h2>
+            <label>이미지 업로드</label><br>
+            <input type="file" name="images" multiple><br>
+            <p>* 최대 n장 업로드 가능</p>
+        </div>
+
+
+        <button type="button" id="submitBtn">저장</button>
+        <button type="button" onclick="alert('임시 저장 기능 추가')">임시 저장</button>
+        <a href="/">상품 관리로 이동</a>
+    </form>
+
 </body>
 </html>

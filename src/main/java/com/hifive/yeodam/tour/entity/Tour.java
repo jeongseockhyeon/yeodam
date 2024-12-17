@@ -26,8 +26,8 @@ public class Tour extends Item {
 
 
     @Builder
-    public Tour(Long sellerId, String itemName,String region, String period, String description, int price){
-        super(sellerId,itemName,price);
+    public Tour(Long sellerId, String itemName,String region, String period, String description, int price, boolean reservation){
+        super(sellerId,itemName,price,reservation);
         this.region = region;
         this.period = period;
         this.description = description;
