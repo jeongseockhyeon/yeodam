@@ -17,9 +17,7 @@ public class AuthService {
 
     public Auth addAuth(JoinRequest request) {
 
-        if(authRepository.existsByEmail(request.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
-        }
+        checkDuplicatedEmail(request.getEmail());
 
         Auth auth = Auth.builder()
                 .email(request.getEmail())
@@ -31,9 +29,7 @@ public class AuthService {
     }
 
     public Auth addAuth(SellerJoinRequest joinRequest) {
-        if(authRepository.existsByEmail(joinRequest.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
-        }
+        checkDuplicatedEmail(joinRequest.getEmail());
 
         Auth auth = Auth.builder()
                 .email(joinRequest.getEmail())
@@ -42,5 +38,11 @@ public class AuthService {
                 .build();
 
         return authRepository.save(auth);
+    }
+
+    public void checkDuplicatedEmail(String email) {
+        if(authRepository.existsByEmail(email)) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+        }
     }
 }

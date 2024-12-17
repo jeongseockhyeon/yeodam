@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum AuthErrorResult {
 
-    DUPLICATED_AUTH_JOIN(HttpStatus.BAD_REQUEST, "Duplicated Auth Join Request"),
+    DUPLICATED_EMAIL_JOIN(HttpStatus.BAD_REQUEST, "Duplicated Email Join Request"),
     ;
 
     private final HttpStatus httpStatus;
