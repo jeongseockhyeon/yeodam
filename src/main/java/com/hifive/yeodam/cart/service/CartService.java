@@ -44,7 +44,7 @@ public class CartService {
 //
 //        //이미 장바구니에 있는 상품인지 확인
 //        Optional<Cart> existedCart = cartRepository.findByUserAndItem(user, item);
-
+//
 //        if (existedCart.isPresent()) {
 //            if (item.getItemType() != ItemType.RESERVATION) {
 //                //예약 상품이 아닌 경우 수량 증가
@@ -82,8 +82,8 @@ public class CartService {
 //        cart.updateCount(updateDto.getCount());
 //        return new CartResponseDto(cart);
 //    }
-//
-//
+
+
 //    @Transactional
 //    public void removeCart(Long cartId) {
 //        Cart cart = cartRepository.findById(cartId)

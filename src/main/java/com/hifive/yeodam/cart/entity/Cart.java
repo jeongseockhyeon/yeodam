@@ -39,7 +39,7 @@ public class Cart {
         return item.getPrice() * count;
     }
 
-
+//
 //    //티켓 타입 수량 변경
 //    public void updateCount(int count) {
 //        if (item.getItemType() == ItemType.RESERVATION) {
