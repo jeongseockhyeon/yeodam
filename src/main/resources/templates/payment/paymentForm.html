@@ -18,24 +18,47 @@
 
         function requestPay() {
 
-            let itemName = '[[${paymentRequest.itemName}]]';
-            let price = '[[${paymentRequest.price}]]';
-            let orderUid = '[[${paymentRequest.orderUid}]]';
+            const successUrl = "payment/success";
+            const failUrl = "payment/fail";
+
+            let itemName = [[${paymentRequest.itemName}]]
+            let price = [[${paymentRequest.price}]];
+            let orderUid = [[${paymentRequest.orderUid}]];
 
             IMP.request_pay(
                 {
                     pg: "html5_inicis",		//KG이니시스 pg파라미터 값
                     pay_method: "card",		//결제 방법
-                    merchant_uid: orderUid,//주문번호
-                    name: itemName,		//상품 명
+                    merchant_uid: orderUid, //주문번호
+                    name: itemName,		    //상품 명
                     amount: price,			//금액
                 },
                 function (rsp) {
-                    //rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.
                     if (rsp.success) {
-
+                        fetch(successUrl, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                "paymentUid" : rsp.imp_uid,
+                                "orderUid" : rsp.merchant_uid
+                                }
+                            )
+                            }
+                        );
                     } else {
                         alert("결제에 실패하였습니다. 에러 내용: " + rsp.error_msg);
+                        fetch(failUrl, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                "paymentUid" : rsp.imp_uid,
+                                "orderUid" : rsp.merchant_uid
+                            })
+                        })
                     }
                 }
             );
@@ -46,6 +69,5 @@
 </head>
 <body>
 <button onclick="requestPay()">결제하기</button>
-<p th:field=""></p>
 </body>
 </html>
