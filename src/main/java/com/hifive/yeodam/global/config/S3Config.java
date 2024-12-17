@@ -1,4 +1,4 @@
-package com.hifive.yeodam.globla.config;
+package com.hifive.yeodam.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
