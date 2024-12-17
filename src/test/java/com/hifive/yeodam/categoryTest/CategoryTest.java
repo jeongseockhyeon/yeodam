@@ -3,6 +3,7 @@ package com.hifive.yeodam.categoryTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.category.controller.CategoryApiController;
 import com.hifive.yeodam.category.dto.CategoryReqDto;
+import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.category.service.CategoryService;
@@ -119,10 +120,11 @@ public class CategoryTest {
         String url = "/api/categorys";
         int testCount = 3;
 
-        List<Category> mockCategoryList = new ArrayList<>();
+        List<CategoryResDto> mockCategoryList = new ArrayList<>();
         for (int i = 0; i < testCount; i++) {
             Category category = Category.builder().build();
-            mockCategoryList.add(category);
+            CategoryResDto categoryResDto = new CategoryResDto(category);
+            mockCategoryList.add(categoryResDto);
         }
         when(categoryService.findAllCategory()).thenReturn(mockCategoryList);
 

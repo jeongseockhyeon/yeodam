@@ -32,21 +32,23 @@ public class TourItemService {
                 .period(tourItemReqDto.getTourPeriod())
                 .description(tourItemReqDto.getTourDesc())
                 .price(tourItemReqDto.getTourPrice())
+                .reservation(true)
                 .build();
 
         Tour savedTour = tourRepository.save(itemTour);
 
         /*여행_카테고리 저장*/
-        for(Long categoryId : tourItemReqDto.getCategoryIdList()){
-            Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new RuntimeException("해당 카테고리는 존재하지 않습니다."));
-            TourCategory tourCategory = TourCategory.builder()
-                    .tour(itemTour)
-                    .category(category)
-                    .build();
-            tourCategoryRepository.save(tourCategory);
+        if(tourItemReqDto.getCategoryIdList() != null || !tourItemReqDto.getCategoryIdList().isEmpty()) {
+            for(Long categoryId : tourItemReqDto.getCategoryIdList()){
+                Category category = categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new RuntimeException("해당 카테고리는 존재하지 않습니다."));
+                TourCategory tourCategory = TourCategory.builder()
+                        .tour(itemTour)
+                        .category(category)
+                        .build();
+                tourCategoryRepository.save(tourCategory);
+            }
         }
-
         return savedTour;
     }
     /*상품_여행 목록 조회*/

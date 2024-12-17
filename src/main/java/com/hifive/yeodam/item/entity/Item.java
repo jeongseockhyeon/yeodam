@@ -24,10 +24,11 @@ public abstract class Item {
 
     private boolean reservation;
 
-    public Item(Long sellerId, String itemName, int price) {
+    public Item(Long sellerId, String itemName, int price, boolean reservation) {
         this.sellerId = sellerId;
         this.itemName = itemName;
         this.price = price;
+        this.reservation = reservation;
     }
 
     public void updateItem(String itemName,int price) {
