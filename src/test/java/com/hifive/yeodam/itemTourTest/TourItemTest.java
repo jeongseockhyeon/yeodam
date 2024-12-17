@@ -201,6 +201,18 @@ public class TourItemTest {
         String updateTourRegion = "강원도";
         int updateTourPrice = 100;
 
+        List<Long> addCategories = new ArrayList<>();
+        addCategories.add(1L);
+        addCategories.add(2L);
+
+        List<Long> removeCategories = new ArrayList<>();
+        removeCategories.add(3L);
+
+        List<Long> addGuides = new ArrayList<>();
+        addGuides.add(4L);
+        List<Long> removeGuides = new ArrayList<>();
+        removeGuides.add(5L);
+
         TourItemUpdateReqDto tourItemUpdateReqDto = new TourItemUpdateReqDto();
 
         tourItemUpdateReqDto.setTourName(updateTourName);
@@ -208,6 +220,10 @@ public class TourItemTest {
         tourItemUpdateReqDto.setDescription(updateTourDesc);
         tourItemUpdateReqDto.setPeriod(updateTourPeriod);
         tourItemUpdateReqDto.setRegion(updateTourRegion);
+        tourItemUpdateReqDto.setAddCategoryIds(addCategories);
+        tourItemUpdateReqDto.setRemoveCategoryIds(removeCategories);
+        tourItemUpdateReqDto.setAddGuideIds(addGuides);
+        tourItemUpdateReqDto.setRemoveGuideIds(removeGuides);
 
         String json = objectMapper.writeValueAsString(tourItemUpdateReqDto);
 
