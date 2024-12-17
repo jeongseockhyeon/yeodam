@@ -3,6 +3,7 @@ package com.hifive.yeodam.itemTourTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.tour.controller.TourItemAPIController;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
@@ -36,6 +37,7 @@ public class TourItemTest {
     private final static String tourPeriod = "1일";
     private final static String tourRegion = "제주";
     private final static int tourPrice = 100;
+    private final static int tourMaximum = 2;
 
     private MockMvc mockMvc;
 
@@ -66,6 +68,9 @@ public class TourItemTest {
         categoryIds.add(1L);
         categoryIds.add(2L);
 
+        List<Long> guideIds = new ArrayList<>();
+        guideIds.add(1L);
+
 
         TourItemReqDto tourItemReqDto = new TourItemReqDto();
         tourItemReqDto.setSellerId(sellerId);
@@ -74,18 +79,25 @@ public class TourItemTest {
         tourItemReqDto.setTourPeriod(tourPeriod);
         tourItemReqDto.setTourRegion(tourRegion);
         tourItemReqDto.setTourPrice(tourPrice);
+        tourItemReqDto.setMaximum(tourMaximum);
         tourItemReqDto.setCategoryIdList(categoryIds);
+        tourItemReqDto.setGuideIdList(guideIds);
 
         String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
 
+        Seller seller = new Seller();
+
+
+
         Tour expectedTour = Tour.builder()
-                .sellerId(sellerId)
+                .seller(seller)
                 .itemName(tourName)
                 .description(tourDesc)
                 .region(tourRegion)
                 .period(tourPeriod)
                 .price(tourPrice)
+                .maximum(tourMaximum)
                 .build();
 
         when(tourItemService.saveTourItem(tourItemReqDto)).thenReturn(expectedTour);
@@ -148,8 +160,9 @@ public class TourItemTest {
         String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
+        Seller seller = new Seller();
         Tour expectedTour = Tour.builder()
-                .sellerId(sellerId)
+                .seller(seller)
                 .itemName(tourName)
                 .description(tourDesc)
                 .region(tourRegion)
@@ -168,7 +181,7 @@ public class TourItemTest {
 
         //then
         resultActions.andExpect(status().isOk());
-        assertEquals(sellerId, resultTour.getSellerId());
+        assertEquals(seller, resultTour.getSeller());
         assertEquals(tourName, resultTour.getItemName());
         assertEquals(tourDesc, resultTour.getDescription());
         assertEquals(tourPeriod, resultTour.getPeriod());
@@ -188,6 +201,18 @@ public class TourItemTest {
         String updateTourRegion = "강원도";
         int updateTourPrice = 100;
 
+        List<Long> addCategories = new ArrayList<>();
+        addCategories.add(1L);
+        addCategories.add(2L);
+
+        List<Long> removeCategories = new ArrayList<>();
+        removeCategories.add(3L);
+
+        List<Long> addGuides = new ArrayList<>();
+        addGuides.add(4L);
+        List<Long> removeGuides = new ArrayList<>();
+        removeGuides.add(5L);
+
         TourItemUpdateReqDto tourItemUpdateReqDto = new TourItemUpdateReqDto();
 
         tourItemUpdateReqDto.setTourName(updateTourName);
@@ -195,6 +220,10 @@ public class TourItemTest {
         tourItemUpdateReqDto.setDescription(updateTourDesc);
         tourItemUpdateReqDto.setPeriod(updateTourPeriod);
         tourItemUpdateReqDto.setRegion(updateTourRegion);
+        tourItemUpdateReqDto.setAddCategoryIds(addCategories);
+        tourItemUpdateReqDto.setRemoveCategoryIds(removeCategories);
+        tourItemUpdateReqDto.setAddGuideIds(addGuides);
+        tourItemUpdateReqDto.setRemoveGuideIds(removeGuides);
 
         String json = objectMapper.writeValueAsString(tourItemUpdateReqDto);
 
