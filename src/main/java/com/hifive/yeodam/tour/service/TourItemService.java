@@ -1,12 +1,9 @@
 package com.hifive.yeodam.tour.service;
 
 import com.hifive.yeodam.category.entity.Category;
-import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.category.service.CategoryService;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
-import com.hifive.yeodam.seller.repository.GuideRepository;
-import com.hifive.yeodam.seller.repository.SellerRepository;
 import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
