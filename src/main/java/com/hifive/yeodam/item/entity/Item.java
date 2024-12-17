@@ -22,6 +22,7 @@ public abstract class Item {
 
     private int price;
 
+    private boolean reservation;
 
     public Item(Long sellerId, String itemName, int price) {
         this.sellerId = sellerId;
