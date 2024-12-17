@@ -24,9 +24,7 @@ public class UserService {
 
     public UserResponse addUser(JoinRequest request, Auth auth) {
 
-        if(userRepository.existsByNickname(request.getNickname())) {
-            throw new UserException(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
-        }
+        checkDuplicatedNickname(request.getNickname());
 
         User user = User.builder()
                 .name(request.getName())
@@ -39,6 +37,12 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return new UserResponse(savedUser);
+    }
+
+    public void checkDuplicatedNickname(String nickname) {
+        if(userRepository.existsByNickname(nickname)) {
+            throw new UserException(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
+        }
     }
 
     public List<UserResponse> getUserList() {
