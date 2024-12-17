@@ -1,5 +1,6 @@
 package com.hifive.yeodam.tour.controller;
 
+import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
@@ -21,7 +22,7 @@ public class TourItemAPIController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity<?> findAll(@ModelAttribute SearchFilterDto searchFilterDto) {
         return ResponseEntity.ok(tourItemService.findAll());
     }
 
