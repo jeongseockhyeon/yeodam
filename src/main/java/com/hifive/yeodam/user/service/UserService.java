@@ -11,6 +11,8 @@ import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +26,7 @@ public class UserService {
 
     public UserResponse addUser(JoinRequest request, Auth auth) {
 
-        if(userRepository.existsByNickname(request.getNickname())) {
+        if (userRepository.existsByNickname(request.getNickname())) {
             throw new UserException(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
         }
 
@@ -39,6 +41,16 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return new UserResponse(savedUser);
+    }
+
+    public void checkDuplicatedNickname(JoinRequest joinRequest, BindingResult result) {
+        if (userRepository.existsByNickname(joinRequest.getNickname())) {
+            result.addError(new FieldError("joinRequest", "nickname", "이미 존재하는 닉네임입니다"));
+        }
+    }
+
+    public boolean checkNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 
     public List<UserResponse> getUserList() {

@@ -100,7 +100,7 @@ public class UserControllerTest {
     public void 유저등록실패_AuthService에서에러Throw() throws Exception{
         //given
         String url = "/api/users";
-        doThrow(new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN))
+        doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN))
                 .when(authService).addAuth(any(JoinRequest.class));
 
         //when

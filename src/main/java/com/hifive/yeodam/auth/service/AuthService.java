@@ -6,8 +6,11 @@ import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +20,8 @@ public class AuthService {
 
     public Auth addAuth(JoinRequest request) {
 
-        if(authRepository.existsByEmail(request.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
+        if (authRepository.existsByEmail(request.getEmail())) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
         }
 
         Auth auth = Auth.builder()
@@ -31,8 +34,8 @@ public class AuthService {
     }
 
     public Auth addAuth(SellerJoinRequest joinRequest) {
-        if(authRepository.existsByEmail(joinRequest.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
+        if (authRepository.existsByEmail(joinRequest.getEmail())) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
         }
 
         Auth auth = Auth.builder()
@@ -44,18 +47,13 @@ public class AuthService {
         return authRepository.save(auth);
     }
 
-    // 로그인
-    public boolean authenticate(String email, String password) {
-        Auth auth = authRepository.findByEmail(email);
-        if (auth.getPassword().equals(password)) {
-            return true;
+    public void checkDuplicatedEmail(JoinRequest joinRequest, BindingResult result) {
+        if (authRepository.existsByEmail(joinRequest.getEmail())) {
+            result.addError(new FieldError("joinRequest", "email", "이미 존재하는 이메일입니다"));
         }
-        return false;
     }
 
-    // 이메일 중복 체크
-    public boolean isEmailDuplicate(String email) {
+    public boolean checkEmail(String email) {
         return authRepository.existsByEmail(email);
     }
-
 }

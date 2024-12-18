@@ -24,9 +24,9 @@ public class SellerService {
     // 판매자 등록
     @Transactional(rollbackFor = AuthException.class)
     public Seller createSeller(SellerJoinRequest joinRequest, Auth auth) {
-        if(!authRepository.existsByEmail(joinRequest.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
-        } // 올바른 auth 인지 확인
+        if(authRepository.existsByEmail(joinRequest.getEmail())) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+        }
 
         Seller seller = new Seller();
         seller.setAuth(auth);
