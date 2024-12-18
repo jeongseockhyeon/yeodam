@@ -44,7 +44,7 @@ public class SellerController {
     @GetMapping("/check-email")
     @ResponseBody
     public ResponseEntity<Boolean> checkEmailDuplicate(@RequestParam String email) {
-        boolean isDuplicate = authService.isEmailDuplicate(email);
+        boolean isDuplicate = authService.checkEmail(email);
         return ResponseEntity.ok(isDuplicate);
     }
 
