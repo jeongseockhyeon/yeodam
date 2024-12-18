@@ -24,17 +24,14 @@ public class PaymentController {
     @GetMapping
     public String paymentForm(@RequestParam("orderUid") String orderUid, Model model) {
         Long paymentId = paymentService.createPayment(orderUid);
-        PaymentRequest requestPayment = paymentService.findRequestPayment(paymentId);
+        PaymentRequest requestPayment = paymentService.findRequestPayment(paymentId); //커멘드 쿼리 분리
         model.addAttribute("paymentRequest", requestPayment);
         return "payment/paymentForm";
     }
 
-    @ResponseBody
     @PostMapping("/success")
     public ResponseEntity<IamportResponse<Payment>> validationPayment(@RequestBody PaymentRequestCallBack request) {
         IamportResponse<com.siot.IamportRestClient.response.Payment> response = paymentService.paymentCallBack(request);
-        log.info("결제 응답={}", response.getResponse().toString());
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
