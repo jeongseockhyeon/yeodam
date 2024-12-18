@@ -2,6 +2,7 @@ package com.hifive.yeodam.order.controller;
 
 import com.hifive.yeodam.order.dto.AddOrderRequest;
 import com.hifive.yeodam.order.service.OrderService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -45,6 +46,8 @@ public class OrderController {
         return "redirect:/payment?orderUid={orderUid}";
     }
 
+    //TODO 추후 삭제 예정
+    @AllArgsConstructor
     static class TestPrincipal implements Principal {
 
         private String name;
@@ -52,10 +55,6 @@ public class OrderController {
         @Override
         public String getName() {
             return this.name;
-        }
-
-        public TestPrincipal(String name) {
-            this.name = name;
         }
     }
 }
