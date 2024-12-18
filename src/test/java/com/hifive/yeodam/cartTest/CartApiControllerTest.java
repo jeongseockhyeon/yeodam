@@ -1,3 +1,5 @@
+package com.hifive.yeodam.cartTest;
+
 import com.hifive.yeodam.cart.controller.CartApiController;
 import com.hifive.yeodam.cart.dto.CartRequestDto;
 import com.hifive.yeodam.cart.dto.CartResponseDto;
@@ -15,15 +17,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,13 +46,10 @@ class CartApiControllerTest {
 
     @BeforeEach
     void setUp() {
-
         cartId = 1L;
-
         requestDto = new CartRequestDto(1L, 2);
 
         testItem = Tour.builder()
-                .sellerId(1L)
                 .itemName("제주도 여행")
                 .region("제주도")
                 .period("3박 4일")
@@ -86,8 +85,32 @@ class CartApiControllerTest {
         assertThat(response.getBody().getCartId()).isEqualTo(responseDto.getCartId());
         assertThat(response.getBody().getItemId()).isEqualTo(responseDto.getItemId());
         assertThat(response.getBody().getCount()).isEqualTo(responseDto.getCount());
-        assertThat(response.getBody().isCountModifiable()).isFalse();
         verify(cartService).addCart(requestDto);
+    }
+
+    @Test
+    @DisplayName("장바구니 수량 변경 성공 테스트")
+    void updateCartCount_Success() {
+        // given
+        CartUpdateCountDto updateDto = new CartUpdateCountDto();
+        updateDto.setCount(5);
+
+        Cart updatedCart = new Cart(null, testItem);
+        updatedCart.setId(cartId);
+        updatedCart.setCount(5);
+        CartResponseDto expectedDto = new CartResponseDto(updatedCart);
+
+        given(cartService.updateCartCount(eq(cartId), any(CartUpdateCountDto.class)))
+                .willReturn(expectedDto);
+
+        // when
+        ResponseEntity<CartResponseDto> response = cartController.updateCartCount(cartId, updateDto);
+
+        // then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getCount()).isEqualTo(updateDto.getCount());
+        verify(cartService).updateCartCount(cartId, updateDto);
     }
 
 
@@ -95,17 +118,14 @@ class CartApiControllerTest {
     @DisplayName("장바구니 예약상품 수량 변경 실패 테스트")
     void updateCartCount_Fail() {
         // given
-        Long cartId = 1L;
-        CartUpdateCountDto updateCountDto = new CartUpdateCountDto();
-        updateCountDto.setCount(2);
-
         given(cartService.updateCartCount(eq(cartId), any(CartUpdateCountDto.class)))
                 .willThrow(new IllegalStateException("예약 상품은 수량 변경이 불가능합니다."));
 
-        //when & then
-        assertThrows(IllegalStateException.class,
-                () -> cartController.updateCartCount(cartId, updateCountDto));
+        //when
+       ResponseEntity<CartResponseDto> response = cartController.updateCartCount(cartId, updateCountDto);
 
+        //then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         verify(cartService).updateCartCount(cartId, updateCountDto);
     }
 
@@ -113,7 +133,7 @@ class CartApiControllerTest {
     @DisplayName("장바구니 상품 삭제 성공 테스트")
     void removeCart_Success() {
         // given
-        doNothing().when(cartService).removeCart(cartId);
+        willDoNothing().given(cartService).removeCart(cartId);
 
         // when
         ResponseEntity<Void> response = cartController.removeCart(cartId);
@@ -124,7 +144,7 @@ class CartApiControllerTest {
     }
 
     @Test
-    @DisplayName("장바구니 전체 가격 조회 테스트")
+    @DisplayName("장바구니 총 가격 조회 테스트")
     void getTotalPrice_Success() {
         // given
         CartTotalPriceDto expectedDto = new CartTotalPriceDto(200000);
@@ -140,9 +160,10 @@ class CartApiControllerTest {
         verify(cartService).getTotalPrice();
     }
 
+
     @Test
     @DisplayName("장바구니 선택 상품 가격 조회 테스트")
-    void getSelectedPrice_Success() {
+    void getSelectedPrice_Success() throws Exception{
         // given
         List<Long> cartIds = Arrays.asList(1L, 2L);
         CartTotalPriceDto expectedDto = new CartTotalPriceDto(400000); //예약 상품 2개
