@@ -8,6 +8,7 @@ import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -17,6 +18,7 @@ import org.springframework.validation.FieldError;
 public class AuthService {
 
     private final AuthRepository authRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Auth addAuth(JoinRequest request) {
 
@@ -26,7 +28,7 @@ public class AuthService {
 
         Auth auth = Auth.builder()
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .build();
 
