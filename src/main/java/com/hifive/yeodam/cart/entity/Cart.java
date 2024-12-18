@@ -6,7 +6,9 @@ import com.hifive.yeodam.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
@@ -25,14 +27,14 @@ public class Cart {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private int count; //티켓 타입 수량
+    private int count;
 
     private boolean reservation;
 
     public Cart(User user, Item item) {
         this.user = user;
         this.item = item;
-        this.count = 1; //기본 수량
+        this.count = 1;
         this.reservation = item.isReservation();
     }
 
