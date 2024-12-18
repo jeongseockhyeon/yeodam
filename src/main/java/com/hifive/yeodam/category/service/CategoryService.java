@@ -1,15 +1,19 @@
 package com.hifive.yeodam.category.service;
 
 import com.hifive.yeodam.category.dto.CategoryReqDto;
+import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
@@ -35,8 +39,13 @@ public class CategoryService {
         return categoryRepository.save(newCategory);
     }
     /*카테고리 전체 목록 조회*/
-    public List<Category> findAllCategory() {
-        return categoryRepository.findAll();
+    public List<CategoryResDto> findAllCategory() {
+        List<Category> categoryList = categoryRepository.findAll();
+        List<CategoryResDto> categoryResDtoList = new ArrayList<>();
+        for (Category category : categoryList) {
+            categoryResDtoList.add(new CategoryResDto(category));
+        }
+        return categoryResDtoList;
     }
     /*카테고리 단일 조회*/
     public Category findCategoryById(Long id) {

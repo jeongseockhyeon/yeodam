@@ -25,8 +25,22 @@ public class CartApiController {
         return ResponseEntity.ok(responseDto);
     }
 
+    //장바구니 전체 조회
+    @GetMapping
+    public ResponseEntity<CartTotalPriceDto> getTotalPrice() {
+        CartTotalPriceDto totalPrice = cartService.getTotalPrice();
+        return ResponseEntity.ok(totalPrice);
+    }
+
+    //장바구니 선택 조회
+    @GetMapping("/selected")
+    public ResponseEntity<CartTotalPriceDto> getSelectedPrice(@RequestBody List<Long> cartIds) {
+        CartTotalPriceDto selectedPrice = cartService.getSelectedPrice(cartIds);
+        return ResponseEntity.ok(selectedPrice);
+    }
+
     //장바구니 상품 수량 변경
-    @PatchMapping("/{id}/count")
+    @PatchMapping("/{cartId}/count")
     public ResponseEntity<CartResponseDto> updateCartCount(
             @PathVariable Long cartId, @RequestBody CartUpdateCountDto updateDto) {
         try {
@@ -45,17 +59,4 @@ public class CartApiController {
         return ResponseEntity.ok().build();
     }
 
-    //장바구니 전체 조회
-    @GetMapping
-    public ResponseEntity<CartTotalPriceDto> getTotalPrice() {
-        CartTotalPriceDto totalPrice = cartService.getTotalPrice();
-        return ResponseEntity.ok(totalPrice);
-    }
-
-    //장바구니 선택 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<CartTotalPriceDto> getSelectedPrice(@RequestBody List<Long> cartIds) {
-        CartTotalPriceDto selectedPrice = cartService.getSelectedPrice(cartIds);
-        return ResponseEntity.ok(selectedPrice);
-    }
 }

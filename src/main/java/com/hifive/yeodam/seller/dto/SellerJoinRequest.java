@@ -23,12 +23,16 @@ public class SellerJoinRequest {
     private String password;
 
     @NotBlank
+    @Size(min = 9, max = 11)
+    @Pattern(regexp = "^[0-9]{9,11}$")
     private String phone;
 
     @NotBlank
+    @Size(max = 25)
     private String companyName;
 
     @NotBlank
+    @Size(max = 25)
     private String owner;
 
     @NotBlank

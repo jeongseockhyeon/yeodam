@@ -1,6 +1,7 @@
 package com.hifive.yeodam.category.controller;
 
 import com.hifive.yeodam.category.dto.CategoryReqDto;
+import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class CategoryApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategory() {
+    public ResponseEntity<List<CategoryResDto>> getAllCategory() {
         return ResponseEntity.ok(categoryService.findAllCategory());
     }
 

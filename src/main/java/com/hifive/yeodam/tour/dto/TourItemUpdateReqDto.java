@@ -3,6 +3,8 @@ package com.hifive.yeodam.tour.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class TourItemUpdateReqDto {
@@ -16,5 +18,13 @@ public class TourItemUpdateReqDto {
     private String description;
 
     private int price;
+
+    private int maximum;
+
+    private List<Long> addCategoryIds;
+    private List<Long> removeCategoryIds;
+
+    private List<Long> addGuideIds;
+    private List<Long> removeGuideIds;
 
 }

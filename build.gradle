@@ -57,9 +57,6 @@ dependencies {
 
     //아이엠 포트 추가
     implementation 'com.github.iamport:iamport-rest-client-java:0.1.6'
-
-    //아이엠 포트 추가
-    implementation 'com.github.iamport:iamport-rest-client-java:0.1.6'
 }
 
 tasks.named('test') {

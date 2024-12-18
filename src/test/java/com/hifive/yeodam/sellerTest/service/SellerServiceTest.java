@@ -39,22 +39,23 @@ class SellerServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(null, "email@email.com", "password", "010-1234-1234");
+        auth = new Auth(null, "email@email.com", "password", "01012341234");
         seller = new Seller(null, auth, "Company", "Owner", "Company Bio");
     }
 
+    // 판매자 등록 성공
     @Test
     void createSellerTest() {
         // given
         SellerJoinRequest joinRequest = new SellerJoinRequest();
         joinRequest.setEmail("email@email.com");
         joinRequest.setPassword("password");
-        joinRequest.setPhone("010-1234-1234");
+        joinRequest.setPhone("01012341234");
         joinRequest.setCompanyName("Company");
         joinRequest.setOwner("Owner");
         joinRequest.setBio("Company Bio");
 
-        when(authRepository.existsByEmail(anyString())).thenReturn(false);
+        when(authRepository.existsByEmail(anyString())).thenReturn(true);
         when(sellerRepository.save(any(Seller.class))).thenReturn(seller);
 
         // when
@@ -68,13 +69,14 @@ class SellerServiceTest {
         verify(sellerRepository, times(1)).save(any(Seller.class));
     }
 
+    // 판매자 등록 실패
     @Test
-    void createSellerDuplicateAuthExceptionTest() {
+    void createSellerTest_fail_invalidData() {
         // given
-        SellerJoinRequest joinRequest = new SellerJoinRequest();
-        joinRequest.setEmail("email@email.com");
+        SellerJoinRequest joinRequest = new SellerJoinRequest("email@email.com", "password", "01012341234", "Company", "Owner", "Company Bio"
+        );
 
-        when(authRepository.existsByEmail(anyString())).thenReturn(true);
+        when(authRepository.existsByEmail(anyString())).thenReturn(false);
 
         // when & then
         AuthException exception = assertThrows(AuthException.class, () -> {
@@ -86,6 +88,7 @@ class SellerServiceTest {
         verify(sellerRepository, never()).save(any(Seller.class));
     }
 
+    // 판매자 정보 수정 성공
     @Test
     void updateSellerTest() {
         // given
@@ -109,8 +112,9 @@ class SellerServiceTest {
         verify(sellerRepository, times(1)).save(any(Seller.class));
     }
 
+    // 판매자 정보 수정 실패
     @Test
-    void updateSellerNotFoundTest() {
+    void updateSellerTest_fail_notFound() {
         // given
         SellerUpdateRequest updateRequest = new SellerUpdateRequest();
         when(sellerRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -125,6 +129,7 @@ class SellerServiceTest {
         verify(sellerRepository, never()).save(any(Seller.class));
     }
 
+    // 판매자 삭제
     @Test
     void deleteSellerTest() {
         doNothing().when(sellerRepository).deleteById(anyLong());
@@ -134,6 +139,7 @@ class SellerServiceTest {
         verify(sellerRepository, times(1)).deleteById(1L);
     }
 
+    // 판매자 전제 조회
     @Test
     void getAllSellersTest() {
         when(sellerRepository.findAll()).thenReturn(List.of(seller));
@@ -145,6 +151,7 @@ class SellerServiceTest {
         verify(sellerRepository, times(1)).findAll();
     }
 
+    // 판매자 단일 조회
     @Test
     void getSellerByIdTest() {
         when(sellerRepository.findById(anyLong())).thenReturn(Optional.of(seller));
@@ -156,8 +163,9 @@ class SellerServiceTest {
         verify(sellerRepository, times(1)).findById(1L);
     }
 
+    // 판매자 단일 조회 실패
     @Test
-    void getSellerByIdNotFoundTest() {
+    void getSellerByIdTest_fail_notFound() {
         when(sellerRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {

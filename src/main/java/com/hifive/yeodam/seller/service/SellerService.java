@@ -62,7 +62,6 @@ public class SellerService {
 
     // 판매자 단일 조회
     public Seller getSellerById(Long id) {
-        return sellerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+        return sellerRepository.findById(id).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
     }
 }

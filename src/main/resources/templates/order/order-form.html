@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주문 폼</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-top: 20px;
+        }
+
+        .input-field {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/order}" method="post" th:object="${orderRequest}">
+
+    <!-- 상품 정보 -->
+    <div class="section" th:each="item : ${orderRequest.items}">
+
+        <input type="hidden" th:field="*{items[__${itemStat.index}__].id}">
+        <input type="hidden" th:field="*{items[__${itemStat.index}__].price}">
+        <input type="hidden" th:field="*{items[__${itemStat.index}__].count}">
+
+        <h1 th:text="${item.name}">투어 제목</h1>
+        <!--    <p><strong>날짜:</strong> <span th:text="${#temporals.format(item.period, 'yyyy년 MM월 dd일')}"></span></p>-->
+        <p><strong>인원:</strong> <span th:text="${item.count} + '명'"></span></p>
+        <p><strong>비용:</strong> <span th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'"></span></p>
+    </div>
+
+    <!-- 예약자 정보 -->
+    <div class="section">
+        <h2>예약자 정보</h2>
+        <div class="input-field">
+            <label for="name">이름</label>
+            <input type="text" id="name" th:field="*{bookerName}" placeholder="이름 입력" required/>
+        </div>
+        <div class="input-field">
+            <label for="contact">연락처</label>
+            <input type="text" id="contact" th:field="*{phoneNumber}" placeholder="연락처 입력" required/>
+        </div>
+        <div class="input-field">
+            <label for="message">예약 메시지</label>
+            <input type="text" id="message" th:field="*{orderMessage}" placeholder="예약 메시지 입력"/>
+        </div>
+    </div>
+
+    <!-- 결제 버튼 -->
+    <button type="submit">결제하기</button>
+</form>
+</body>
+</html>
