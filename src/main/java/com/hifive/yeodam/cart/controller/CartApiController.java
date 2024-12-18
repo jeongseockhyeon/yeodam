@@ -40,9 +40,9 @@ public class CartApiController {
     }
 
     //장바구니 상품 수량 변경
-    @PatchMapping("/{cartId}/count")
+    @PatchMapping("/{id}/count")
     public ResponseEntity<CartResponseDto> updateCartCount(
-            @PathVariable Long cartId, @RequestBody CartUpdateCountDto updateDto) {
+            @PathVariable("id") Long cartId, @RequestBody CartUpdateCountDto updateDto) {
         try {
             CartResponseDto responseDto = cartService.updateCartCount(cartId, updateDto);
             return ResponseEntity.ok(responseDto);
