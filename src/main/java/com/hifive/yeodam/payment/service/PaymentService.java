@@ -1,6 +1,8 @@
 package com.hifive.yeodam.payment.service;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.order.repository.OrderRepository;
 import com.hifive.yeodam.payment.domain.Payment;
@@ -12,8 +14,18 @@ import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @Service
@@ -24,6 +36,12 @@ public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final IamportClient iamportClient;
+
+    @Value("${imp.api-key}")
+    private String apiKey;
+
+    @Value("${imp.secret-key}")
+    private String secretKey;
 
     public Long createPayment(String orderUid) {
 
@@ -48,7 +66,7 @@ public class PaymentService {
                 .username(payment.getOrder().getUser().getName())
                 .phone(payment.getOrder().getUser().getAuth().getPhone())
                 .email(payment.getOrder().getUser().getAuth().getEmail())
-                .itemName(payment.getOrder().getItemName())
+                .itemName(payment.getOrder().getItemSummary())
                 .price(payment.getPrice())
                 .build();
     }
@@ -68,14 +86,14 @@ public class PaymentService {
 
         Payment payment = order.getPayment();
 
-        //결제가 성공 검증
+        //결제 성공 검증
         validateIsSuccess(iamportResponse, payment, order);
 
         int orderTotalPrice = order.getTotalPrice();
         int iamportPrice = iamportResponse.getResponse().getAmount().intValue();
 
         //결제 위변조 체크
-        validatePaymentPrice(orderTotalPrice, iamportPrice, payment, order, iamportResponse);
+        validateModulation(orderTotalPrice, iamportPrice, payment, order, iamportResponse);
 
         payment.successPayment(iamportResponse.getResponse().getImpUid());
         order.successOrder();
@@ -94,6 +112,36 @@ public class PaymentService {
         order.getPayment().failPayment(request.getPaymentUid());
     }
 
+    private String getToken() {
+
+        String path = "https://api.iamport.kr/users/getToken";
+        URI uri = URI.create(path);
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        String body = String.format("{\"imp_key\":\"%s\", \"imp_secret\":\"%s\"}", apiKey, secretKey);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .header("Content-Type", APPLICATION_JSON_VALUE)
+                .header("Accept", "*/*")
+                .POST(HttpRequest.BodyPublishers.ofString(body, UTF_8))
+                .build();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            String resBody = response.body();
+            JsonNode jsonNode = objectMapper.readTree(resBody);
+            return jsonNode.get("response").get("access_token").asText();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void validateIsSuccess(IamportResponse<com.siot.IamportRestClient.response.Payment> iamportResponse, Payment payment, Order order) {
         if (!iamportResponse.getResponse().getStatus().equals("paid")) {
             deletePaymentOrder(payment, order);
@@ -106,8 +154,8 @@ public class PaymentService {
         orderRepository.deleteById(order.getId());
     }
 
-    private void validatePaymentPrice(int orderTotalPrice, int iamportPrice, Payment payment, Order order,
-                                      IamportResponse<com.siot.IamportRestClient.response.Payment> iamportResponse) {
+    private void validateModulation(int orderTotalPrice, int iamportPrice, Payment payment, Order order,
+                                    IamportResponse<com.siot.IamportRestClient.response.Payment> iamportResponse) {
 
         if (orderTotalPrice != iamportPrice) {
             deletePaymentOrder(payment, order);
