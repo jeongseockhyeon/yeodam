@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -35,7 +36,11 @@ public class OrderService {
 
         List<OrderDetail> orderDetails = createOrderDetails(request);
 
-        Order order = Order.createOrder(user, orderDetails);
+        validateOrderMessage(request);
+
+        Order order = Order.createOrder(user, request.getBookerName(), request.getPhoneNumber(),
+                request.getOrderMessage(),orderDetails);
+
         orderRepository.save(order);
 
         return order.getOrderUid();
@@ -62,5 +67,11 @@ public class OrderService {
         }
 
         return orderDetails;
+    }
+
+    private void validateOrderMessage(AddOrderRequest request) {
+        if (!StringUtils.hasText(request.getOrderMessage())) {
+            request.setOrderMessage("메세지 없음");
+        }
     }
 }
