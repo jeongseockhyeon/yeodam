@@ -36,6 +36,10 @@ public class Order {
     @Enumerated(STRING)
     private OrderStatus status;
 
+    private String bookerName;
+    private String bookerPhone;
+    private String message;
+
     private String orderUid; //주문번호
 
     @OneToMany(mappedBy = "order", cascade = ALL)
@@ -45,15 +49,20 @@ public class Order {
     @OneToOne(mappedBy = "order", fetch = LAZY)
     private Payment payment;
 
-    private Order(User user, List<OrderDetail> orderDetails) {
+    private Order(User user,String bookerName, String bookerPhone,
+                  String message ,List<OrderDetail> orderDetails) {
         this.User = user;
         this.status = PENDING;
+        this.bookerName = bookerName;
+        this.bookerPhone = bookerPhone;
+        this.message = message;
         this.orderUid = createOrderUid();
         setOrderDetails(orderDetails);
     }
 
-    public static Order createOrder(User user, List<OrderDetail> orderDetails) {
-        return new Order(user, orderDetails);
+    public static Order createOrder(User user,String bookerName, String bookerPhone,
+                                    String message ,List<OrderDetail> orderDetails) {
+        return new Order(user, bookerName, bookerPhone, message, orderDetails);
     }
 
     private String createOrderUid() {
