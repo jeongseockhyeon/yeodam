@@ -2,6 +2,7 @@ package com.hifive.yeodam.tour.entity;
 
 import com.hifive.yeodam.item.entity.Item;
 
+import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,9 @@ public class Tour extends Item {
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TourGuide> tourGuides  = new ArrayList<>();
 
 
     @Builder

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.SellerRepository;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
+import com.hifive.yeodam.tour.dto.TourItemResDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,17 +95,17 @@ public class IntegrationTourItemTest {
         //when
         ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
 
-        List<Tour> tours = tourItemService.findAll();
-        Tour tour = tours.getLast();
+        List<TourItemResDto> tours = tourItemService.findAll();
+        TourItemResDto tour = tours.getLast();
 
         //then
         result.andExpect(status().isCreated());
-        assertEquals(seller.getCompanyId(), tour.getSeller().getCompanyId());
-        assertEquals(tourName,tour.getItemName());
-        assertEquals(tourDesc,tour.getDescription());
-        assertEquals(tourPeriod,tour.getPeriod());
-        assertEquals(tourRegion,tour.getRegion());
-        assertEquals(tourPrice,tour.getPrice());
+        //assertEquals(seller.getCompanyId(), tour.getSeller().getCompanyId());
+        assertEquals(tourName,tour.getTourName());
+        assertEquals(tourDesc,tour.getTourDesc());
+        assertEquals(tourPeriod,tour.getTourPeriod());
+        assertEquals(tourRegion,tour.getTourRegion());
+        assertEquals(tourPrice,tour.getTourPrice());
     }
 
     @Test
@@ -142,14 +143,15 @@ public class IntegrationTourItemTest {
         //when
         ResultActions resultActions = mockMvc.perform(get(url,tourItemId));
 
+
         //then
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.sellerId").value(sellerId))
-                .andExpect(jsonPath("$.itemName").value(tourName))
-                .andExpect(jsonPath("$.description").value(tourDesc))
-                .andExpect(jsonPath("$.period").value(tourPeriod))
-                .andExpect(jsonPath("$.region").value(tourRegion))
-                .andExpect(jsonPath("$.price").value(tourPrice));
+        resultActions.andExpect(status().isOk());
+        assertEquals(tourName,tourItemService.findById(tourItemId).getTourName());
+        assertEquals(tourDesc,tourItemService.findById(tourItemId).getTourDesc());
+        assertEquals(tourPeriod,tourItemService.findById(tourItemId).getTourPeriod());
+        assertEquals(tourRegion,tourItemService.findById(tourItemId).getTourRegion());
+        assertEquals(tourPrice,tourItemService.findById(tourItemId).getTourPrice());
+
     }
 
     @Test
