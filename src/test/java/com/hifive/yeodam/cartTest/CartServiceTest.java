@@ -45,6 +45,11 @@ class CartServiceTest {
     private User testUser;
     private Cart testCart;
 
+    //getCurrentUser() - 로그인 X, 로그인 O
+    //getCartList() - 로그인 X 리스트 반환, 로그인 O 장바구니 목록 반환
+    //syncCartWithLocal() - 로컬 - 서버 연동
+    //존재하지 않는 상품 추가, 수량 엽데이트 1 미만, 존재하지 않는 유저로 수정
+
     private Tour createTestTour(String itemName, String region, int price, boolean isReservation) {
         Tour tour = Tour.builder()
                 .sellerId(1L)
@@ -82,9 +87,7 @@ class CartServiceTest {
     @DisplayName("장바구니 추가 - 새로운 상품")
     void addCart_NewItem() {
         // given
-        CartRequestDto requestDto = new CartRequestDto();
-        requestDto.setItemId(1L);
-        requestDto.setCount(2);
+        CartRequestDto requestDto = new CartRequestDto(1L, 2);
 
         Tour tour = createTestTour("서울 여행", "서울", 50000, true);
 
@@ -105,9 +108,7 @@ class CartServiceTest {
     @DisplayName("장바구니 추가 - 이미 장바구니에 존재하는 상품")
     void addCart_ExistingItem() {
         // given
-        CartRequestDto requestDto = new CartRequestDto();
-        requestDto.setItemId(1L);
-        requestDto.setCount(2);
+        CartRequestDto requestDto = new CartRequestDto(1L, 2);
 
         Tour tour = createTestTour("제주도 여행", "제주도", 100000,true);
         tour.setReservation(false);
@@ -129,9 +130,7 @@ class CartServiceTest {
     @DisplayName("장바구니 추가 - 이미 존재하는 예약 상품")
     void addCart_ExistingReservationItem() {
         // given
-        CartRequestDto requestDto = new CartRequestDto();
-        requestDto.setItemId(1L);
-        requestDto.setCount(1);
+        CartRequestDto requestDto = new CartRequestDto(1L, 1);
 
         Tour tour = createTestTour("부산 여행", "부산", 80000, true);
         tour.setReservation(true);
