@@ -38,24 +38,27 @@ public class Cart {
         this.reservation = item.isReservation();
     }
 
+    //동일 상품 존재 여부 확인
+    public boolean isSameItem(Item item) {
+        return this.item.getId().equals(item.getId());
+    }
+
+    //수량 변경 가능 여부 확인
+    public boolean isCountModifiable() {
+        return !reservation;
+    }
 
     //상품의 현재 가격 실시간 반환
     public int getPrice(){
         return item.getPrice() * count;
     }
 
-
-    //티켓 타입 수량 변경
+    //일반 상품 수량 업데이트
     public void updateCount(int count) {
-        if (reservation) {
+        if (item.isReservation()) {
             throw new IllegalStateException("예약 상품은 수량 변경이 불가능합니다.");
         }
-        this.count = count;
-    }
-
-    //수량 변경 가능 여부 확인
-    public boolean isCountModifiable() {
-        return !reservation;
+        this.count += count;
     }
 
 }
