@@ -1,15 +1,15 @@
 package com.hifive.yeodam.orderdetail.domain;
 
+import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.domain.Order;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -26,12 +26,13 @@ public class OrderDetail {
     @ManyToOne(fetch = LAZY)
     private Order order;
 
-    //TODO 추후 아이템으로 변경
-    private Long item;
+    @JoinColumn(name = "item_id")
+    @ManyToOne(fetch = LAZY)
+    private Item item;
     private int count;
     private int price;
 
-    public static OrderDetail create(Long item, int count, int price) {
+    public static OrderDetail create(Item item, int count, int price) {
         return new OrderDetail(item, count, price);
     }
 
@@ -39,7 +40,7 @@ public class OrderDetail {
         return getPrice() * getCount();
     }
 
-    private OrderDetail(Long item, int count, int price) {
+    private OrderDetail(Item item, int count, int price) {
         this.item = item;
         this.count = count;
         this.price = price;

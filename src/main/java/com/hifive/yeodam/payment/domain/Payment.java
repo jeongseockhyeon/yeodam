@@ -2,15 +2,14 @@ package com.hifive.yeodam.payment.domain;
 
 import com.hifive.yeodam.order.domain.Order;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static com.hifive.yeodam.payment.domain.PaymentStatus.*;
-import static jakarta.persistence.FetchType.*;
-import static jakarta.persistence.GenerationType.*;
-import static lombok.AccessLevel.*;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
@@ -24,7 +23,7 @@ public class Payment {
 
     private int price;
 
-    @Enumerated
+    @Enumerated(STRING)
     private PaymentStatus status;
 
     //결제 고유 번호
@@ -38,15 +37,25 @@ public class Payment {
     private Payment(int price, Order order) {
         this.price = price;
         this.status = PENDING;
-        this.order = order;
+        setOrder(order);
     }
 
     public static Payment create(int price, Order order) {
         return new Payment(price, order);
     }
 
-    public void changePaymentBySuccess(PaymentStatus status, String paymentUid) {
-        this.status = status;
+    private void setOrder(Order order) {
+        this.order = order;
+        order.setPayment(this);
+    }
+
+    public void successPayment(String paymentUid) {
+        this.status = COMPLETED;
+        this.paymentUid = paymentUid;
+    }
+
+    public void failPayment(String paymentUid) {
+        this.status = FAILED;
         this.paymentUid = paymentUid;
     }
 }
