@@ -43,7 +43,7 @@ public class TourItemService {
 
         Seller seller = sellerService.getSellerById(tourItemReqDto.getSellerId());
 
-        Tour itemTour = Tour.builder()
+        Tour tourItem = Tour.builder()
                 .seller(seller)
                 .itemName(tourItemReqDto.getTourName())
                 .region(tourItemReqDto.getTourRegion())
@@ -56,14 +56,14 @@ public class TourItemService {
 
                 .build();
 
-        Tour savedTour = tourRepository.save(itemTour);
+        Tour savedTour = tourRepository.save(tourItem);
 
         /*여행_카테고리 저장*/
         if(tourItemReqDto.getCategoryIdList() != null ) {
             for(Long categoryId : tourItemReqDto.getCategoryIdList()){
                 Category category = categoryService.findCategoryById(categoryId);
                 TourCategory tourCategory = TourCategory.builder()
-                        .tour(itemTour)
+                        .tour(tourItem)
                         .category(category)
                         .build();
                 tourCategoryRepository.save(tourCategory);
@@ -74,7 +74,7 @@ public class TourItemService {
             for(Long guideId : tourItemReqDto.getGuideIdList()){
                 Guide guide = guideService.getGuideById(guideId);
                 TourGuide tourGuide = TourGuide.builder()
-                        .tour(itemTour)
+                        .tour(tourItem)
                         .guide(guide)
                         .build();
                 tourGuideRepository.save(tourGuide);
