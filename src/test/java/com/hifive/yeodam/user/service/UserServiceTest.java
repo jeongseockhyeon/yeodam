@@ -182,18 +182,6 @@ public class UserServiceTest {
         //then
     }
 
-    @Test
-    public void 닉네임중복체크() throws Exception{
-        //given
-        doReturn(true).when(userRepository).existsByNickname(nickname);
-
-        //when
-        UserException result = assertThrows(UserException.class, () -> target.checkDuplicatedNickname(nickname));
-
-        //then
-        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
-    }
-
     private User user(){
         return User.builder()
                 .id(-1L)

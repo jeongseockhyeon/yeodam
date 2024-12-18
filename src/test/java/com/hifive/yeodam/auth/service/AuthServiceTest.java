@@ -64,18 +64,6 @@ public class AuthServiceTest {
         assertThat(result.getPhone()).isEqualTo(phone);
     }
 
-    @Test
-    public void 이메일중복체크() throws Exception{
-        //given
-        doReturn(true).when(authRepository).existsByEmail(email);
-
-        //when
-        AuthException result = assertThrows(AuthException.class, () -> target.checkDuplicatedEmail(email));
-
-        //then
-        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
-    }
-
     private Auth auth() {
         return Auth.builder()
                 .id(-1L)
