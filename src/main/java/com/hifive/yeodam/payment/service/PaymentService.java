@@ -40,13 +40,16 @@ public class PaymentService {
 
     public PaymentRequest findRequestPayment(Long paymentId) {
 
-        Payment payment = paymentRepository.findById(paymentId)
+        Payment payment = paymentRepository.findByIdFetchJoin(paymentId)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 결제정보가 없습니다"));
 
         return PaymentRequest.builder()
+                .orderUid(payment.getOrder().getOrderUid())
+                .username(payment.getOrder().getUser().getName())
+                .phone(payment.getOrder().getUser().getAuth().getPhone())
+                .email(payment.getOrder().getUser().getAuth().getEmail())
                 .itemName(payment.getOrder().getItemName())
                 .price(payment.getPrice())
-                .orderUid(payment.getOrder().getOrderUid())
                 .build();
     }
 
