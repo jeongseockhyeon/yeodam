@@ -24,7 +24,7 @@ public class SellerJoinRequest {
 
     @NotBlank
     @Size(min = 9, max = 11)
-    @Pattern(regexp = "\\d+")
+    @Pattern(regexp = "^[0-9]{9,11}$")
     private String phone;
 
     @NotBlank
