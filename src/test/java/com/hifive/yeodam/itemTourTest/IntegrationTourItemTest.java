@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.hifive.yeodam.tour.entity.Tour;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -26,7 +25,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -131,7 +129,7 @@ public class IntegrationTourItemTest {
     @DisplayName("상품_여행 단일 조회 테스트")
     public void itemFindByIdTest() throws Exception {
         //given
-        Long sellerId = 1L;
+        //Long sellerId = 1L;
         String tourName = "test";
         String tourDesc = "test";
         String tourPeriod = "1일";

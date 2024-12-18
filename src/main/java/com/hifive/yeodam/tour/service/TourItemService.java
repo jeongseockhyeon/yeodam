@@ -102,6 +102,7 @@ public class TourItemService {
         List<TourItemResDto> tourItemResDtos = new ArrayList<>();
         for(Tour tour : filterTours){
             TourItemResDto tourItemResDto = new TourItemResDto(tour);
+            tourItemResDtos.add(tourItemResDto);
         }
         return tourItemResDtos;
     }

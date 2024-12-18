@@ -2,7 +2,6 @@ package com.hifive.yeodam.tour.entity;
 
 import com.hifive.yeodam.item.entity.Item;
 
-import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import jakarta.persistence.*;
 import lombok.*;

@@ -221,7 +221,7 @@ public class TourItemTest {
     @DisplayName("상품_여행 단일 조회 실패 테스트")
     public void itemFindByIdFailTest() throws Exception {
         //given
-        String url = "/api/tours/{id}";
+        //String url = "/api/tours/{id}";
         Long tourItemId = 2L;
 
         when(tourItemService.findById(tourItemId)).thenThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"));
@@ -300,10 +300,10 @@ public class TourItemTest {
         verify(tourItemService, times(1)).update(any(Long.class),any(TourItemUpdateReqDto.class));
     }
     @Test
-    @DisplayName("상품_여행 수정 테스트")
+    @DisplayName("상품_여행 수정 실패 테스트")
     public void itemTourUpdateFailTest() throws Exception {
         //given
-        String url = "/api/tours/{id}";
+        //String url = "/api/tours/{id}";
         Long tourItemId = 2L;
 
         String updateTourName = "update name";
@@ -368,7 +368,7 @@ public class TourItemTest {
     @DisplayName("상품_여행 삭제 실패 테스트")
     public void itemTourDeleteFailTest() throws Exception {
         //given
-        String url = "/api/tours/{id}";
+        //String url = "/api/tours/{id}";
         Long tourItemId = 2L;
         doThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"))
                 .when(tourItemService).delete(tourItemId);
