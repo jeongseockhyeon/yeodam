@@ -21,9 +21,12 @@
             const successUrl = "payment/success";
             const failUrl = "payment/fail";
 
-            let itemName = [[${paymentRequest.itemName}]]
+            let itemName = [[${paymentRequest.itemName}]];
             let price = [[${paymentRequest.price}]];
             let orderUid = [[${paymentRequest.orderUid}]];
+            let username = [[${paymentRequest.username}]];
+            let email = [[${paymentRequest.email}]];
+            let phone = [[${paymentRequest.phone}]];
 
             IMP.request_pay(
                 {
@@ -32,6 +35,9 @@
                     merchant_uid: orderUid, //주문번호
                     name: itemName,		    //상품 명
                     amount: price,			//금액
+                    buyer_name: username,   //주문자
+                    buyer_email: email,     //이메일
+                    buyer_tel: phone        //전화번호
                 },
                 function (rsp) {
                     if (rsp.success) {
@@ -64,10 +70,11 @@
             );
         }
     </script>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => requestPay());
+    </script>
     <meta charset="UTF-8"/>
     <title>Sample Payment</title>
+    <p th:field="${paymentRequest.username}"
 </head>
-<body>
-<button onclick="requestPay()">결제하기</button>
-</body>
 </html>
