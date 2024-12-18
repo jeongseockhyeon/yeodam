@@ -157,7 +157,9 @@ public class TourItemService {
     }
     /*상품_여행 삭제*/
     public void delete(Long id) {
-        tourRepository.deleteById(id);
+        Tour targetTour = tourRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+        tourRepository.delete(targetTour);
     }
 
 }

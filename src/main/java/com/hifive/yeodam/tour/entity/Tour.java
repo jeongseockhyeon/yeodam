@@ -20,6 +20,7 @@ public class Tour extends Item {
 
     private String period;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private int maximum;
