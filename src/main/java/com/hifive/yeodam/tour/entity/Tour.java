@@ -19,6 +19,7 @@ public class Tour extends Item {
 
     private String period;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private int maximum;
@@ -26,6 +27,9 @@ public class Tour extends Item {
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TourGuide> tourGuides  = new ArrayList<>();
 
 
     @Builder

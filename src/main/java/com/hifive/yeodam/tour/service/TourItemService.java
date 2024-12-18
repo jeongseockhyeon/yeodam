@@ -8,6 +8,7 @@ import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
+import com.hifive.yeodam.tour.dto.TourItemResDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.tour.entity.TourCategory;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -39,11 +41,11 @@ public class TourItemService {
 
 
     /*상품_여행 등록*/
-    public Tour saveTourItem(TourItemReqDto tourItemReqDto) {
+    public TourItemResDto saveTourItem(TourItemReqDto tourItemReqDto) {
 
         Seller seller = sellerService.getSellerById(tourItemReqDto.getSellerId());
 
-        Tour itemTour = Tour.builder()
+        Tour tourItem = Tour.builder()
                 .seller(seller)
                 .itemName(tourItemReqDto.getTourName())
                 .region(tourItemReqDto.getTourRegion())
@@ -56,14 +58,14 @@ public class TourItemService {
 
                 .build();
 
-        Tour savedTour = tourRepository.save(itemTour);
+        Tour savedTour = tourRepository.save(tourItem);
 
         /*여행_카테고리 저장*/
         if(tourItemReqDto.getCategoryIdList() != null ) {
             for(Long categoryId : tourItemReqDto.getCategoryIdList()){
                 Category category = categoryService.findCategoryById(categoryId);
                 TourCategory tourCategory = TourCategory.builder()
-                        .tour(itemTour)
+                        .tour(tourItem)
                         .category(category)
                         .build();
                 tourCategoryRepository.save(tourCategory);
@@ -74,33 +76,48 @@ public class TourItemService {
             for(Long guideId : tourItemReqDto.getGuideIdList()){
                 Guide guide = guideService.getGuideById(guideId);
                 TourGuide tourGuide = TourGuide.builder()
-                        .tour(itemTour)
+                        .tour(tourItem)
                         .guide(guide)
                         .build();
                 tourGuideRepository.save(tourGuide);
             }
 
         }
-        return savedTour;
+        return new TourItemResDto(savedTour);
     }
     /*상품_여행 목록 조회*/
-    public List<Tour> findAll() {
-        return tourRepository.findAll();
+    public List<TourItemResDto> findAll() {
+        List<Tour> tours = tourRepository.findAll();
+        List<TourItemResDto> tourItemResDtos = new ArrayList<>();
+        for(Tour tour : tours){
+            TourItemResDto tourItemResDto = new TourItemResDto(tour);
+            tourItemResDtos.add(tourItemResDto);
+        }
+        return tourItemResDtos;
     }
 
     /*카테고리 적용 조회*/
-    public List<Tour> getSearchFilterTour(SearchFilterDto searchFilterDto) {
-        return tourRepository.searchByFilter(searchFilterDto);
+    public List<TourItemResDto> getSearchFilterTour(SearchFilterDto searchFilterDto) {
+        List<Tour> filterTours = tourRepository.searchByFilter(searchFilterDto);
+        List<TourItemResDto> tourItemResDtos = new ArrayList<>();
+        for(Tour tour : filterTours){
+            TourItemResDto tourItemResDto = new TourItemResDto(tour);
+            tourItemResDtos.add(tourItemResDto);
+        }
+        return tourItemResDtos;
     }
 
     /*상품_여행 단일 조회*/
-    public Tour findById(Long id) {
-        return tourRepository.findById(id)
+    public TourItemResDto findById(Long id) {
+        Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+        return new TourItemResDto(tour);
     }
+
     /*상품_여행 수정*/
-    public Tour update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
-        Tour targetTour = this.findById(id);
+    public TourItemResDto update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
+        Tour targetTour = tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
         targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getPrice());
         targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(), tourItemUpdateReqDto.getDescription());
 
@@ -137,11 +154,13 @@ public class TourItemService {
             }
         }
 
-        return tourRepository.save(targetTour);
+        return new TourItemResDto(targetTour);
     }
     /*상품_여행 삭제*/
     public void delete(Long id) {
-        tourRepository.deleteById(id);
+        Tour targetTour = tourRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+        tourRepository.delete(targetTour);
     }
 
 }
