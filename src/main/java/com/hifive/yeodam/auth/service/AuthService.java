@@ -9,6 +9,8 @@ import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class AuthService {
 
     public Auth addAuth(JoinRequest request) {
 
-        if(checkDuplicatedEmail(request.getEmail())) {
+        if (authRepository.existsByEmail(request.getEmail())) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
         }
 
@@ -32,7 +34,9 @@ public class AuthService {
     }
 
     public Auth addAuth(SellerJoinRequest joinRequest) {
-        checkDuplicatedEmail(joinRequest.getEmail());
+        if (authRepository.existsByEmail(joinRequest.getEmail())) {
+            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+        }
 
         Auth auth = Auth.builder()
                 .email(joinRequest.getEmail())
@@ -43,7 +47,13 @@ public class AuthService {
         return authRepository.save(auth);
     }
 
-    public boolean checkDuplicatedEmail(String email) {
+    public void checkDuplicatedEmail(JoinRequest joinRequest, BindingResult result) {
+        if (authRepository.existsByEmail(joinRequest.getEmail())) {
+            result.addError(new FieldError("joinRequest", "email", "이미 존재하는 이메일입니다"));
+        }
+    }
+
+    public boolean checkEmail(String email) {
         return authRepository.existsByEmail(email);
     }
 }
