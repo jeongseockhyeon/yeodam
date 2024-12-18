@@ -210,7 +210,7 @@ class SellerControllerTest {
     void checkEmailDuplicateTest() {
         // given
         String email = "email@email.com";
-        when(authService.isEmailDuplicate(anyString())).thenReturn(true);
+        when(authService.checkEmail(anyString())).thenReturn(true);
 
         // when
         ResponseEntity<Boolean> response = sellerController.checkEmailDuplicate(email);
@@ -218,6 +218,6 @@ class SellerControllerTest {
         // then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody());
-        verify(authService, times(1)).isEmailDuplicate(anyString());
+        verify(authService, times(1)).checkEmail(anyString());
     }
 }
