@@ -49,8 +49,8 @@ public class Order {
     @OneToOne(mappedBy = "order", fetch = LAZY)
     private Payment payment;
 
-    private Order(User user,String bookerName, String bookerPhone,
-                  String message ,List<OrderDetail> orderDetails) {
+    private Order(User user, String bookerName, String bookerPhone,
+                  String message, List<OrderDetail> orderDetails) {
         this.User = user;
         this.status = PENDING;
         this.bookerName = bookerName;
@@ -60,8 +60,8 @@ public class Order {
         setOrderDetails(orderDetails);
     }
 
-    public static Order createOrder(User user,String bookerName, String bookerPhone,
-                                    String message ,List<OrderDetail> orderDetails) {
+    public static Order createOrder(User user, String bookerName, String bookerPhone,
+                                    String message, List<OrderDetail> orderDetails) {
         return new Order(user, bookerName, bookerPhone, message, orderDetails);
     }
 
@@ -87,7 +87,7 @@ public class Order {
                 .sum();
     }
 
-    public String getItemName() {
+    public String getItemSummary() {
 
         StringBuilder sb = new StringBuilder();
         int size = orderDetails.size();
