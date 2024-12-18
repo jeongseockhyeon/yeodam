@@ -24,9 +24,9 @@ public class SellerService {
     // 판매자 등록
     @Transactional(rollbackFor = AuthException.class)
     public Seller createSeller(SellerJoinRequest joinRequest, Auth auth) {
-        if(authRepository.existsByEmail(joinRequest.getEmail())) {
+        if(!authRepository.existsByEmail(joinRequest.getEmail())) {
             throw new AuthException(AuthErrorResult.DUPLICATED_AUTH_JOIN);
-        }
+        } // 올바른 auth 인지 확인
 
         Seller seller = new Seller();
         seller.setAuth(auth);
@@ -62,7 +62,6 @@ public class SellerService {
 
     // 판매자 단일 조회
     public Seller getSellerById(Long id) {
-        return sellerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+        return sellerRepository.findById(id).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
     }
 }

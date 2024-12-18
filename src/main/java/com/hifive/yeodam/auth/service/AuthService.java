@@ -43,4 +43,19 @@ public class AuthService {
 
         return authRepository.save(auth);
     }
+
+    // 로그인
+    public boolean authenticate(String email, String password) {
+        Auth auth = authRepository.findByEmail(email);
+        if (auth.getPassword().equals(password)) {
+            return true;
+        }
+        return false;
+    }
+
+    // 이메일 중복 체크
+    public boolean isEmailDuplicate(String email) {
+        return authRepository.existsByEmail(email);
+    }
+
 }

@@ -39,17 +39,18 @@ class SellerControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(null, "email@email.com", "password", "010-1234-1234");
+        auth = new Auth(null, "email@email.com", "password", "01012341234");
         seller = new Seller(null, auth, "Company", "Owner", "Company Bio");
     }
 
+    // 판매자 등록 성공
     @Test
     void createSellerTest() {
         // given
         SellerJoinRequest joinRequest = new SellerJoinRequest();
         joinRequest.setEmail("email@email.com");
         joinRequest.setPassword("password");
-        joinRequest.setPhone("010-1234-1234");
+        joinRequest.setPhone("01012341234");
         joinRequest.setCompanyName("Company");
         joinRequest.setOwner("Owner");
         joinRequest.setBio("Company Bio");
@@ -58,16 +59,37 @@ class SellerControllerTest {
         when(sellerService.createSeller(any(SellerJoinRequest.class), any(Auth.class))).thenReturn(seller);
 
         // when
-        ResponseEntity<Seller> response = sellerController.createSeller(joinRequest);
+        String viewName = sellerController.createSeller(joinRequest);
 
         // then
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Company", response.getBody().getCompanyName());
+        assertEquals("redirect:/sellers/login", viewName);
         verify(authService, times(1)).addAuth(any(SellerJoinRequest.class));
         verify(sellerService, times(1)).createSeller(any(SellerJoinRequest.class), any(Auth.class));
     }
 
+    // 판매자 등록 실패
+    @Test
+    void createSellerTest_fail_invalidData() {
+        // given
+        SellerJoinRequest joinRequest = new SellerJoinRequest();
+        joinRequest.setEmail("");
+        joinRequest.setPassword("password");
+        joinRequest.setPhone("01012341234");
+        joinRequest.setCompanyName("Company");
+        joinRequest.setOwner("Owner");
+        joinRequest.setBio("Company Bio");
+
+        when(authService.addAuth(any(SellerJoinRequest.class))).thenThrow(new IllegalArgumentException("Invalid email"));
+
+        // when
+        assertThrows(IllegalArgumentException.class, () -> sellerController.createSeller(joinRequest));
+
+        // then
+        verify(authService, times(1)).addAuth(any(SellerJoinRequest.class));
+        verify(sellerService, never()).createSeller(any(SellerJoinRequest.class), any(Auth.class));
+    }
+
+    // 판매자 정보 수정 성공
     @Test
     void updateSellerTest() {
         // given
@@ -91,6 +113,26 @@ class SellerControllerTest {
         verify(sellerService, times(1)).updateSeller(anyLong(), any(SellerUpdateRequest.class));
     }
 
+    // 판매자 정보 수정 실패(해당 판매자 X)
+    @Test
+    void updateSellerTest_fail_notFound() {
+        // given
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest();
+        updateRequest.setCompanyName("Updated Company");
+        updateRequest.setOwner("Updated Owner");
+        updateRequest.setBio("Updated Bio");
+
+        when(sellerService.updateSeller(anyLong(), any(SellerUpdateRequest.class)))
+                .thenThrow(new IllegalArgumentException("Seller not found"));
+
+        // when
+        assertThrows(IllegalArgumentException.class, () -> sellerController.updateSeller(1L, updateRequest));
+
+        // then
+        verify(sellerService, times(1)).updateSeller(anyLong(), any(SellerUpdateRequest.class));
+    }
+
+    // 판매자 삭제 성공
     @Test
     void deleteSellerTest() {
         // given
@@ -104,6 +146,20 @@ class SellerControllerTest {
         verify(sellerService, times(1)).deleteSeller(anyLong());
     }
 
+    // 판매자 삭제 실패
+    @Test
+    void deleteSellerTest_fail_notFound() {
+        // given
+        doThrow(new IllegalArgumentException("Seller not found")).when(sellerService).deleteSeller(anyLong());
+
+        // when
+        assertThrows(IllegalArgumentException.class, () -> sellerController.deleteSeller(1L));
+
+        // then
+        verify(sellerService, times(1)).deleteSeller(anyLong());
+    }
+
+    // 판매자 전체 조회
     @Test
     void getAllSellersTest() {
         // given
@@ -120,6 +176,7 @@ class SellerControllerTest {
         verify(sellerService, times(1)).getAllSellers();
     }
 
+    // 아이디로 판매자 조회
     @Test
     void getSellerByIdTest() {
         // given
@@ -133,5 +190,34 @@ class SellerControllerTest {
         assertNotNull(response.getBody());
         assertEquals("Company", response.getBody().getCompanyName());
         verify(sellerService, times(1)).getSellerById(anyLong());
+    }
+
+    // 아이디로 판매자 조회 실패
+    @Test
+    void getSellerByIdTest_fail_notFound() {
+        // given
+        when(sellerService.getSellerById(anyLong())).thenThrow(new IllegalArgumentException("Seller not found"));
+
+        // when
+        assertThrows(IllegalArgumentException.class, () -> sellerController.getSellerById(1L));
+
+        // then
+        verify(sellerService, times(1)).getSellerById(anyLong());
+    }
+
+    // 이메일 중복 체크
+    @Test
+    void checkEmailDuplicateTest() {
+        // given
+        String email = "email@email.com";
+        when(authService.isEmailDuplicate(anyString())).thenReturn(true);
+
+        // when
+        ResponseEntity<Boolean> response = sellerController.checkEmailDuplicate(email);
+
+        // then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody());
+        verify(authService, times(1)).isEmailDuplicate(anyString());
     }
 }
