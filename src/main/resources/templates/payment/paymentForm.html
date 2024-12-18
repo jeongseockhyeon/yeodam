@@ -72,9 +72,14 @@
     </script>
     <script>
         window.addEventListener("DOMContentLoaded", () => requestPay());
+
+        // 사용자가 그냥 창을 닫을 시 로직
+        window.addEventListener("beforeunload", () => {
+            fetch()
+        })
     </script>
     <meta charset="UTF-8"/>
     <title>Sample Payment</title>
-    <p th:field="${paymentRequest.username}"
+
 </head>
 </html>
