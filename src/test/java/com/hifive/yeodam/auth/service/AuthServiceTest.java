@@ -82,6 +82,18 @@ public class AuthServiceTest {
         assertThat(result.getPassword()).isNotNull();
     }
 
+    @Test
+    public void 중복이메일체크() throws Exception {
+        //given
+        doReturn(true).when(authRepository).existsByEmail(email);
+
+        //when
+        boolean result = target.checkEmail(email);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
     private Auth auth() {
         return Auth.builder()
                 .id(-1L)

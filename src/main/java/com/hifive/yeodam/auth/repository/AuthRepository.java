@@ -3,7 +3,9 @@ package com.hifive.yeodam.auth.repository;
 import com.hifive.yeodam.auth.entity.Auth;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface AuthRepository extends JpaRepository<Auth, Long> {
-    Auth findByEmail(String email);
+    Optional<Auth> findByEmail(String email);
     Boolean existsByEmail(String email);
 }
