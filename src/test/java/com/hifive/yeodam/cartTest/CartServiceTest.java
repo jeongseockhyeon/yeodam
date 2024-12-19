@@ -1,6 +1,5 @@
 package com.hifive.yeodam.cartTest;
 
-import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.cart.dto.CartRequestDto;
 import com.hifive.yeodam.cart.dto.CartResponseDto;
 import com.hifive.yeodam.cart.dto.CartTotalPriceDto;
@@ -19,9 +18,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -52,34 +51,28 @@ class CartServiceTest {
 
     private Tour createTestTour(String itemName, String region, int price, boolean isReservation) {
         Tour tour = Tour.builder()
-                .sellerId(1L)
                 .itemName(itemName)
                 .region(region)
                 .period("1박2일")
                 .description(region + "여행")
                 .price(price)
+                .reservation(isReservation)
                 .build();
 
-        tour.setReservation(isReservation);
         ReflectionTestUtils.setField(tour, "id",1L);
         return tour;
     }
 
     @BeforeEach
     void setUp() {
-        testUser = User.builder()
-                .name("테스트유저")
-                .birthDate(LocalDate.of(2024,12,11))
-                .nickname("테스트닉네임")
-                .gender("M")
-                .auth(new Auth())
-                .build();
+        testUser = new User();
         ReflectionTestUtils.setField(testUser, "id", 1L);
 
         Tour testTour = createTestTour("제주도 여행", "제주도", 100000, true);
-
         testCart = new Cart(testUser, testTour);
         ReflectionTestUtils.setField(testCart, "id",1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
     }
 
 
@@ -88,12 +81,10 @@ class CartServiceTest {
     void addCart_NewItem() {
         // given
         CartRequestDto requestDto = new CartRequestDto(1L, 2);
-
         Tour tour = createTestTour("서울 여행", "서울", 50000, true);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(itemRepository.findById(1L)).thenReturn(Optional.of(tour));
-        when(cartRepository.findByUserAndItem(testUser, tour)).thenReturn(Optional.empty());
+        when(cartRepository.findByUserAndItem(any(User.class), any(Tour.class))).thenReturn(Optional.empty());
         when(cartRepository.save(any(Cart.class))).thenReturn(testCart);
 
         // when
@@ -115,7 +106,7 @@ class CartServiceTest {
         Cart cart = new Cart(testUser, tour);
         cart.setCount(1);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
         when(itemRepository.findById(1L)).thenReturn(Optional.of(tour));
         when(cartRepository.findByUserAndItem(testUser, tour)).thenReturn(Optional.of(cart));
 
