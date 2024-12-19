@@ -62,10 +62,7 @@ public class AuthService {
     public boolean authenticate(String email, String password) {
         Auth auth = authRepository.findByEmail(email);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        if (passwordEncoder.matches(password, auth.getPassword())) {
-            return true;
-        }
-        return false;
+        return passwordEncoder.matches(password, auth.getPassword());
     }
 
     public void checkDuplicatedEmail(JoinRequest joinRequest, BindingResult result) {
