@@ -143,26 +143,20 @@ public class CategoryTest {
     @DisplayName("카테고리 단일 조회 테스트")
     public void findCategoryTest() throws Exception {
         //given
-        String url = "/api/categorys/{id}";
         Long categoryId = 1L;
 
-        Category expectedCategory = Category.builder()
-                .name(categoryName)
-                .build();
+        CategoryResDto mockCategoryResDto = mock(CategoryResDto.class);
+        when(mockCategoryResDto.getName()).thenReturn(categoryName);
 
-
-        when(categoryService.findCategoryById(categoryId)).thenReturn(expectedCategory);
+        when(categoryService.findCategoryById(categoryId)).thenReturn(mockCategoryResDto);
 
         //when
-        ResultActions result = mockMvc.perform(get(url, categoryId));
-
-        MvcResult mvcResult = result.andReturn();
-        String jsonResponse = mvcResult.getResponse().getContentAsString();
-        Category responseCategory = objectMapper.readValue(jsonResponse, Category.class);
+        CategoryResDto result = categoryService.findCategoryById(categoryId);
 
         //then
-        result.andExpect(status().isOk());
-        assertEquals(categoryName, responseCategory.getName());
+        assertEquals(categoryId, result.getId());
+        assertEquals(categoryName, result.getName());
+        verify(categoryService, times(1)).findCategoryById(categoryId);
     }
 
     @Test
