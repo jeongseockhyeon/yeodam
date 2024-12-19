@@ -23,7 +23,7 @@ public class JoinRequest {
 
     @NotBlank
     @Size(min = 8, max = 16, message = "8자 이상 16자 이하로 작성해 주세요")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,15}$"
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,16}$"
             , message = "영대소문자, 특수문자, 숫자를 포함해주세요")
     private String password;
 
