@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.category.dto.CategoryReqDto;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
+import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.category.service.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +39,8 @@ public class IntegrationCategoryTest {
 
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @BeforeEach
     public void setMockMvc(){
@@ -82,7 +85,6 @@ public class IntegrationCategoryTest {
         ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
         List<CategoryResDto> categories = categoryService.findAllCategory();
         CategoryResDto category = categories.getLast();
-        Category parentCategory = categoryService.findCategoryById(parentId);
 
         //then
         result.andExpect(status().isCreated());
