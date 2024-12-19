@@ -29,7 +29,7 @@ public class CategoryApiController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResDto> getCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.findCategoryById(id));
     }
 
