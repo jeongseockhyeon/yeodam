@@ -121,7 +121,7 @@ public class UserControllerTest {
         String url = "/api/users";
 
         Auth auth = Auth.builder()
-                .id(-1L).email(email).password(password).phone(phone)
+                .id(-1L).email(email).password(password)
                 .build();
 
         doReturn(auth).when(authService).addAuth(any(JoinRequest.class));
@@ -147,7 +147,7 @@ public class UserControllerTest {
         String url = "/api/users";
 
         Auth auth = Auth.builder()
-                .id(-1L).email(email).password(password).phone(phone)
+                .id(-1L).email(email).password(password)
                 .build();
 
         User user = User.builder()

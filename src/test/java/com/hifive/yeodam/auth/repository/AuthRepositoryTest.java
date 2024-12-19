@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -27,7 +26,6 @@ class AuthRepositoryTest {
         Auth auth = Auth.builder()
                 .email(email)
                 .password(password)
-                .phone(phone)
                 .build();
 
         //when
@@ -37,7 +35,6 @@ class AuthRepositoryTest {
         assertThat(result.getId()).isNotNull();
         assertThat(result.getEmail()).isEqualTo(email);
         assertThat(result.getPassword()).isEqualTo(password);
-        assertThat(result.getPhone()).isEqualTo(phone);
     }
     
     @Test
@@ -46,7 +43,6 @@ class AuthRepositoryTest {
         Auth auth = Auth.builder()
                 .email(email)
                 .password(password)
-                .phone(phone)
                 .build();
         
         //when
@@ -57,23 +53,4 @@ class AuthRepositoryTest {
         assertThat(result).isTrue();
     }
 
-//    @Test
-//    public void 비밀번호암호화저장() throws Exception{
-//        //given
-//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-//        String encryptedPwd = passwordEncoder.encode(password);
-//
-//        Auth auth = Auth.builder()
-//                .id(-1L)
-//                .email(email)
-//                .password(encryptedPwd)
-//                .phone(phone)
-//                .build();
-//
-//        //when
-//        Auth result = authRepository.save(auth);
-//
-//        //then
-//        assertThat(passwordEncoder.matches(password, result.getPassword())).isTrue();
-//    }
 }

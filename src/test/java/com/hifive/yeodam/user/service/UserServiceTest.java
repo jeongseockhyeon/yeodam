@@ -197,7 +197,6 @@ public class UserServiceTest {
                 .id(-1L)
                 .email(email)
                 .password(password)
-                .phone(phone)
                 .build();
     }
 

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>유저 회원가입</title>
+
+    <style>
+        .error-message {
+            color: red;
+            font-size: 12px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<form th:action="@{/users/join}" method="post" th:object="${joinRequest}">
+
+    <a th:href="@{/}" ><img th:src="@{/image/logo.png}" alt="로고" width="72" height="54"></a>
+    <h1>유저 회원가입</h1>
+    <hr>
+
+    <label th:for="userEmail">이메일</label>
+    <div>
+        <input type="email" id="userEmail" th:field="*{email}" placeholder="이메일을 입력해주세요" maxlength="50" required />
+        <input type="button" onclick="emailCheck()" value="중복체크" />
+        <div id="email-check-result"></div>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message">이메일 오류</div>
+    </div>
+
+    <label for="password">비밀번호</label>
+    <div>
+        <input type="password" id="password" onkeyup="passwordCheck();" th:field="*{password}" placeholder="비밀번호를 입력해주세요" minlength="8" maxlength="16" required />
+        <span id="password-success" style="display: none;">✅</span>
+        <div id="password-check-result"></div>
+        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message">비밀번호 오류</div>
+    </div>
+
+    <label for="rePassword">비밀번호 확인</label>
+    <div>
+        <input type="password" id="rePassword" onkeyup="rePasswordCheck();" placeholder="비밀번호 확인" minlength="8" maxlength="16" required />
+        <span id="rePassword-success" style="display: none;">✅</span>
+    </div>
+
+    <label th:for="name">이름</label>
+    <div>
+        <input type="text" th:field="*{name}" placeholder="이름" maxlength="25" required />
+        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message">이름 오류</div>
+    </div>
+
+    <label for="nickname">닉네임</label>
+    <div>
+        <input type="text" id="nickname" th:field="*{nickname}" placeholder="닉네임을 입력해주세요" maxlength="25" required />
+        <input type="button" onclick="nicknameCheck()" value="중복체크" />
+        <div id="nickname-check-result"></div>
+        <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="error-message">닉네임 오류</div>
+    </div>
+
+    <label th:for="phone">전화번호</label>
+    <div>
+        <input type="tel" th:field="*{phone}" placeholder="전화번호를 입력해주세요" maxlength="11" required />
+        <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="error-message">전화번호 오류</div>
+    </div>
+
+    <div>
+        <input type="date" name="birthDate">
+    </div>
+
+    <div>
+        <input type="radio" id="male" name="gender" value="M">
+        <label for="male">남</label>
+        <input type="radio" id="female" name="gender" value="F">
+        <label for="female">여</label>
+    </div>
+
+    <input type="submit" value="회원가입" />
+</form>
+
+<script th:inline="javascript">
+    const emailCheck = async () => {
+        const email = document.getElementById("userEmail").value;
+        const checkResult = document.getElementById("email-check-result");
+
+        if (email === "") {
+            checkResult.style.color = "red";
+            checkResult.innerHTML = "이메일을 입력해주세요";
+            document.getElementById("userEmail").focus();
+            return false;
+        }
+
+        try {
+            const response = await fetch("/users/email-check", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(email)
+            });
+
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+
+            const res = await response.text();
+
+            if (res === "ok") {
+                checkResult.style.color = "green";
+                checkResult.innerHTML = "사용가능한 이메일입니다";
+            } else if (res === "duplicated") {
+                checkResult.style.color = "red";
+                checkResult.innerHTML = "이미 사용 중입니다";
+            } else if (res === "invalid") {
+                checkResult.style.color = "red";
+                checkResult.innerHTML = "이메일 형식이 올바르지 않습니다";
+            }
+        } catch (error) {
+            checkResult.style.color = "red";
+            checkResult.innerHTML = "서버 오류 발생";
+        }
+    }
+
+    const passwordCheck = async () => {
+        const password = document.getElementById("password").value;
+        const checkResult = document.getElementById("password-check-result");
+        const pwdSuccess = document.getElementById("password-success");
+
+        try {
+            const response = await fetch("/users/password-check", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(password)
+            });
+
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+
+            const res = await response.text();
+
+            if (res === "ok") {
+                pwdSuccess.style.display = "inline-block";
+                checkResult.innerHTML = "";
+            } else {
+                pwdSuccess.style.display = "none";
+                checkResult.style.color = "red";
+                checkResult.innerHTML = "영대소문자, 특수문자, 숫자를 포함해주세요";
+            }
+        } catch (error) {
+            checkResult.style.color = "red";
+            checkResult.innerHTML = "서버 오류 발생";
+        }
+    }
+
+    const rePasswordCheck = () => {
+
+        const rePassword = document.getElementById("rePassword").value;
+        const rePwdSuccess = document.getElementById("rePassword-success");
+
+        if (rePassword === document.getElementById("password").value) {
+            rePwdSuccess.style.display = "inline-block";
+        } else {
+            rePwdSuccess.style.display = "none";
+        }
+    }
+
+    const nicknameCheck = async () => {
+        const nickname = document.getElementById("nickname").value;
+        const checkResult = document.getElementById("nickname-check-result");
+
+        if (nickname === "") {
+            checkResult.style.color = "red";
+            checkResult.innerHTML = "닉네임을 입력해주세요";
+            document.getElementById("nickname").focus();
+            return false;
+        }
+
+        try {
+            const response = await fetch("/users/nickname-check", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nickname)
+            });
+
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+
+            const res = await response.text();
+
+            if (res === "ok") {
+                checkResult.style.color = "green";
+                checkResult.innerHTML = "사용가능한 닉네임입니다";
+            } else {
+                checkResult.style.color = "red";
+                checkResult.innerHTML = "이미 사용 중입니다";
+            }
+        } catch (error) {
+            checkResult.style.color = "red";
+            checkResult.innerHTML = "서버 오류 발생";
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const invalidInput = document.querySelector('.is-invalid');
+        if (invalidInput) {
+            invalidInput.focus();
+        }
+    });
+</script>
+
+</body>
+</html>

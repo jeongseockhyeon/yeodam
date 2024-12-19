@@ -1,7 +1,10 @@
 package com.hifive.yeodam.auth.service;
 
+import com.hifive.yeodam.auth.entity.Role;
+import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
+import com.hifive.yeodam.auth.repository.RoleRepository;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
@@ -11,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -28,6 +33,12 @@ public class AuthServiceTest {
 
     @Mock
     private AuthRepository authRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     private static final String email = "emailName@domain.com";
     private static final String password = "1234";
@@ -52,7 +63,15 @@ public class AuthServiceTest {
     @Test
     public void 인증등록성공() throws Exception{
         //given
-        doReturn(auth()).when(authRepository).save(any(Auth.class));
+        doReturn("encryptedPwd").when(passwordEncoder).encode(password);
+
+        doReturn(Auth.builder()
+                .id(-1L)
+                .email(email)
+                .password("encryptedPwd")
+                .build()).when(authRepository).save(any(Auth.class));
+
+        doReturn(new Role(auth(), RoleType.USER)).when(roleRepository).save(any(Role.class));
 
         //when
         Auth result = target.addAuth(new JoinRequest(email, password, name, nickname, phone, birthDate, "M"));
@@ -60,8 +79,7 @@ public class AuthServiceTest {
         //then
         assertThat(result.getId()).isNotNull();
         assertThat(result.getEmail()).isEqualTo(email);
-        assertThat(result.getPassword()).isEqualTo(password);
-        assertThat(result.getPhone()).isEqualTo(phone);
+        assertThat(result.getPassword()).isNotNull();
     }
 
     private Auth auth() {
@@ -69,7 +87,6 @@ public class AuthServiceTest {
                 .id(-1L)
                 .email(email)
                 .password(password)
-                .phone(phone)
                 .build();
     }
 }
