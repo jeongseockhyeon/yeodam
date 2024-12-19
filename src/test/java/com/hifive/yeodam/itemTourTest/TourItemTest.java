@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import com.hifive.yeodam.tour.entity.Tour;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.MediaType;
@@ -189,8 +190,7 @@ public class TourItemTest {
     @DisplayName("카테고리 필터링 테스트")
     public void itemTourSearchFilterTest() throws Exception {
         // Given
-        SearchFilterDto filter = new SearchFilterDto();
-        filter.setCategory("레저");
+        SearchFilterDto filter = new SearchFilterDto("레저","","","");
 
         // When
         List<Tour> results = tourRepositoryCustom.searchByFilter(filter);

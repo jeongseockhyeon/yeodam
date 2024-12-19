@@ -32,8 +32,15 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (hasText(searchFilterDto.getCategory())) {
             builder.and(category.name.eq(searchFilterDto.getCategory()));
         }
-
-
+        if (hasText(searchFilterDto.getRegion())){
+            builder.and(tour.region.eq(searchFilterDto.getRegion()));
+        }
+        if (hasText(searchFilterDto.getKeyword())){
+            builder.and(tour.itemName.containsIgnoreCase(searchFilterDto.getKeyword()));
+        }
+        if (hasText(searchFilterDto.getPeriod())){
+            builder.and(tour.period.eq(searchFilterDto.getPeriod()));
+        }
         return jpaQueryFactory.select(tour)
                 .from(tour)
                 .leftJoin(tour.tourCategories, tourCategory)
