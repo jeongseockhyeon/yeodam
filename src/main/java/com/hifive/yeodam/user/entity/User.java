@@ -29,6 +29,8 @@ public class User {
 
     private String gender;
 
+    private String phone;
+
     @ManyToOne
     @JoinColumn(name = "auth_id")
     private Auth auth;
