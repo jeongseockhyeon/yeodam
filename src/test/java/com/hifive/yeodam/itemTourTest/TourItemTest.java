@@ -1,6 +1,7 @@
 package com.hifive.yeodam.itemTourTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.tour.controller.TourItemAPIController;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import com.hifive.yeodam.tour.entity.Tour;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.MediaType;
@@ -188,15 +190,109 @@ public class TourItemTest {
     @Test
     @DisplayName("카테고리 필터링 테스트")
     public void itemTourSearchFilterTest() throws Exception {
-        // Given
-        SearchFilterDto filter = new SearchFilterDto();
-        filter.setCategory("레저");
+        // given
+        List<TourItemResDto> mockTourList = new ArrayList<>();
 
-        // When
-        List<Tour> results = tourRepositoryCustom.searchByFilter(filter);
+        // 카테고리 응답 dto 모킹
+        CategoryResDto categoryResDtoMock = mock(CategoryResDto.class);
+        when(categoryResDtoMock.getName()).thenReturn("액티비티");
 
-        // Then
+        List<CategoryResDto> categoryResDtoListMock = new ArrayList<>();
+        categoryResDtoListMock.add(categoryResDtoMock);
+
+        // 여행상품 응답 dto 모킹
+        TourItemResDto resMock = mock(TourItemResDto.class);
+        when(resMock.getCategoryResDtoList()).thenReturn(categoryResDtoListMock);
+
+        mockTourList.add(resMock);
+
+        // filter 모킹
+        SearchFilterDto filterMock = mock(SearchFilterDto.class);
+        when(filterMock.getCategory()).thenReturn("액티비티");
+
+        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+
+        // when
+        List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
+
+        // then
         assertThat(results).hasSize(1);
+        assertEquals("액티비티", results.get(0).getCategoryResDtoList().get(0).getName());
+        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+    }
+
+    @Test
+    @DisplayName("키워드 필터링 테스트")
+    public void itemTourSearchFilterKeywordTest() throws Exception {
+        //given
+        List<TourItemResDto> mockTourList = new ArrayList<>();
+
+        TourItemResDto resMock = mock(TourItemResDto.class);
+        when(resMock.getTourName()).thenReturn("제주도");
+
+        mockTourList.add(resMock);
+
+        SearchFilterDto filterMock = mock(SearchFilterDto.class);
+        when(filterMock.getKeyword()).thenReturn("제주");
+
+        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+
+        // when
+        List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
+
+        //then
+        assertThat(results).hasSize(1);
+        assertEquals("제주도",results.get(0).getTourName());
+        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+    }
+
+    @Test
+    @DisplayName("지역 필터링 테스트")
+    public void itemTourSearchFilterRegionTest() throws Exception {
+        //given
+        List<TourItemResDto> mockTourList = new ArrayList<>();
+
+        TourItemResDto resMock = mock(TourItemResDto.class);
+        when(resMock.getTourRegion()).thenReturn("제주");
+        mockTourList.add(resMock);
+
+        SearchFilterDto filterMock = mock(SearchFilterDto.class);
+        when(filterMock.getRegion()).thenReturn("제주");
+
+        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+
+        //when
+        List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
+
+        //then
+        assertThat(results).hasSize(1);
+        assertEquals("제주",results.get(0).getTourRegion());
+        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+
+    }
+
+    @Test
+    @DisplayName("기간 필터링 테스트")
+    public void itemTourSearchFilterPeriodTest() throws Exception {
+        //given
+        List<TourItemResDto> mockTourList = new ArrayList<>();
+        TourItemResDto resMock = mock(TourItemResDto.class);
+        when(resMock.getTourPeriod()).thenReturn("1일");
+        mockTourList.add(resMock);
+
+        SearchFilterDto filterMock = mock(SearchFilterDto.class);
+        when(filterMock.getPeriod()).thenReturn("1일");
+
+        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+
+        //when
+        List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
+
+        //then
+        assertThat(results).hasSize(1);
+        assertEquals("1일",results.get(0).getTourPeriod());
+        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+
     }
 
     @Test

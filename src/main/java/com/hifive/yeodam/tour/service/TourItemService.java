@@ -55,7 +55,6 @@ public class TourItemService {
                 .maximum(tourItemReqDto.getMaximum())
                 .stock(tourStock)
                 .reservation(reservation)
-
                 .build();
 
         Tour savedTour = tourRepository.save(tourItem);

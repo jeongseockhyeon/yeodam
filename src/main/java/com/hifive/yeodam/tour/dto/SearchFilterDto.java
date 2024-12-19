@@ -1,17 +1,23 @@
 package com.hifive.yeodam.tour.dto;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class SearchFilterDto {
 
-    private String keyword;
+    private final String category;
 
-    private String region;
+    private final String keyword;
 
-    private String period;
+    private final String region;
 
-    private String category;
+    private final String period;
+
+    public SearchFilterDto(String category, String keyword, String region, String period) {
+
+        this.category = category;
+        this.keyword = keyword;
+        this.region = region;
+        this.period = period;
+    }
 }
