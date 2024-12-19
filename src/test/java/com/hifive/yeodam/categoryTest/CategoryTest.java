@@ -143,7 +143,6 @@ public class CategoryTest {
     @DisplayName("카테고리 단일 조회 테스트")
     public void findCategoryTest() throws Exception {
         //given
-        String url = "/api/categorys/{id}";
         Long categoryId = 1L;
 
         CategoryResDto mockCategoryResDto = mock(CategoryResDto.class);
