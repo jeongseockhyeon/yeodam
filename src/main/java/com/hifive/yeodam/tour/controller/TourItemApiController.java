@@ -16,7 +16,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/api/tours")
 @Slf4j
 @RestController
-public class TourItemAPIController {
+public class TourItemApiController {
     private final TourItemService tourItemService;
 
     @PostMapping
