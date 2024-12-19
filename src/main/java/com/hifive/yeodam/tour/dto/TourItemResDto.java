@@ -24,7 +24,7 @@ public class TourItemResDto {
     private int maximum;
 
     private List<CategoryResDto> categoryResDtoList = new ArrayList<>();
-    private List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>(); //GuideResDto로 바꿀 거
+    private List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
 
     public TourItemResDto(Tour tour) {
         this.tourName = tour.getItemName();

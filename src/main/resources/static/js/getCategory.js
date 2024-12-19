@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const categoryCheckBox = document.getElementById("categoryCheckBox");
 
     //DB 내 카테고리
-    fetch("/api/categorys")
+    fetch("/api/categories")
         .then(response => response.json())
         .then(categories => {
             categories.forEach(category => {

@@ -6,7 +6,6 @@ import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/tours")
-@Slf4j
 @RestController
 public class TourItemApiController {
     private final TourItemService tourItemService;
@@ -26,10 +24,6 @@ public class TourItemApiController {
 
     @GetMapping
     public ResponseEntity<?> findAll(@ModelAttribute SearchFilterDto searchFilterDto) {
-/*        if(searchFilterDto != null){
-            return ResponseEntity.ok(tourItemService.getSearchFilterTour(searchFilterDto));
-        }*/
-        log.info("searchFilterDto: {}", searchFilterDto.getCategory());
         return ResponseEntity.ok(tourItemService.getSearchFilterTour(searchFilterDto));
     }
 
