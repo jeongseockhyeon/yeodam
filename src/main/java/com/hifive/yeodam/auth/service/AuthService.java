@@ -11,6 +11,7 @@ import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class AuthService {
         return authRepository.save(auth);
     }
 
+    @Transactional
     public Auth addAuth(SellerJoinRequest joinRequest) {
         if (authRepository.existsByEmail(joinRequest.getEmail())) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
@@ -50,7 +52,7 @@ public class AuthService {
 
         Auth auth = Auth.builder()
                 .email(joinRequest.getEmail())
-                .password(joinRequest.getPassword())
+                .password(passwordEncoder.encode(joinRequest.getPassword()))
                 .build();
 
         return authRepository.save(auth);
@@ -59,7 +61,8 @@ public class AuthService {
     // 로그인
     public boolean authenticate(String email, String password) {
         Auth auth = authRepository.findByEmail(email);
-        if (auth.getPassword().equals(password)) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if (passwordEncoder.matches(password, auth.getPassword())) {
             return true;
         }
         return false;
