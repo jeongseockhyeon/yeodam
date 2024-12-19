@@ -35,6 +35,7 @@ public class UserService {
                 .birthDate(request.getBirthDate())
                 .nickname(request.getNickname())
                 .gender(request.getGender())
+                .phone(request.getPhone())
                 .auth(auth)
                 .build();
 

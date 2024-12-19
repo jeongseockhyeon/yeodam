@@ -1,14 +1,19 @@
 package com.hifive.yeodam.auth.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.entity.Role;
+import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.auth.repository.RoleRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
@@ -17,7 +22,10 @@ import org.springframework.validation.FieldError;
 public class AuthService {
 
     private final AuthRepository authRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
+    @Transactional
     public Auth addAuth(JoinRequest request) {
 
         if (authRepository.existsByEmail(request.getEmail())) {
@@ -26,9 +34,11 @@ public class AuthService {
 
         Auth auth = Auth.builder()
                 .email(request.getEmail())
-                .password(request.getPassword())
-                .phone(request.getPhone())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build();
+
+        Role role = new Role(auth, RoleType.USER);
+        roleRepository.save(role);
 
         return authRepository.save(auth);
     }
@@ -41,7 +51,6 @@ public class AuthService {
         Auth auth = Auth.builder()
                 .email(joinRequest.getEmail())
                 .password(joinRequest.getPassword())
-                .phone(joinRequest.getPhone())
                 .build();
 
         return authRepository.save(auth);

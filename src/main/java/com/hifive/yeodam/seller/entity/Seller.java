@@ -25,4 +25,5 @@ public class Seller {
     private String companyName;
     private String owner;
     private String bio;
+    private String phone;
 }
