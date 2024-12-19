@@ -1,9 +1,12 @@
 package com.hifive.yeodam.tour.service;
 
 import com.hifive.yeodam.category.entity.Category;
-import com.hifive.yeodam.category.service.CategoryService;
+import com.hifive.yeodam.category.repository.CategoryRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
+import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
@@ -31,13 +34,13 @@ public class TourItemService {
     private final TourRepository tourRepository;
     private final TourCategoryRepository tourCategoryRepository;
     private final TourGuideRepository tourGuideRepository;
-    private final CategoryService categoryService;
     private final GuideService guideService;
     private final SellerService sellerService;
 
     private final static int tourStock = 1;
     private final static boolean reservation = true;
-
+    private final CategoryRepository categoryRepository;
+    private final GuideRepository guideRepository;
 
 
     /*상품_여행 등록*/
@@ -62,7 +65,8 @@ public class TourItemService {
         /*여행_카테고리 저장*/
         if(tourItemReqDto.getCategoryIdList() != null ) {
             for(Long categoryId : tourItemReqDto.getCategoryIdList()){
-                Category category = categoryService.findCategoryById(categoryId);
+                Category category = categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
                 TourCategory tourCategory = TourCategory.builder()
                         .tour(tourItem)
                         .category(category)
@@ -109,20 +113,21 @@ public class TourItemService {
     /*상품_여행 단일 조회*/
     public TourItemResDto findById(Long id) {
         Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
         return new TourItemResDto(tour);
     }
 
     /*상품_여행 수정*/
     public TourItemResDto update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
         Tour targetTour = tourRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
         targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getPrice());
         targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(), tourItemUpdateReqDto.getDescription());
 
         if(tourItemUpdateReqDto.getAddCategoryIds() != null){
             for(Long categoryId : tourItemUpdateReqDto.getAddCategoryIds()){
-                Category category = categoryService.findCategoryById(categoryId);
+                Category category = categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));//예외처리 추가
                 TourCategory addTourCategory = TourCategory.builder()
                                 .tour(targetTour)
                                 .category(category)
@@ -138,7 +143,8 @@ public class TourItemService {
         }
         if(tourItemUpdateReqDto.getAddGuideIds() != null){
             for(Long guideId : tourItemUpdateReqDto.getAddGuideIds()){
-                Guide guide = guideService.getGuideById(guideId);
+                Guide guide = guideRepository.findById(guideId)
+                        .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
                 TourGuide addTourGuide = TourGuide.builder()
                         .guide(guide)
                         .tour(targetTour)
@@ -148,7 +154,8 @@ public class TourItemService {
         }
         if(tourItemUpdateReqDto.getRemoveGuideIds() != null){
             for(Long guideId : tourItemUpdateReqDto.getRemoveGuideIds()){
-                Guide guide = guideService.getGuideById(guideId);
+                Guide guide = guideRepository.findById(guideId)
+                        .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
                 tourGuideRepository.deleteByGuide(guide);
             }
         }
@@ -158,7 +165,7 @@ public class TourItemService {
     /*상품_여행 삭제*/
     public void delete(Long id) {
         Tour targetTour = tourRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("해당 여행을 찾을 수 없습니다"));
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
         tourRepository.delete(targetTour);
     }
 

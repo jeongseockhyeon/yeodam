@@ -4,6 +4,8 @@ import com.hifive.yeodam.category.dto.CategoryReqDto;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,15 +50,16 @@ public class CategoryService {
         return categoryResDtoList;
     }
     /*카테고리 단일 조회*/
-    public Category findCategoryById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 카테고리는 존재하지 않습니다."));
+    public CategoryResDto findCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
+        return new CategoryResDto(category);
     }
     /*카테고리 수정*/
     public Category updateCategory(Long id, CategoryReqDto categoryReqDto) {
 
         Category targetCategory = categoryRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("해당 카테고리는 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
 
         targetCategory.updateCategory(categoryReqDto.getCategoryName());
         return categoryRepository.save(targetCategory);
