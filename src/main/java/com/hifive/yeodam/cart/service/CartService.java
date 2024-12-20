@@ -38,8 +38,11 @@ public class CartService {
             return null;
         }
 
-        return userRepository.findById(1L) //인증 구현 후 수정 예정
-                .orElse(null);
+        //로그인 사용자 정보 가져오기
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
     }
 
@@ -60,7 +63,7 @@ public class CartService {
         }
 
         for (LocalStorageCartDto localItem : localStorageCart) {
-            CartRequestDto requestDto = new CartRequestDto(localItem.getItemId(), localItem.getCount());
+            CartRequestDto requestDto = new CartRequestDto(localItem.getItemId(), localItem.getCount(), localItem.isReservation());
             try {
                 addCart(requestDto);
             } catch (Exception e) {
@@ -125,8 +128,11 @@ public class CartService {
     }
 
     public CartTotalPriceDto getTotalPrice() {
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        User user = getCurrentUser();
+        if (user == null) {
+            //로컬 스토리지 이용
+            return new CartTotalPriceDto(0);
+        }
 
         int totalPrice = cartRepository.findByUser(user).stream()
                 .mapToInt(Cart::getPrice)
@@ -135,8 +141,11 @@ public class CartService {
     }
 
     public CartTotalPriceDto getSelectedPrice(List<Long> cartIds) {
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        User user = getCurrentUser();
+        if (user == null) {
+            //로컬 스토리지 이용
+            return new CartTotalPriceDto(0);
+        }
 
         int selectedPrice = cartRepository.findByUser(user).stream()
                 .filter(cart -> cartIds.contains(cart.getId()))
