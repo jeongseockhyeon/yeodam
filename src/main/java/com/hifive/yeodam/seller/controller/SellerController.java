@@ -36,7 +36,7 @@ public class SellerController {
         Auth auth = authService.addAuth(joinRequest);
         Seller savedSeller = sellerService.createSeller(joinRequest, auth);
 
-        return "redirect:/sellers/login";
+        return "redirect:/login";
     }
 
     // 이메일 중복 체크
@@ -45,15 +45,6 @@ public class SellerController {
     public ResponseEntity<Boolean> checkEmailDuplicate(@RequestParam String email) {
         boolean isDuplicate = authService.checkEmail(email);
         return ResponseEntity.ok(isDuplicate);
-    }
-
-    // 로그인 페이지 보기
-    @GetMapping("/login")
-    public String showLoginPage(@RequestParam(value = "error", required = false) String error, Model model) {
-        if (error != null) {
-            model.addAttribute("errorMessage", "Invalid email or password. Please try again.");
-        }
-        return "seller/sellerLogin";
     }
 
     // 판매자 정보 수정
