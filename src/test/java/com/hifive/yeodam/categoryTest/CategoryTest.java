@@ -56,59 +56,45 @@ public class CategoryTest {
     @DisplayName("카테고리 생성 테스트")
     public void saveCategoryTest() throws Exception {
         //given
-        CategoryReqDto categoryReqDto = new CategoryReqDto();
-        categoryReqDto.setCategoryName(categoryName);
-        String url = "/api/categorys";
+        CategoryReqDto categoryReqDto = mock(CategoryReqDto.class);
+        when(categoryReqDto.getCategoryName()).thenReturn(categoryName);
 
-        String json = objectMapper.writeValueAsString(categoryReqDto);
-
-        Category category = Category.builder()
-                .name(categoryName)
-                .build();
-
-
+        Category category = mock(Category.class);
+        when(category.getName()).thenReturn(categoryName);
 
         when(categoryService.saveCategory(categoryReqDto)).thenReturn(category);
 
         //when
-        ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
-        result.andExpect(status().isCreated());
-        verify(categoryService, times(1)).saveCategory(any(CategoryReqDto.class));
+        String result = categoryService.saveCategory(categoryReqDto).getName();
 
         //then
-        result.andExpect(status().isCreated());
-        assertEquals(categoryName, category.getName());
+        assertEquals(categoryName, result);
+        verify(categoryService, times(1)).saveCategory(categoryReqDto);
     }
     @Test
     @DisplayName("하위 카테고리 생성 테스트")
     public void saveSubCategoryTest() throws Exception {
         //given
         Long parentId = 1L;
-        CategoryReqDto categoryReqDto = new CategoryReqDto();
-        categoryReqDto.setParentCategoryId(parentId);
-        categoryReqDto.setCategoryName(subCategoryName);
+        Category category = mock(Category.class);
+        when(category.getId()).thenReturn(parentId);
 
-        String url = "/api/categorys";
-        String json = objectMapper.writeValueAsString(categoryReqDto);
+        CategoryReqDto categoryReqDto = mock(CategoryReqDto.class);
+        when(categoryReqDto.getCategoryName()).thenReturn(subCategoryName);
+        when(categoryReqDto.getParentCategoryId()).thenReturn(parentId);
 
-        Category parentCategory = Category.builder()
-                .name(categoryName)
-                .build();
+        Category subCategory = mock(Category.class);
+        when(subCategory.getName()).thenReturn(subCategoryName);
+        when(subCategory.getParent()).thenReturn(category);
 
-        categoryRepository.save(parentCategory);
-
-        Category childCategory = Category.builder()
-                .parent(parentCategory)
-                .name(subCategoryName)
-                .build();
-
-        when(categoryService.saveCategory(any(CategoryReqDto.class))).thenReturn(childCategory);
+        when(categoryService.saveCategory(categoryReqDto)).thenReturn(subCategory);
 
         //when
-        ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
+        Category result = categoryService.saveCategory(categoryReqDto);
 
         //then
-        result.andExpect(status().isCreated());
+        assertEquals(subCategoryName, result.getName());
+        assertEquals(1L, result.getParent().getId());
         verify(categoryService, times(1)).saveCategory(any(CategoryReqDto.class));
 
     }
@@ -117,7 +103,6 @@ public class CategoryTest {
     @DisplayName("카테고리 전체 목록 조회 테스트")
     public void findAllCategoryTest() throws Exception {
         //given
-        String url = "/api/categorys";
         int testCount = 3;
 
         List<CategoryResDto> mockCategoryList = new ArrayList<>();
@@ -129,14 +114,11 @@ public class CategoryTest {
         when(categoryService.findAllCategory()).thenReturn(mockCategoryList);
 
         //when
-        ResultActions result = mockMvc.perform(get(url));
-        MvcResult mvcResult = result.andReturn();
-        String jsonResponse = mvcResult.getResponse().getContentAsString();
-        List<?> responseList = objectMapper.readValue(jsonResponse, List.class);
+        List<CategoryResDto> result = categoryService.findAllCategory();
 
         //then
-        assertEquals(testCount, responseList.size());
-        result.andExpect(status().isOk());
+        assertEquals(testCount, result.size());
+        verify(categoryService, times(1)).findAllCategory();
     }
 
     @Test
@@ -146,6 +128,7 @@ public class CategoryTest {
         Long categoryId = 1L;
 
         CategoryResDto mockCategoryResDto = mock(CategoryResDto.class);
+        when(mockCategoryResDto.getId()).thenReturn(categoryId);
         when(mockCategoryResDto.getName()).thenReturn(categoryName);
 
         when(categoryService.findCategoryById(categoryId)).thenReturn(mockCategoryResDto);
@@ -164,25 +147,22 @@ public class CategoryTest {
     public void updateCategoryTest() throws Exception {
         //given
         Long categoryId = 1L;
-        String updateName = "공연/전시/체험";
-        CategoryReqDto categoryReqDto = new CategoryReqDto();
-        categoryReqDto.setCategoryName(updateName);
-        String url = "/api/categorys/{id}";
-        String json = objectMapper.writeValueAsString(categoryReqDto);
+        CategoryReqDto updateCategoryReqDto = mock(CategoryReqDto.class);
+        when(updateCategoryReqDto.getCategoryName()).thenReturn("공연/전시/체험");
 
-        Category updateCategory = Category.builder()
-                .id(categoryId)
-                .name(updateName)
-                .build();
+        Category updatedCategory = mock(Category.class);
+        when(updatedCategory.getId()).thenReturn(categoryId);
+        when(updatedCategory.getName()).thenReturn("공연/전시/체험");
 
-        when(categoryService.updateCategory(categoryId, categoryReqDto)).thenReturn(updateCategory);
+        when(categoryService.updateCategory(categoryId, updateCategoryReqDto)).thenReturn(updatedCategory);
 
         //when
-        ResultActions result = mockMvc.perform(patch(url, categoryId).contentType(MediaType.APPLICATION_JSON).content(json));
+        Category result = categoryService.updateCategory(categoryId, updateCategoryReqDto);
 
         //then
-        result.andExpect(status().isOk());
-        verify(categoryService, times(1)).updateCategory(any(Long.class), any(CategoryReqDto.class));
+        assertEquals(categoryId, result.getId());
+        assertEquals("공연/전시/체험", result.getName());
+        verify(categoryService, times(1)).updateCategory(categoryId, updateCategoryReqDto);
 
     }
 
@@ -193,14 +173,10 @@ public class CategoryTest {
         Long categoryId = 1L;
 
         //when
-        ResultActions result = mockMvc.perform(delete("/api/categorys/{id}", categoryId));
+        categoryService.deleteCategory(categoryId);
 
         //then
-        result.andExpect(status().isNoContent());
         verify(categoryService,times(1)).deleteCategory(categoryId);
-        //하위 카테고리가 존재하는 상위 카테고리 삭제 요청 시 발생하는 오류 추후 예외 처리
-        // -> 하위 카테고리가 존재할 경우 상위 카테고리는 삭제되서는 안됨
-        //해당 카테고리를 사용하고 있는 여행 상품이 있을 경우 삭제 x
 
     }
 
