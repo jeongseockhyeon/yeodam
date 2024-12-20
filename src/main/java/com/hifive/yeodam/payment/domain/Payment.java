@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.hifive.yeodam.global.constant.PaymentConst.PAYMENT_UID_BEFORE_PAYMENT;
 import static com.hifive.yeodam.payment.domain.PaymentStatus.*;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
@@ -37,6 +38,7 @@ public class Payment {
     private Payment(int price, Order order) {
         this.price = price;
         this.status = PENDING;
+        this.paymentUid = PAYMENT_UID_BEFORE_PAYMENT;
         setOrder(order);
     }
 
@@ -60,6 +62,6 @@ public class Payment {
     }
 
     public void cancel() {
-        this.status = CANCELLED;
+        this.status = CANCELED;
     }
 }
