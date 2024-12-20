@@ -54,7 +54,7 @@ public class IntegrationCategoryTest {
         String categoryName = "액티비티";
         CategoryReqDto categoryReqDto = new CategoryReqDto();
         categoryReqDto.setCategoryName(categoryName);
-        String url = "/api/categorys";
+        String url = "/api/categories";
 
         String json = objectMapper.writeValueAsString(categoryReqDto);
 
@@ -77,7 +77,7 @@ public class IntegrationCategoryTest {
         categoryReqDto.setParentCategoryId(parentId);
         categoryReqDto.setCategoryName(categoryName);
 
-        String url = "/api/categorys";
+        String url = "/api/categories";
         String json = objectMapper.writeValueAsString(categoryReqDto);
 
         //when
@@ -96,7 +96,7 @@ public class IntegrationCategoryTest {
     @DisplayName("카테고리 전체 목록 조회 테스트")
     public void findAllCategoryTest() throws Exception {
         //given
-        String url = "/api/categorys";
+        String url = "/api/categories";
         int testCount = 2;
 
         //when
@@ -114,7 +114,7 @@ public class IntegrationCategoryTest {
     @DisplayName("카테고리 단일 조회 테스트")
     public void findCategoryTest() throws Exception {
         //given
-        String url = "/api/categorys/{id}";
+        String url = "/api/categories/{id}";
         Long categoryId = 1L;
         String categoryName = "액티비티";
 
@@ -130,11 +130,11 @@ public class IntegrationCategoryTest {
     @DisplayName("카테고리 수정 테스트")
     public void updateCategoryTest() throws Exception {
         //given
-        Long categoryId = 4L;
+        Long categoryId = 1L;
         String updateName = "공연/전시/체험";
         CategoryReqDto categoryReqDto = new CategoryReqDto();
         categoryReqDto.setCategoryName(updateName);
-        String url = "/api/categorys/{id}";
+        String url = "/api/categories/{id}";
         String json = objectMapper.writeValueAsString(categoryReqDto);
 
         //when
@@ -154,7 +154,7 @@ public class IntegrationCategoryTest {
         Long categoryId = 4L;
 
         //when
-        ResultActions result = mockMvc.perform(delete("/api/categorys/{id}", categoryId));
+        ResultActions result = mockMvc.perform(delete("/api/categories/{id}", categoryId));
 
         //then
         result.andExpect(status().isNoContent());
