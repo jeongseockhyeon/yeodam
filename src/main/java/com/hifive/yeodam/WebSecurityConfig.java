@@ -19,10 +19,9 @@ public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                //.requestMatchers(toH2Console())
-                .requestMatchers("/static/**");
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return web -> web.ignoring()
+                .requestMatchers("/**");
     }
 
     @Bean
@@ -30,17 +29,18 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/users/**" /*"/users/login", "/users/join"*/).permitAll()
+                        .requestMatchers("/", "/users/**", "/order/**", "/api/**", "tours/**").permitAll()
+                        .requestMatchers("/sellers/join", "/sellers/check-email").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/users/login") // 커스텀 로그인 페이지
+                        .loginPage("/login") // 커스텀 로그인 페이지
                         .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/users/login")
+                        .logoutSuccessUrl("/login")
                         .permitAll()
                 ).csrf(csrf -> csrf.disable())
                 .build();
@@ -61,31 +61,31 @@ public class WebSecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/sellers/join", "/sellers/login", "/sellers/check-email").permitAll()
-                        .requestMatchers("/sellers/myPage").authenticated()
-                        .anyRequest().permitAll()
-                )
-                .formLogin(login -> login
-                        .loginPage("/sellers/login")
-                        .loginProcessingUrl("/sellers/login")
-                        .defaultSuccessUrl("/sellers/myPage", true)
-                        .failureUrl("/sellers/login?error=true")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/sellers/logout")
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                );
-
-        return http.build();
-    }
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(authz -> authz
+//                        .requestMatchers("/sellers/join", "/sellers/login", "/sellers/check-email").permitAll()
+//                        .requestMatchers("/sellers/myPage").authenticated()
+//                        .anyRequest().permitAll()
+//                )
+//                .formLogin(login -> login
+//                        .loginPage("/sellers/login")
+//                        .loginProcessingUrl("/sellers/login")
+//                        .defaultSuccessUrl("/sellers/myPage", true)
+//                        .failureUrl("/sellers/login?error=true")
+//                        .permitAll()
+//                )
+//                .logout(logout -> logout
+//                        .logoutUrl("/sellers/logout")
+//                        .logoutSuccessUrl("/")
+//                        .invalidateHttpSession(true)
+//                        .deleteCookies("JSESSIONID")
+//                );
+//
+//        return http.build();
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
