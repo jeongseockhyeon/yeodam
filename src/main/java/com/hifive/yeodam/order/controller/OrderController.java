@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.util.List;
@@ -41,7 +43,7 @@ public class OrderController {
 
     @ResponseBody
     @PostMapping
-    public ResponseEntity order(/*Principal principal,*/ AddOrderRequest request, RedirectAttributes redirectAttributes) {
+    public ResponseEntity order(/*Principal principal,*/ AddOrderRequest request) {
 
         Principal principal = new TestPrincipal("123@a.com");
 
