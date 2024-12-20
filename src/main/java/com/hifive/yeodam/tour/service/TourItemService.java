@@ -121,8 +121,8 @@ public class TourItemService {
     public TourItemResDto update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
         Tour targetTour = tourRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
-        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getPrice());
-        targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(), tourItemUpdateReqDto.getDescription());
+        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getDescription(),tourItemUpdateReqDto.getPrice());
+        targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(),tourItemUpdateReqDto.getMaximum());
 
         if(tourItemUpdateReqDto.getAddCategoryIds() != null){
             for(Long categoryId : tourItemUpdateReqDto.getAddCategoryIds()){
