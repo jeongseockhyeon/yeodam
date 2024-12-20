@@ -1,0 +1,33 @@
+spring.application.name: Yeodam
+
+imp:
+  store-key: testKey1
+  api-key: testKey2
+  secret-key: testKey3
+
+spring:
+  datasource:
+    url: yourUrl
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+  cloud:
+    aws:
+      cloudfront.domainName: testKey
+      s3.bucket: test1
+      region.static: test2
+      credentials:
+        access-key: test3
+        secret-key: test4
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
