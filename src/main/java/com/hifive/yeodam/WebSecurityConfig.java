@@ -1,6 +1,7 @@
 package com.hifive.yeodam;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +22,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> web.ignoring()
-                .requestMatchers("/**");
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
     @Bean
@@ -29,14 +30,16 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/users/**", "/order/**", "/api/**", "tours/**").permitAll()
-                        .requestMatchers("/sellers/join", "/sellers/check-email").permitAll()
+                        .requestMatchers("/", "/login", "/join", "/order/**", "/api/**", "tours/**").permitAll()
+                        .requestMatchers("/users/join", "/users/email-check", "/users/nickname-check", "/users/password-check").permitAll()
+                        .requestMatchers("/sellers", "/sellers/join", "/sellers/check-email").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login") // 커스텀 로그인 페이지
                         .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -61,31 +64,6 @@ public class WebSecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(authz -> authz
-//                        .requestMatchers("/sellers/join", "/sellers/login", "/sellers/check-email").permitAll()
-//                        .requestMatchers("/sellers/myPage").authenticated()
-//                        .anyRequest().permitAll()
-//                )
-//                .formLogin(login -> login
-//                        .loginPage("/sellers/login")
-//                        .loginProcessingUrl("/sellers/login")
-//                        .defaultSuccessUrl("/sellers/myPage", true)
-//                        .failureUrl("/sellers/login?error=true")
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout
-//                        .logoutUrl("/sellers/logout")
-//                        .logoutSuccessUrl("/")
-//                        .invalidateHttpSession(true)
-//                        .deleteCookies("JSESSIONID")
-//                );
-//
-//        return http.build();
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
