@@ -53,7 +53,7 @@ public class SellerController {
         if (error != null) {
             model.addAttribute("errorMessage", "Invalid email or password. Please try again.");
         }
-        return "seller/sellerLogin";
+        return "login";
     }
 
     // 판매자 정보 수정
