@@ -60,19 +60,6 @@ public class AuthService {
         return authRepository.save(auth);
     }
 
-    // 로그인
-    public boolean authenticate(String email, String password) {
-        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
-
-        if (optionalAuth.isEmpty()) {
-            return false;
-        }
-
-        Auth auth = optionalAuth.get();
-
-        return passwordEncoder.matches(password, auth.getPassword());
-    }
-
     public void checkDuplicatedEmail(JoinRequest joinRequest, BindingResult result) {
         if (authRepository.existsByEmail(joinRequest.getEmail())) {
             result.addError(new FieldError("joinRequest", "email", "이미 존재하는 이메일입니다"));

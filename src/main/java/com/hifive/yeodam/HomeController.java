@@ -9,7 +9,7 @@ public class HomeController {
     @GetMapping("/join")
     public String joinView() {
 
-        return "join";
+        return "joinSelect";
     }
 
     @GetMapping("/login")
@@ -17,4 +17,13 @@ public class HomeController {
 
         return "login";
     }
+
+//    // 로그인 페이지 보기
+//    @GetMapping("/login")
+//    public String showLoginPage(@RequestParam(value = "error", required = false) String error, Model model) {
+//        if (error != null) {
+//            model.addAttribute("errorMessage", "Invalid email or password. Please try again.");
+//        }
+//        return "login";
+//    }
 }

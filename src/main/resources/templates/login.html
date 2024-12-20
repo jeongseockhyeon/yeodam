@@ -14,11 +14,11 @@
 <body class="d-flex justify-content-center align-items-center vh-100">
     <div class="text-center">
         <div class="mb-4">
-            <a th:href="@{/}"><img th:src="@{/image/logo.png}" alt="로고" width="380" height="140"></a>
+            <a th:href="@{/}"><img th:src="@{/images/logo.png}" alt="로고" width="380" height="140"></a>
         </div>
 
         <div class="login-container mb-4">
-            <form th:action="@{/users/login}" method="post">
+            <form th:action="@{/login}" method="post">
                 <div class="mb-4">
                     <input type="email" class="form-control" name="email" placeholder="이메일을 입력하세요" required />
                 </div>
