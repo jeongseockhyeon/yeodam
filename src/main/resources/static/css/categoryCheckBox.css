@@ -1,0 +1,19 @@
+/* 카테고리 컨테이너 */
+#categoryCheckBox {
+    display: flex;
+    flex-wrap: wrap; /* 줄 바꿈 허용 */
+    gap: 10px; /* 항목 간 간격 */
+}
+
+/* 각 항목(체크박스 + 라벨) 정렬 */
+#categoryCheckBox div {
+    display: flex; /* 체크박스와 라벨 가로 정렬 */
+    align-items: center; /* 세로 정렬 중앙 배치 */
+    width: 45%; /* 두 줄 정렬을 위해 너비 조정 */
+}
+
+/* 라벨 스타일 조정 */
+#categoryCheckBox label {
+    margin-left: 5px; /* 체크박스와 라벨 간 간격 */
+    white-space: nowrap; /* 라벨이 줄 바꿈되지 않도록 설정 */
+}

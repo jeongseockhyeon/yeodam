@@ -15,12 +15,6 @@ public class ItemViewController {
         return "item/items";
     }
 
-    /*상품 등록 페이지*/
-    @GetMapping("/add")
-    public String addItem(Model model) {
-        return "item/itemAdd";
-    }
-
     /*상품 관리 페이지*/
     @GetMapping("/manage")
     public String manageItem(Model model) {
