@@ -72,13 +72,11 @@
 <body>
 <h2 style="display: none;">판매자 가입</h2>
 <form action="/sellers" method="POST" id="sellerJoinForm">
-    <div>
-        <div class="input-container">
-            <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
-            <button type="button" id="checkEmailBtn">중복체크</button>
-        </div>
-        <p id="emailValidationResult"></p>
+    <div class="input-container">
+        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
+         <button type="button" id="checkEmailBtn">중복체크</button>
     </div>
+    <a id="emailValidationResult"></a>
     <div class="input-container">
         <input type="password" id="password" name="password" placeholder="비밀번호 (8자 이상)" required minlength="8">
     </div>
