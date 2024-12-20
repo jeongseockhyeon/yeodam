@@ -1,7 +1,6 @@
 package com.hifive.yeodam.payment.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.order.repository.OrderRepository;
 import com.hifive.yeodam.payment.domain.Payment;
@@ -13,19 +12,11 @@ import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static com.hifive.yeodam.global.exception.CustomErrorCode.*;
 
 @Slf4j
 @Service
@@ -38,12 +29,6 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final IamportClient iamportClient;
 
-    @Value("${imp.api-key}")
-    private String apiKey;
-
-    @Value("${imp.secret-key}")
-    private String secretKey;
-
     @Transactional
     public Long createPayment(String orderUid) {
         Order order = findOrderByUid(orderUid);
@@ -55,7 +40,7 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public PaymentResponse findRequestPayment(Long paymentId) {
         Payment payment = paymentRepository.findByIdFetchJoin(paymentId)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 결제정보가 없습니다"));
+                .orElseThrow(() -> new CustomException(PAYMENT_NOT_FOUND));
 
         return buildPaymentResponse(payment);
     }
@@ -75,7 +60,7 @@ public class PaymentService {
         }
 
         handlePaymentFailure(order, payment, iamportResponse.getResponse().getImpUid());
-        throw new RuntimeException("결제 실패");
+        throw new CustomException(PAYMENT_FAILED);
     }
 
     @Transactional
@@ -96,15 +81,14 @@ public class PaymentService {
             return;
         }
 
-        throw new RuntimeException("결제 취소에 실패하였습니다");
+        throw new CustomException(PAYMENT_CANCELED);
     }
 
     private IamportResponse<com.siot.IamportRestClient.response.Payment> fetchPaymentDetails(String paymentUid) {
         try {
             return iamportClient.paymentByImpUid(paymentUid);
         } catch (Exception e) {
-            log.error("결제 조회 실패: {}", e.getMessage());
-            throw new RuntimeException("결제 조회 실패", e);
+            throw new CustomException(I_AM_PORT_ERROR);
         }
     }
 
@@ -141,7 +125,7 @@ public class PaymentService {
 
     private Order findOrderByUid(String orderUid) {
         return orderRepository.findByOrderUid(orderUid)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다"));
+                .orElseThrow(() -> new CustomException(PAYMENT_NOT_FOUND));
     }
 
     private PaymentResponse buildPaymentResponse(Payment payment) {
@@ -155,7 +139,7 @@ public class PaymentService {
                 .build();
     }
 
-    @Deprecated
+    /*@Deprecated
     private String getToken() {
         String path = "https://api.iamport.kr/users/getToken";
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -165,7 +149,6 @@ public class PaymentService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return parseTokenFromResponse(response.body());
         } catch (IOException | InterruptedException e) {
-            log.error("토큰 생성 실패: {}", e.getMessage());
             throw new RuntimeException("토큰 생성 실패", e);
         }
     }
@@ -183,5 +166,5 @@ public class PaymentService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
         return jsonNode.get("response").get("access_token").asText();
-    }
+    }*/
 }

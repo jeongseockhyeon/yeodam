@@ -1,5 +1,7 @@
 package com.hifive.yeodam.order.service;
 
+import com.hifive.yeodam.global.constant.ItemConst;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.order.domain.Order;
@@ -18,13 +20,13 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hifive.yeodam.global.exception.CustomErrorCode.*;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
-
-    public  final String DEFAULT_MESSAGE = "기본생성 메세지";
 
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
@@ -41,7 +43,7 @@ public class OrderService {
         validateOrderMessage(request);
 
         Order order = Order.createOrder(user, request.getBookerName(), request.getPhoneNumber(),
-                request.getOrderMessage(),orderDetails);
+                request.getOrderMessage(), orderDetails);
 
         orderRepository.save(order);
 
@@ -51,7 +53,7 @@ public class OrderService {
     @Transactional
     public void cancelOrder(String orderUid) {
         Order order = orderRepository.findByOrderUid(orderUid)
-                .orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다"));
+                .orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         order.cancelOrder();
     }
@@ -61,8 +63,13 @@ public class OrderService {
         List<OrderDetail> orderDetails = new ArrayList<>();
 
         for (AddOrderRequest.ItemRequest requestItem : request.getItems()) {
+
             Item item = itemRepository.findById(requestItem.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("일치하는 상품이 없습니다"));
+                    .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND));
+
+            if (item.getStock() == ItemConst.OUT_OF_STOCK) {
+                throw new CustomException(NOT_ENOUGH_STOCK);
+            }
 
             OrderDetail orderDetail = OrderDetail.create(item, requestItem.getCount(), item.getPrice());
             orderDetails.add(orderDetail);
@@ -73,7 +80,7 @@ public class OrderService {
 
     private void validateOrderMessage(AddOrderRequest request) {
         if (!StringUtils.hasText(request.getOrderMessage())) {
-            request.setOrderMessage(DEFAULT_MESSAGE);
+            request.setOrderMessage("메세지 없음");
         }
     }
 }
