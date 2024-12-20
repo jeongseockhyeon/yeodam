@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -60,8 +62,14 @@ public class AuthService {
 
     // 로그인
     public boolean authenticate(String email, String password) {
-        Auth auth = authRepository.findByEmail(email);
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
+
+        if (optionalAuth.isEmpty()) {
+            return false;
+        }
+
+        Auth auth = optionalAuth.get();
+
         return passwordEncoder.matches(password, auth.getPassword());
     }
 
@@ -73,5 +81,9 @@ public class AuthService {
 
     public boolean checkEmail(String email) {
         return authRepository.existsByEmail(email);
+    }
+
+    public Optional<Auth> findByEmail(String email) {
+        return authRepository.findByEmail(email);
     }
 }

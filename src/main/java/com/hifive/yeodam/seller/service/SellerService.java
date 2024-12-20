@@ -72,4 +72,10 @@ public class SellerService {
     public Seller getSellerById(Long id) {
         return sellerRepository.findById(id).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
     }
+
+    // 이메일로 판매자 찾기
+    public Seller getSellerByEmail(String email) {
+        Auth auth = authRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+        return sellerRepository.findByAuthId(auth.getId()).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+    }
 }

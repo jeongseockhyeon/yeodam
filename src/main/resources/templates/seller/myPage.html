@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+</head>
+<body>
+<h1>마이페이지</h1>
+<div sec:authorize="isAuthenticated()">
+    <table>
+        <tr>
+            <td>회사명</td>
+            <td th:text="${seller.getCompanyName()}"></td>
+        </tr>
+        <tr>
+            <td>대표자</td>
+            <td th:text="${seller.getOwner()}"></td>
+        </tr>
+        <tr>
+            <td>회사 설명</td>
+            <td th:text="${seller.getBio()}"></td>
+        </tr>
+        <tr>
+            <td>전화번호</td>
+            <td th:text="${seller.getPhone()}"></td>
+        </tr>
+    </table>
+</div>
+
+<form action="/sellers/logout" method="post">
+    <button type="submit">로그아웃</button>
+</form>
+</body>
+</html>
