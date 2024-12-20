@@ -140,7 +140,7 @@ public class IntegrationCategoryTest {
         //when
         ResultActions result = mockMvc.perform(patch(url, categoryId).contentType(MediaType.APPLICATION_JSON).content(json));
         List<CategoryResDto> categories = categoryService.findAllCategory();
-        CategoryResDto category = categories.getLast();
+        CategoryResDto category = categories.getFirst();
 
         //then
         result.andExpect(status().isOk());
