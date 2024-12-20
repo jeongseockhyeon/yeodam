@@ -13,10 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
@@ -25,8 +22,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class CategoryTest {
@@ -35,13 +30,9 @@ public class CategoryTest {
 
     MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Mock
     private CategoryService categoryService;
 
-    @Mock
-    private CategoryRepository categoryRepository;
 
     @InjectMocks
     private CategoryApiController categoryApiController;
@@ -54,7 +45,7 @@ public class CategoryTest {
 
     @Test
     @DisplayName("카테고리 생성 테스트")
-    public void saveCategoryTest() throws Exception {
+    public void saveCategoryTest(){
         //given
         CategoryReqDto categoryReqDto = mock(CategoryReqDto.class);
         when(categoryReqDto.getCategoryName()).thenReturn(categoryName);
@@ -73,7 +64,7 @@ public class CategoryTest {
     }
     @Test
     @DisplayName("하위 카테고리 생성 테스트")
-    public void saveSubCategoryTest() throws Exception {
+    public void saveSubCategoryTest() {
         //given
         Long parentId = 1L;
         Category category = mock(Category.class);
@@ -101,7 +92,7 @@ public class CategoryTest {
 
     @Test
     @DisplayName("카테고리 전체 목록 조회 테스트")
-    public void findAllCategoryTest() throws Exception {
+    public void findAllCategoryTest() {
         //given
         int testCount = 3;
 
@@ -123,7 +114,7 @@ public class CategoryTest {
 
     @Test
     @DisplayName("카테고리 단일 조회 테스트")
-    public void findCategoryTest() throws Exception {
+    public void findCategoryTest(){
         //given
         Long categoryId = 1L;
 
@@ -144,7 +135,7 @@ public class CategoryTest {
 
     @Test
     @DisplayName("카테고리 수정 테스트")
-    public void updateCategoryTest() throws Exception {
+    public void updateCategoryTest() {
         //given
         Long categoryId = 1L;
         CategoryReqDto updateCategoryReqDto = mock(CategoryReqDto.class);
@@ -168,7 +159,7 @@ public class CategoryTest {
 
     @Test
     @DisplayName("카테고리 삭제 테스트")
-    public void deleteCategoryTest() throws Exception {
+    public void deleteCategoryTest(){
         //given
         Long categoryId = 1L;
 
