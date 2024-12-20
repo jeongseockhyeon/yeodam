@@ -1,62 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Registration</title>
     <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        #checkEmailBtn {
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+        }
+
+        .input-container {
+            position: relative;
+            width: 100%;
+        }
+
+        #email {
+            max-width: calc(100% - 95px);
+        }
+
         .error {
             color: red;
+            font-size: 0.8rem;
         }
+
         .success {
             color: green;
+            font-size: 0.8rem;
+        }
+
+        #emailValidationResult, #passwordValidationResult {
+            display: block;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-<h2>판매자 가입</h2>
+<h2 style="display: none;">판매자 가입</h2>
 <form action="/sellers" method="POST" id="sellerJoinForm">
-    <div>
-        <label for="email">이메일</label>
+    <div class="input-container">
         <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
         <button type="button" id="checkEmailBtn">중복체크</button>
         <span id="emailValidationResult"></span>
     </div>
 
-    <div>
-        <label for="password">비밀번호</label>
-        <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required minlength="8">
+    <div class="input-container">
+        <input type="password" id="password" name="password" placeholder="비밀번호 (8자 이상)" required minlength="8">
     </div>
 
-    <div>
-        <label for="confirmPassword">비밀번호 확인</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
+    <div class="input-container">
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호 확인" required>
         <span id="passwordValidationResult"></span>
     </div>
 
-    <div>
-        <label for="phone">전화번호</label>
-        <input type="text" id="phone" name="phone" placeholder="전화번호를 입력하세요" required pattern="^\d{9,11}$">
+    <div class="input-container">
+        <input type="text" id="phone" name="phone" placeholder="전화번호" required pattern="^\d{9,11}$">
     </div>
 
-    <div>
-        <label for="companyName">회사명</label>
-        <input type="text" id="companyName" name="companyName" placeholder="회사명을 입력하세요" required maxlength="25">
+    <div class="input-container">
+        <input type="text" id="companyName" name="companyName" placeholder="회사명" required maxlength="25">
     </div>
 
-    <div>
-        <label for="owner">대표자명</label>
-        <input type="text" id="owner" name="owner" placeholder="대표자명을 입력하세요" required maxlength="25">
+    <div class="input-container">
+        <input type="text" id="owner" name="owner" placeholder="대표자명" required maxlength="25">
     </div>
 
-    <div>
-        <label for="bio">자기소개</label>
+    <div class="input-container">
         <textarea id="bio" name="bio" placeholder="회사소개를 입력하세요" required></textarea>
     </div>
 
-    <div>
-        <button type="submit" id="joinButton" disabled>가입하기</button>
-    </div>
+    <button type="submit" id="joinButton" disabled>가입하기</button>
 </form>
 
 <script>

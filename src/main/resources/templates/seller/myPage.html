@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>MyPage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 70px;
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .profile-left {
+            display: flex;
+            align-items: center;
+        }
+        .circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-right: 20px;
+        }
+        .company-info {
+            display: flex;
+            align-items: center;
+        }
+        .company-name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        .divider {
+            margin-right: 10px;
+        }
+        .owner {
+            font-size: 16px;
+            color: #888;
+        }
+        .bio {
+            margin-top: 5px;
+            color: #555;
+        }
+        .logout {
+            margin-left: auto;
+        }
+        .logout button {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+        .link-box {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        .link-box a {
+            text-decoration: none;
+            color: #333;
+        }
+        .link-box:hover {
+            background-color: #e6e6e6;
+        }
+    </style>
+</head>
+<body>
+<h1>MyPage</h1>
+<div class="profile">
+    <div class="profile-left">
+        <div class="circle"></div>
+        <div>
+            <div class="company-info">
+                <span class="company-name" th:text="${seller.getCompanyName()}"></span>
+                <span class="divider">|</span>
+                <span class="owner" th:text="${seller.getOwner()}"></span>
+            </div>
+            <div class="bio" th:text="${seller.getBio()}"></div>
+        </div>
+    </div>
+    <form class="logout" action="/sellers/logout" method="post">
+        <button type="submit">로그아웃</button>
+    </form>
+</div>
+<div class="links">
+    <div class="link-box"><a href="#">상품 목록</a></div>
+    <div class="link-box"><a href="#">예약 현황</a></div>
+    <div class="link-box"><a href="#">문의 내역</a></div>
+    <div class="link-box"><a href="#">리뷰 관리</a></div>
+    <div class="link-box"><a href="#">업체 정보 수정</a></div>
+    <div class="link-box"><a href="#">소속 가이드 정보 수정</a></div>
+</div>
+</body>
+</html>

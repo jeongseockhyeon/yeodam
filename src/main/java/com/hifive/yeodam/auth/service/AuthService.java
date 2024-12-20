@@ -11,11 +11,14 @@ import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,7 @@ public class AuthService {
         return authRepository.save(auth);
     }
 
+    @Transactional
     public Auth addAuth(SellerJoinRequest joinRequest) {
         if (authRepository.existsByEmail(joinRequest.getEmail())) {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
@@ -50,7 +54,7 @@ public class AuthService {
 
         Auth auth = Auth.builder()
                 .email(joinRequest.getEmail())
-                .password(joinRequest.getPassword())
+                .password(passwordEncoder.encode(joinRequest.getPassword()))
                 .build();
 
         return authRepository.save(auth);
@@ -58,11 +62,15 @@ public class AuthService {
 
     // 로그인
     public boolean authenticate(String email, String password) {
-        Auth auth = authRepository.findByEmail(email);
-        if (auth.getPassword().equals(password)) {
-            return true;
+        Optional<Auth> optionalAuth = authRepository.findByEmail(email);
+
+        if (optionalAuth.isEmpty()) {
+            return false;
         }
-        return false;
+
+        Auth auth = optionalAuth.get();
+
+        return passwordEncoder.matches(password, auth.getPassword());
     }
 
     public void checkDuplicatedEmail(JoinRequest joinRequest, BindingResult result) {
@@ -73,5 +81,9 @@ public class AuthService {
 
     public boolean checkEmail(String email) {
         return authRepository.existsByEmail(email);
+    }
+
+    public Optional<Auth> findByEmail(String email) {
+        return authRepository.findByEmail(email);
     }
 }
