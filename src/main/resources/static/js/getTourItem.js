@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tourList = document.getElementById("tourList");
     const applyFiltersBtn = document.getElementById("applyFiltersBtn");
 
-    // 데이터 가져오기 함수
     function fetchTours(filters = {}) {
         const params = new URLSearchParams(filters).toString();
         fetch(`/api/tours?${params}`)
@@ -21,6 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const tourCard = document.createElement("div");
             tourCard.className = "tour-card";
             const primaryGuide = tour.guideInTourResDtos[0];
+
+            tourCard.addEventListener("click", () => {
+                window.location.href = `/tours/${tour.id}`;
+            });
 
             tourCard.innerHTML = `
                 <div class="content">
