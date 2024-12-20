@@ -24,6 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
+    public  final String DEFAULT_MESSAGE = "기본생성 메세지";
+
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -71,7 +73,7 @@ public class OrderService {
 
     private void validateOrderMessage(AddOrderRequest request) {
         if (!StringUtils.hasText(request.getOrderMessage())) {
-            request.setOrderMessage("메세지 없음");
+            request.setOrderMessage(DEFAULT_MESSAGE);
         }
     }
 }

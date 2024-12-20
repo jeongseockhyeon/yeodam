@@ -3,7 +3,7 @@ package com.hifive.yeodam.itemTourTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.seller.entity.Seller;
-import com.hifive.yeodam.tour.controller.TourItemAPIController;
+import com.hifive.yeodam.tour.controller.TourItemApiController;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemResDto;
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import com.hifive.yeodam.tour.entity.Tour;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.MediaType;
@@ -57,7 +56,7 @@ public class TourItemTest {
     private TourRepositoryCustom tourRepositoryCustom;
 
     @InjectMocks
-    private TourItemAPIController tourItemAPIController;
+    private TourItemApiController tourItemAPIController;
 
 
 
