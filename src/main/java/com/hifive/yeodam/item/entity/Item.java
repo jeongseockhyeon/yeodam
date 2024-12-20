@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-@Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "item_type")
 @Entity
@@ -23,25 +22,30 @@ public abstract class Item {
 
     private String itemName;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     private int price;
 
     private int stock;
 
     private boolean reservation;
 
-    public Item(Seller seller, String itemName, int price, boolean reservation, int stock) {
+    public Item(Seller seller, String itemName, String description,int price, boolean reservation, int stock) {
         this.seller = seller;
         this.itemName = itemName;
+        this.description = description;
         this.price = price;
         this.reservation = reservation;
         this.stock = stock;
     }
 
-    public void updateItem(String itemName,int price) {
+    public void updateItem(String itemName,String description,int price) {
 
         this.itemName = itemName;
+        this.description = description;
         this.price = price;
     }
 
-    public abstract void updateSubItem(String... args);
+    public abstract void updateSubItem(String region,String period,int maximum);
 }
