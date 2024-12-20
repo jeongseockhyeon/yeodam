@@ -11,6 +11,8 @@ import java.util.List;
 
 @Getter
 public class TourItemResDto {
+    private Long id;
+
     private String tourName;
 
     private String tourDesc;
@@ -27,6 +29,7 @@ public class TourItemResDto {
     private List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
 
     public TourItemResDto(Tour tour) {
+        this.id = tour.getId();
         this.tourName = tour.getItemName();
         this.tourDesc = tour.getDescription();
         this.tourPeriod = tour.getPeriod();
