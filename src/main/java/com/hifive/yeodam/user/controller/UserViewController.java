@@ -68,7 +68,13 @@ public class UserViewController {
                         .getAuthentication()
         );
 
-        return "redirect:/login";
+        return "redirect:/";
+    }
+
+    @GetMapping("/myPage")
+    public String myPage(Model model) {
+
+        return "user/detail";
     }
 
     @PostMapping("/email-check")
