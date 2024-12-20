@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Guides List</title>
+</head>
+<body>
+<h1>Guides List</h1>
+<button onclick="window.location.href='/guides/join'">가이드 추가</button>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Phone</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="guide : ${guides}">
+        <td th:text="${guide.name}">Name</td>
+        <td th:text="${guide.gender}">Gender</td>
+        <td th:text="${guide.phone}">Phone</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

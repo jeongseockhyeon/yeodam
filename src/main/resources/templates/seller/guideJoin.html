@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guide Register</title>
+</head>
+<body>
+<h1>New Guide</h1>
+<form method="post" action="/guides">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="birth">Birth Date:</label>
+    <input type="date" id="birth" name="birth" required><br>
+
+    <label for="gender">Gender:</label>
+    <select id="gender" name="gender" required>
+        <option value="M">남자</option>
+        <option value="F">여자</option>
+    </select><br>
+
+    <label for="phone">Phone:</label>
+    <input type="text" id="phone" name="phone" required pattern="^010\d{8}$"><br>
+
+    <label for="bio">Bio:</label>
+    <textarea id="bio" name="bio" required></textarea><br>
+
+    <button type="submit">Register</button>
+</form>
+</body>
+</html>
