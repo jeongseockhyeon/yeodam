@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -74,8 +75,7 @@ public class SellerService {
     }
 
     // 이메일로 판매자 찾기
-    public Seller getSellerByEmail(String email) {
-        Auth auth = authRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
-        return sellerRepository.findByAuthId(auth.getId()).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+    public Seller getSellerByAuth(Auth auth) {
+        return sellerRepository.findByAuthId(auth.getId()).orElseThrow(() -> new IllegalArgumentException("해당 Auth에 연결된 Seller가 없습니다."));
     }
 }

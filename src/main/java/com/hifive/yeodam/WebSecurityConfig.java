@@ -22,7 +22,7 @@ public class WebSecurityConfig {
                 .formLogin(login -> login
                         .loginPage("/sellers/login")
                         .loginProcessingUrl("/sellers/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/sellers/myPage", true)
                         .failureUrl("/sellers/login?error=true")
                         .permitAll()
                 )

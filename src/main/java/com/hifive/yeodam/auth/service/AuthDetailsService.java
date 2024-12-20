@@ -23,10 +23,6 @@ public class AuthDetailsService implements UserDetailsService {
         Auth auth = authService.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        return new org.springframework.security.core.userdetails.User(
-                auth.getEmail(),
-                auth.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_SELLER"))
-        );
+        return auth;
     }
 }
