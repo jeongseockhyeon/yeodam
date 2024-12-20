@@ -49,7 +49,7 @@ public class SellerController {
 
     // 판매자 정보 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Seller> updateSeller(@PathVariable Long id, @RequestBody @Valid SellerUpdateRequest updateRequest) {
+    public ResponseEntity<Seller> updateSeller(@PathVariable Long id, @ModelAttribute @Valid SellerUpdateRequest updateRequest) {
         Seller updatedSeller = sellerService.updateSeller(id, updateRequest);
         return ResponseEntity.ok(updatedSeller);
     }
