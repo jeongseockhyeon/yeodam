@@ -54,8 +54,12 @@ public class Payment {
         this.paymentUid = paymentUid;
     }
 
-    public void failPayment(String paymentUid) {
+    public void paymentFail(String paymentUid) {
         this.status = FAILED;
         this.paymentUid = paymentUid;
+    }
+
+    public void cancel() {
+        this.status = CANCELLED;
     }
 }

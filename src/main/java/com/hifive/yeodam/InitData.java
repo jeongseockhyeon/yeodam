@@ -36,7 +36,6 @@ public class InitData {
             Auth auth = Auth.builder()
                     .email("123@a.com")
                     .password("1234")
-                    .phone("1234-1234")
                     .build();
 
             em.persist(auth);
@@ -44,8 +43,7 @@ public class InitData {
             User user = User.builder()
                     .name("홍길동")
                     .nickname("길동이")
-                    .birthDate(LocalDate.now())
-                    .gender("M")
+                    .phone("1234-1234")
                     .auth(auth)
                     .build();
 
