@@ -51,7 +51,7 @@ public class SellerController {
     @GetMapping("/login")
     public String showLoginPage(@RequestParam(value = "error", required = false) String error, Model model) {
         if (error != null) {
-            model.addAttribute("errorMessage", "Invalid email or password. Please try again.");
+            model.addAttribute("errorMessage", "잘못된 이메일 또는 비밀번호입니다. 다시 시도해 주세요.");
         }
         return "seller/sellerLogin";
     }
