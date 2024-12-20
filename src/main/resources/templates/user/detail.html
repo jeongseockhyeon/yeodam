@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+</head>
+
+<body>
+<h2 th:text="${#authentication.principal.Username} + '님'">Anonymous</h2>
+<hr>
+<div>
+    <button onclick="location.href='#'">예약 내역 확인</button>
+    <button onclick="location.href='#'">내가 쓴 리뷰</button>
+    <button onclick="location.href='#'">문의 내역</button>
+    <button onclick="location.href='/users/logout'">로그아웃</button>
+</div>
+
+</body>
+</html>

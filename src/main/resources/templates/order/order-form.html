@@ -46,9 +46,20 @@
             background-color: #0056b3;
         }
     </style>
+    <script src="/payment/payment.js"></script>
+    <!-- jQuery -->
+    <script
+            type="text/javascript"
+            src="https://code.jquery.com/jquery-1.12.4.min.js"
+    ></script>
+    <!-- iamport.payment.js -->
+    <script
+            type="text/javascript"
+            src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"
+    ></script>
 </head>
 <body>
-<form th:action="@{/order}" method="post" th:object="${orderRequest}">
+<form th:action="@{/order}" method="post" th:object="${orderRequest}" id="orderForm">
 
     <!-- 상품 정보 -->
     <div class="section" th:each="item : ${orderRequest.items}">
@@ -79,9 +90,41 @@
             <input type="text" id="message" th:field="*{orderMessage}" placeholder="예약 메시지 입력"/>
         </div>
     </div>
-
-    <!-- 결제 버튼 -->
-    <button type="submit">결제하기</button>
 </form>
+<button onclick="submitOrder()">결제하기</button>
 </body>
+<script th:inline="javascript">
+    async function submitOrder() {
+
+        const createPaymentURL = "/api/payment?orderUid=";
+
+        const form = document.getElementById('orderForm');
+        const data = new FormData(form);
+
+        try {
+            let responseJson = await (await fetch(form.action, {
+                method: 'POST',
+                body: data
+            })).json();
+
+            const paymentData = await (await fetch(createPaymentURL + responseJson.orderUid, {
+                method: "POST",
+            })).json();
+
+            var IMP = window.IMP;
+            IMP.init('imp65451236'); // 아임포트 가맹점 식별코드
+
+            requestPay(
+                paymentData.itemName,
+                paymentData.price,
+                paymentData.orderUid,
+                paymentData.username,
+                paymentData.email,
+                paymentData.phone
+            );
+
+        } catch (error) {
+        }
+    }
+</script>
 </html>

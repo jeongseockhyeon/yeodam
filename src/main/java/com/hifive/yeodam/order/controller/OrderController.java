@@ -5,23 +5,25 @@ import com.hifive.yeodam.order.service.OrderService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
+@RequestMapping("/order")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/order")
+    @GetMapping
     public String testOrderForm(Model model) {
 
         AddOrderRequest.ItemRequest itemRequest = new AddOrderRequest.ItemRequest();
@@ -37,13 +39,14 @@ public class OrderController {
         return "order/order-form";
     }
 
-    @PostMapping("/order")
-    public String order(/*Principal principal,*/ AddOrderRequest request, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    @PostMapping
+    public ResponseEntity order(/*Principal principal,*/ AddOrderRequest request, RedirectAttributes redirectAttributes) {
 
         Principal principal = new TestPrincipal("123@a.com");
 
-        redirectAttributes.addAttribute("orderUid", orderService.order(request, principal));
-        return "redirect:/payment?orderUid={orderUid}";
+        String orderUid = orderService.order(request, principal);
+        return ResponseEntity.ok(Map.of("orderUid", orderUid));
     }
 
     //TODO 추후 삭제 예정
