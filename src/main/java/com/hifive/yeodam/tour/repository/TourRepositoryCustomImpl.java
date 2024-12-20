@@ -29,8 +29,8 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         QCategory category = QCategory.category;
 
         BooleanBuilder builder = new BooleanBuilder();
-        if (hasText(searchFilterDto.getCategory())) {
-            builder.and(category.name.eq(searchFilterDto.getCategory()));
+        if (searchFilterDto.getCategories() != null && !searchFilterDto.getCategories().isEmpty()) {
+            builder.and(category.name.in(searchFilterDto.getCategories()));
         }
         if (hasText(searchFilterDto.getRegion())){
             builder.and(tour.region.eq(searchFilterDto.getRegion()));

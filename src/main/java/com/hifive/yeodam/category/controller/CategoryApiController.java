@@ -13,7 +13,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/categorys")
+@RequestMapping("/api/categories")
 @RestController
 public class CategoryApiController {
     private final CategoryService categoryService;
