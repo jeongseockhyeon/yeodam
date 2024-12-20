@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import static com.hifive.yeodam.global.constant.PaymentConst.PAYMENT_UID_BEFORE_PAYMENT;
 import static com.hifive.yeodam.global.exception.CustomErrorCode.*;
+import static com.hifive.yeodam.order.domain.OrderStatus.PENDING;
 
 @Slf4j
 @Service
@@ -82,6 +84,16 @@ public class PaymentService {
         }
 
         throw new CustomException(PAYMENT_CANCELED);
+    }
+
+    @Transactional
+    public void checkPaymentStatus(String orderUid) {
+        Order order = findOrderByUid(orderUid);
+
+        if (order.getStatus().equals(PENDING)) {
+            order.failOrder();
+            order.getPayment().paymentFail(PAYMENT_UID_BEFORE_PAYMENT);
+        }
     }
 
     private IamportResponse<com.siot.IamportRestClient.response.Payment> fetchPaymentDetails(String paymentUid) {
