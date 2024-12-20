@@ -30,11 +30,12 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/**" /*"/users/login", "/users/join"*/).permitAll()
+                        .requestMatchers("/", "/users/**" /*"/users/login", "/users/join"*/).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/users/login") // 커스텀 로그인 페이지
+                        .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
