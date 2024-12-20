@@ -207,7 +207,7 @@ public class TourItemTest {
 
         // filter 모킹
         SearchFilterDto filterMock = mock(SearchFilterDto.class);
-        when(filterMock.getCategory()).thenReturn("액티비티");
+        when(filterMock.getCategories().getFirst()).thenReturn("액티비티");
 
         when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
 
@@ -338,7 +338,7 @@ public class TourItemTest {
 
 
     @Test
-    @DisplayName("상품_여행 수정 실패 성공 테스트")
+    @DisplayName("상품_여행 수정 성공 테스트")
     public void itemTourUpdateSuccessTest() throws Exception {
         //given
         String url = "/api/tours/{id}";
