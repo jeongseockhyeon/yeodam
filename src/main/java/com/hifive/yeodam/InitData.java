@@ -61,6 +61,7 @@ public class InitData {
                 Tour tour = Tour.builder()
                         .itemName("제주도 푸른밤")
                         .price(100)
+                        .stock(1)
                         .build();
 
                 em.persist(tour);

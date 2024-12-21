@@ -59,6 +59,7 @@
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .back-button {
             position: absolute;
             top: 5px;
@@ -112,7 +113,7 @@
 <body>
 <div class="custom-container">
     <a href="#" class="back-button">←</a>
-    <form th:action="@{/order}" method="post" th:object="${orderRequest}" id="order-form">
+    <form action="/order" method="post" th:object="${orderRequest}" id="order-form">
 
         <!-- 상품 정보 -->
         <div class="section" th:each="item : ${orderRequest.items}">
@@ -138,7 +139,8 @@
             </div>
             <div class="input-field">
                 <label for="message">예약 메시지</label>
-                <textarea maxlength="255" id="message" th:field="*{orderMessage}" placeholder="특이사항이나 요구사항을 적어주세요."></textarea>
+                <textarea maxlength="255" id="message" th:field="*{orderMessage}"
+                          placeholder="특이사항이나 요구사항을 적어주세요."></textarea>
             </div>
         </div>
         <div id="policy">
@@ -153,22 +155,27 @@
 </div>
 </body>
 <script th:inline="javascript">
-    async function submitOrder() {
 
-        const createPaymentURL = "/api/payment?orderUid=";
+    const createPaymentURL = "/api/payment?orderUid=";
+    const paymentStatusCheckUrl = "/api/payment/check?orderUid=";
+
+    async function submitOrder() {
 
         const form = document.getElementById('order-form');
         const data = new FormData(form);
-
         try {
             let responseJson = await (await fetch(form.action, {
-                method: 'POST',
+                method: "POST",
                 body: data
             })).json();
+
+            sessionStorage.setItem("orderUid", responseJson.orderUid);
+
 
             const paymentData = await (await fetch(createPaymentURL + responseJson.orderUid, {
                 method: "POST",
             })).json();
+
 
             var IMP = window.IMP;
             IMP.init('imp65451236'); // 아임포트 가맹점 식별코드
@@ -183,7 +190,22 @@
             );
 
         } catch (error) {
+
         }
     }
+
+    window.addEventListener("load", () => {
+        sessionStorage.clear();
+    });
+
+    window.addEventListener("beforeunload", () => {
+        if (sessionStorage.getItem("orderUid")) {
+            let orderUid = sessionStorage.getItem("orderUid");
+            fetch(paymentStatusCheckUrl + orderUid, {
+                    method: "POST"
+                }
+            );
+        }
+    });
 </script>
 </html>
