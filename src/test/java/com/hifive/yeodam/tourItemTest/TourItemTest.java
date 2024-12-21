@@ -1,14 +1,16 @@
 package com.hifive.yeodam.tourItemTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.seller.entity.Seller;
+import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.tour.controller.TourItemApiController;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemResDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
-import com.hifive.yeodam.tour.repository.TourRepositoryCustom;
+import com.hifive.yeodam.tour.repository.TourRepository;
 import com.hifive.yeodam.tour.service.TourItemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +54,10 @@ public class TourItemTest {
     private TourItemService tourItemService;
 
     @Mock
-    private TourRepositoryCustom tourRepositoryCustom;
+    private SellerService sellerService;
+
+    @Mock
+    private TourRepository tourRepository;
 
     @InjectMocks
     private TourItemApiController tourItemAPIController;
@@ -459,5 +464,38 @@ public class TourItemTest {
         assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
         verify(tourItemService,times(1)).delete(tourItemId);
     }
+    @Test
+    @DisplayName("업체별 여행 상품 목록 조회")
+    public void tourItemFindBySellerTest(){
+        //given
+        Auth mockAuth = mock(Auth.class);
+        Seller mockSeller = mock(Seller.class);
+
+        Tour mockTour1 = mock(Tour.class);
+        when(mockTour1.getId()).thenReturn(1L);
+        when(mockTour1.getItemName()).thenReturn("test1");
+        when(mockTour1.getSeller()).thenReturn(mockSeller);
+
+        Tour mockTour2 = mock(Tour.class);
+        when(mockTour2.getId()).thenReturn(2L);
+        when(mockTour2.getItemName()).thenReturn("test2");
+        when(mockTour2.getSeller()).thenReturn(mockSeller);
+
+        List <TourItemResDto> mockTourItemResDtoList =  List.of(new TourItemResDto(mockTour1),new TourItemResDto(mockTour2));
+
+        when(sellerService.getSellerByAuth(mockAuth)).thenReturn(mockSeller);
+        when(tourItemService.findBySeller(mockAuth)).thenReturn(mockTourItemResDtoList);
+
+        //when
+        List<TourItemResDto> result = tourItemService.findBySeller(mockAuth);
+
+        //then
+        assertEquals(2, result.size());
+        assertEquals("test1", result.get(0).getTourName());
+        assertEquals("test2", result.get(1).getTourName());
+
+        verify(tourItemService, times(1)).findBySeller(mockAuth);
+    }
+
 
 }
