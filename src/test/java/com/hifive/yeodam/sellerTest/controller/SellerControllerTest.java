@@ -149,7 +149,7 @@ class SellerControllerTest {
         verify(sellerService, times(1)).deleteSeller(anyLong());
     }
 
-//    // 판매자 전체 조회
+//    // 판매자 전체 조회 (사용 X)
 //    @Test
 //    void getAllSellersTest() {
 //        // given

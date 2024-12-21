@@ -1,9 +1,12 @@
 package com.hifive.yeodam.sellerTest.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.entity.Role;
+import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.auth.repository.RoleRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
@@ -30,32 +33,35 @@ class SellerServiceTest {
     @Mock
     private AuthRepository authRepository;
 
+    @Mock
+    private RoleRepository roleRepository;
+
     @InjectMocks
     private SellerService sellerService;
 
     private Seller seller;
     private Auth auth;
+    private Role role;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(null, "email@email.com", "password", "01012341234");
-        seller = new Seller(null, auth, "Company", "Owner", "Company Bio");
+        auth = new Auth(null, "email@email.com", "password");
+        role = new Role(auth, RoleType.SELLER);
+        seller = new Seller(null, auth, "Company", "Owner", "Company Bio", "01012345678");
     }
 
     // 판매자 등록 성공
     @Test
     void createSellerTest() {
         // given
-        SellerJoinRequest joinRequest = new SellerJoinRequest();
-        joinRequest.setEmail("email@email.com");
-        joinRequest.setPassword("password");
-        joinRequest.setPhone("01012341234");
-        joinRequest.setCompanyName("Company");
-        joinRequest.setOwner("Owner");
-        joinRequest.setBio("Company Bio");
+        SellerJoinRequest joinRequest = mock(SellerJoinRequest.class);
+        when(joinRequest.getEmail()).thenReturn("email@email.com");
+        when(joinRequest.getCompanyName()).thenReturn("Company");
+        when(joinRequest.getOwner()).thenReturn("Owner");
 
         when(authRepository.existsByEmail(anyString())).thenReturn(true);
+        when(roleRepository.save(any(Role.class))).thenReturn(role);
         when(sellerRepository.save(any(Seller.class))).thenReturn(seller);
 
         // when
@@ -73,10 +79,10 @@ class SellerServiceTest {
     @Test
     void createSellerTest_fail_invalidData() {
         // given
-        SellerJoinRequest joinRequest = new SellerJoinRequest("email@email.com", "password", "01012341234", "Company", "Owner", "Company Bio"
-        );
+        SellerJoinRequest joinRequest = mock(SellerJoinRequest.class);
+        when(joinRequest.getEmail()).thenReturn("email@email.com");
 
-        when(authRepository.existsByEmail(anyString())).thenReturn(false);
+        when(authRepository.existsByEmail("email@email.com")).thenReturn(false);
 
         // when & then
         AuthException exception = assertThrows(AuthException.class, () -> {
@@ -92,13 +98,10 @@ class SellerServiceTest {
     @Test
     void updateSellerTest() {
         // given
-        SellerUpdateRequest updateRequest = new SellerUpdateRequest();
-        updateRequest.setCompanyName("Updated Company");
-        updateRequest.setOwner("Updated Owner");
-        updateRequest.setBio("Updated Bio");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "01087654321");
 
         when(sellerRepository.findById(anyLong())).thenReturn(Optional.of(seller));
-        when(sellerRepository.save(any(Seller.class))).thenReturn(seller);
+        when(sellerRepository.save(seller)).thenReturn(seller);
 
         // when
         Seller updatedSeller = sellerService.updateSeller(1L, updateRequest);
@@ -139,17 +142,17 @@ class SellerServiceTest {
         verify(sellerRepository, times(1)).deleteById(1L);
     }
 
-    // 판매자 전제 조회
-    @Test
-    void getAllSellersTest() {
-        when(sellerRepository.findAll()).thenReturn(List.of(seller));
-
-        var sellers = sellerService.getAllSellers();
-
-        assertNotNull(sellers);
-        assertEquals(1, sellers.size());
-        verify(sellerRepository, times(1)).findAll();
-    }
+//    // 판매자 전제 조회 (사용 X)
+//    @Test
+//    void getAllSellersTest() {
+//        when(sellerRepository.findAll()).thenReturn(List.of(seller));
+//
+//        var sellers = sellerService.getAllSellers();
+//
+//        assertNotNull(sellers);
+//        assertEquals(1, sellers.size());
+//        verify(sellerRepository, times(1)).findAll();
+//    }
 
     // 판매자 단일 조회
     @Test
