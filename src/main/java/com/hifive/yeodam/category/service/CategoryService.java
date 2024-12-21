@@ -20,7 +20,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     /*카테고리 등록*/
-    public Category saveCategory(CategoryReqDto categoryReqDto) {
+    public CategoryResDto saveCategory(CategoryReqDto categoryReqDto) {
 
         if (categoryReqDto.getParentCategoryId() == null) {
             Category newCategory = Category.builder()
@@ -28,7 +28,8 @@ public class CategoryService {
                     .parent(null)
                     .build();
 
-            return categoryRepository.save(newCategory);
+            Category savedCategory = categoryRepository.save(newCategory);
+            return new CategoryResDto(savedCategory);
         }
         Category parentCategory = categoryRepository.findById(categoryReqDto.getParentCategoryId())
                 .orElseThrow(()->new RuntimeException("해당 상위 카테고리는 존재하지 않습니다."));
@@ -37,8 +38,8 @@ public class CategoryService {
                 .name(categoryReqDto.getCategoryName())
                 .parent(parentCategory)
                 .build();
-
-        return categoryRepository.save(newCategory);
+        Category savedCategory = categoryRepository.save(newCategory);
+        return new CategoryResDto(savedCategory);
     }
     /*카테고리 전체 목록 조회*/
     public List<CategoryResDto> findAllCategory() {
@@ -56,13 +57,15 @@ public class CategoryService {
         return new CategoryResDto(category);
     }
     /*카테고리 수정*/
-    public Category updateCategory(Long id, CategoryReqDto categoryReqDto) {
+    public CategoryResDto updateCategory(Long id, CategoryReqDto categoryReqDto) {
 
         Category targetCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
 
         targetCategory.updateCategory(categoryReqDto.getCategoryName());
-        return categoryRepository.save(targetCategory);
+        Category updatedCategory = categoryRepository.save(targetCategory);
+
+        return new CategoryResDto(updatedCategory);
     }
     /*카테고리 삭제*/
     public void deleteCategory(Long id) {
