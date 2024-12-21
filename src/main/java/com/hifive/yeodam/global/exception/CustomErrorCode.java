@@ -17,6 +17,15 @@ public enum CustomErrorCode {
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품이 존재하지 않습니다"),
     GUIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 가이드가 존재하지 않습니다"),
 
+    // Cart 관련 ERROR
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
+    LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"),
+    CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다"),
+    CART_ITEM_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 장바구니에 존재하는 상품입니다"),
+    CART_ITEM_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "상품 유형이 일치하지 않습니다"),
+    CART_ITEM_COUNT_NOT_MODIFIABLE(HttpStatus.BAD_REQUEST, "예약 상품은 수량 변경이 불가능합니다"),
+    INVALID_ITEM_COUNT(HttpStatus.BAD_REQUEST, "수량은 1개 이상이어야 합니다"),
+
     //주문 관련 ERROR
     NOT_ENOUGH_STOCK(HttpStatus.NOT_FOUND, "해당 상품의 재고가 없습니다"),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문이 존재하지 않습니다"),
