@@ -111,6 +111,7 @@ class SellerServiceTest {
         assertEquals("Updated Company", updatedSeller.getCompanyName());
         assertEquals("Updated Owner", updatedSeller.getOwner());
         assertEquals("Updated Bio", updatedSeller.getBio());
+        assertEquals("01087654321", updatedSeller.getPhone());
         verify(sellerRepository, times(1)).findById(1L);
         verify(sellerRepository, times(1)).save(any(Seller.class));
     }
