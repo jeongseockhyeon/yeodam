@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,11 @@ public class TourItemTest {
 
         List<Long> guideIds = new ArrayList<>();
         guideIds.add(1L);
-        
+
+        MultipartFile image = mock(MultipartFile.class);
+        List<MultipartFile> images = new ArrayList<>();
+        images.add(image);
+
         TourItemReqDto tourItemReqDto = mock(TourItemReqDto.class);
         when(tourItemReqDto.getTourName()).thenReturn(tourName);
         when(tourItemReqDto.getTourDesc()).thenReturn(tourDesc);
@@ -102,6 +107,8 @@ public class TourItemTest {
         when(tourItemReqDto.getMaximum()).thenReturn(tourMaximum);
         when(tourItemReqDto.getCategoryIdList()).thenReturn(categoryIds);
         when(tourItemReqDto.getGuideIdList()).thenReturn(guideIds);
+        //이미지 저장
+        when(tourItemReqDto.getTourImages()).thenReturn(images);
 
         Auth mockAuth = mock(Auth.class);
         Seller mockSeller = mock(Seller.class);
