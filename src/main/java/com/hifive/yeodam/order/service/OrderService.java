@@ -1,6 +1,5 @@
 package com.hifive.yeodam.order.service;
 
-import com.hifive.yeodam.global.constant.ItemConst;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
@@ -52,8 +51,12 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(String orderUid) {
+
         Order order = orderRepository.findByOrderUid(orderUid)
                 .orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
+
+        List<OrderDetail> orderDetails = order.getOrderDetails();
+        orderDetails.forEach(od -> od.getItem().addStock());
 
         order.cancelOrder();
     }
@@ -67,9 +70,11 @@ public class OrderService {
             Item item = itemRepository.findById(requestItem.getId())
                     .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND));
 
-            if (item.getStock() == ItemConst.OUT_OF_STOCK) {
+            if (item.getStock() == 0) {
                 throw new CustomException(NOT_ENOUGH_STOCK);
             }
+
+            item.removeStock();
 
             OrderDetail orderDetail = OrderDetail.create(item, requestItem.getCount(), item.getPrice());
             orderDetails.add(orderDetail);
