@@ -1,9 +1,13 @@
 package com.hifive.yeodam.cart.dto;
 
 import com.hifive.yeodam.cart.entity.Cart;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartResponseDto {
     private Long cartId;
     private Long itemId;
@@ -12,7 +16,8 @@ public class CartResponseDto {
     private int count;
     private boolean countModifiable; //수량 변경 가능 여부
 
-    public CartResponseDto(Cart cart) {
+    @Builder
+    private CartResponseDto(Cart cart) {
         this.cartId = cart.getId();
         this.itemId = cart.getItem().getId();
         this.itemName = cart.getItem().getItemName();

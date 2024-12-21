@@ -1,10 +1,14 @@
 package com.hifive.yeodam.cart.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartUpdateCountDto {
     private int count;
+
+    @Builder
+    private CartUpdateCountDto(int count) {
+        this.count = count;
+    }
 }

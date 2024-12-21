@@ -1,18 +1,16 @@
 package com.hifive.yeodam.cart.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartRequestDto {
     private Long itemId;
-    private int count; //추가할 상품 수량
-    private boolean reservation;
+    private int count;
 
-    public CartRequestDto(Long itemId, int count, boolean reservation) {
+    @Builder
+    private CartRequestDto(Long itemId, int count) {
         this.itemId = itemId;
         this.count = count;
-        this.reservation = reservation;
     }
 }
