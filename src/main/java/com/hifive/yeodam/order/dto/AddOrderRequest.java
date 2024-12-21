@@ -15,7 +15,7 @@ public class AddOrderRequest {
     private String bookerName;
     private String phoneNumber;
     private String orderMessage;
-    private List<ItemRequest> items = new ArrayList<>();
+    private List<ItemRequest> items;
 
     @Data
     @NoArgsConstructor
