@@ -26,7 +26,7 @@ public class UserViewController {
     private final AuthService authService;
 
     @GetMapping("/join")
-    public String joinForm(Model model) {
+    public String userJoinForm(Model model) {
 
         model.addAttribute("joinRequest", new JoinRequest());
 
@@ -34,7 +34,7 @@ public class UserViewController {
     }
 
     @PostMapping("/join")
-    public String join(@Valid @ModelAttribute JoinRequest joinRequest, BindingResult result) {
+    public String userJoin(@Valid @ModelAttribute JoinRequest joinRequest, BindingResult result) {
 
         authService.checkDuplicatedEmail(joinRequest, result);
         userService.checkDuplicatedNickname(joinRequest, result);
@@ -46,13 +46,7 @@ public class UserViewController {
         Auth auth = authService.addAuth(joinRequest);
         userService.addUser(joinRequest, auth);
 
-        return "redirect:/";
-    }
-
-    @GetMapping("/login")
-    public String login() {
-
-        return "user/login";
+        return "redirect:/login";
     }
 
     @GetMapping("/logout")
@@ -68,7 +62,13 @@ public class UserViewController {
                         .getAuthentication()
         );
 
-        return "redirect:/login";
+        return "redirect:/";
+    }
+
+    @GetMapping("/myPage")
+    public String myPage(Model model) {
+
+        return "user/detail";
     }
 
     @PostMapping("/email-check")

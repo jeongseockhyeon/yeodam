@@ -1,17 +1,19 @@
 package com.hifive.yeodam.cart.entity;
 
 
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cart {
 
     @Id
@@ -29,13 +31,11 @@ public class Cart {
 
     private int count;
 
-    private boolean reservation;
-
+    @Builder
     public Cart(User user, Item item) {
         this.user = user;
         this.item = item;
         this.count = 1;
-        this.reservation = item.isReservation();
     }
 
     //동일 상품 존재 여부 확인
@@ -45,7 +45,7 @@ public class Cart {
 
     //수량 변경 가능 여부 확인
     public boolean isCountModifiable() {
-        return !reservation;
+        return !item.isReservation();
     }
 
     //상품의 현재 가격 실시간 반환
@@ -53,12 +53,25 @@ public class Cart {
         return item.getPrice() * count;
     }
 
-    //일반 상품 수량 업데이트
+    //장바구니에서 수량 변경
     public void updateCount(int count) {
         if (item.isReservation()) {
-            throw new IllegalStateException("예약 상품은 수량 변경이 불가능합니다.");
+            throw new CustomException(CustomErrorCode.CART_ITEM_COUNT_NOT_MODIFIABLE);
+        }
+        if (count <= 1) {
+            throw new CustomException(CustomErrorCode.INVALID_ITEM_COUNT);
+        }
+        this.count = count;
+    }
+
+    //로컬 연동시 수량 추가
+    public void addCount(int count) {
+        if (item.isReservation()) {
+            throw new CustomException(CustomErrorCode.CART_ITEM_COUNT_NOT_MODIFIABLE);
+        }
+        if (count <= 1) {
+            throw new CustomException(CustomErrorCode.INVALID_ITEM_COUNT);
         }
         this.count += count;
     }
-
 }

@@ -1,9 +1,13 @@
 package com.hifive.yeodam.tour.service;
 
+import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
+import com.hifive.yeodam.image.service.ImageService;
+import com.hifive.yeodam.item.entity.ItemImage;
+import com.hifive.yeodam.item.repository.ItemImageRepository;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
@@ -22,9 +26,12 @@ import com.hifive.yeodam.tour.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -41,12 +48,14 @@ public class TourItemService {
     private final static boolean reservation = true;
     private final CategoryRepository categoryRepository;
     private final GuideRepository guideRepository;
+    private final ImageService imageService;
+    private final ItemImageRepository itemImageRepository;
 
 
     /*상품_여행 등록*/
-    public TourItemResDto saveTourItem(TourItemReqDto tourItemReqDto) {
+    public TourItemResDto saveTourItem(TourItemReqDto tourItemReqDto,Auth auth)  {
 
-        Seller seller = sellerService.getSellerById(tourItemReqDto.getSellerId());
+        Seller seller = sellerService.getSellerByAuth(auth);
 
         Tour tourItem = Tour.builder()
                 .seller(seller)
@@ -64,7 +73,10 @@ public class TourItemService {
 
         /*여행_카테고리 저장*/
         if(tourItemReqDto.getCategoryIdList() != null ) {
-            for(Long categoryId : tourItemReqDto.getCategoryIdList()){
+            List<Long> categoryIdList = Arrays.stream(tourItemReqDto.getCategoryIdList().replaceAll("[\\[\\]\\s]", "").split(","))
+                    .map(Long::valueOf)
+                    .collect(Collectors.toList());
+            for(Long categoryId : categoryIdList){
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
                 TourCategory tourCategory = TourCategory.builder()
@@ -85,6 +97,22 @@ public class TourItemService {
                 tourGuideRepository.save(tourGuide);
             }
 
+        }
+
+        /*여행 상품 이미지 저장*/
+        if(tourItemReqDto.getTourImages() != null ){
+            for(MultipartFile imageFile : tourItemReqDto.getTourImages()){
+                String originalName = imageFile.getOriginalFilename();
+                String storePath = imageService.upload(imageFile);
+
+                ItemImage itemImage = ItemImage.builder()
+                        .item(savedTour)
+                        .originalName(originalName)
+                        .storePath(storePath)
+                        .build();
+
+                itemImageRepository.save(itemImage);
+            }
         }
         return new TourItemResDto(savedTour);
     }
@@ -121,8 +149,8 @@ public class TourItemService {
     public TourItemResDto update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
         Tour targetTour = tourRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
-        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getPrice());
-        targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(), tourItemUpdateReqDto.getDescription());
+        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getDescription(),tourItemUpdateReqDto.getPrice());
+        targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(),tourItemUpdateReqDto.getMaximum());
 
         if(tourItemUpdateReqDto.getAddCategoryIds() != null){
             for(Long categoryId : tourItemUpdateReqDto.getAddCategoryIds()){
@@ -168,5 +196,13 @@ public class TourItemService {
                         .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
         tourRepository.delete(targetTour);
     }
-
+    /*상품_여행 판매자 조회*/
+    public List<TourItemResDto> findBySeller(Auth auth){
+        Seller seller = sellerService.getSellerByAuth(auth);
+        List<Tour> sellerTours = tourRepository.findBySeller(seller);
+        List<TourItemResDto> tourItemResDtos = sellerTours.stream()
+                .map(TourItemResDto::new)
+                .toList();
+        return tourItemResDtos;
+    }
 }

@@ -1,12 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Yeodam</title>
 </head>
 <body>
-<h1>Yeodam 홈 페이지</h1>
+<h2>Yeodam</h2>
+
+<th:block sec:authorize="isAnonymous()">
+    <!-- 인증 받지 않음 -->
+    <button onclick="location.href='/login'">로그인</button>
+    <button onclick="location.href='/join'">회원가입</button>
+</th:block>
+
+<th:block sec:authorize="isAuthenticated()">
+    <h2 th:text="${#authentication.principal.Username} + '님'">Anonymous</h2>
+    <!-- 인증 받음 -->
+    <button onclick="location.href='/sellers/myPage'">마이페이지</button>
+    <button onclick="location.href='/logout'">로그아웃</button>
+</th:block>
+
 <hr>
-<a href="/users/logout">로그아웃</a>
 </body>
 </html>

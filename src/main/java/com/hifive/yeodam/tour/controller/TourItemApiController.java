@@ -1,35 +1,31 @@
 package com.hifive.yeodam.tour.controller;
 
+import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
 import com.hifive.yeodam.tour.service.TourItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/tours")
-@Slf4j
 @RestController
-public class TourItemAPIController {
+public class TourItemApiController {
     private final TourItemService tourItemService;
 
     @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody TourItemReqDto tourItemReqDto) {
-        return ResponseEntity.status(CREATED).body(tourItemService.saveTourItem(tourItemReqDto));
+    public ResponseEntity<?> save(@Valid @ModelAttribute TourItemReqDto tourItemReqDto, @AuthenticationPrincipal Auth auth) {
+        return ResponseEntity.status(CREATED).body(tourItemService.saveTourItem(tourItemReqDto,auth));
     }
 
     @GetMapping
     public ResponseEntity<?> findAll(@ModelAttribute SearchFilterDto searchFilterDto) {
-/*        if(searchFilterDto != null){
-            return ResponseEntity.ok(tourItemService.getSearchFilterTour(searchFilterDto));
-        }*/
-        log.info("searchFilterDto: {}", searchFilterDto.getCategory());
         return ResponseEntity.ok(tourItemService.getSearchFilterTour(searchFilterDto));
     }
 

@@ -19,11 +19,7 @@ public class Tour extends Item {
 
     private String period;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
     private int maximum;
-
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();
@@ -44,18 +40,17 @@ public class Tour extends Item {
                 int stock
                 )
     {
-        super(seller,itemName,price,reservation,stock);
+        super(seller,itemName,description,price,reservation,stock);
         this.region = region;
         this.period = period;
-        this.description = description;
         this.maximum = maximum;
     }
 
 
     @Override
-    public void updateSubItem(String... args) {
-        this.region = args[0];
-        this.period = args[1];
-        this.description = args[2];
+    public void updateSubItem(String region, String period, int maximum) {
+        this.region = region;
+        this.period = period;
+        this.maximum = maximum;
     }
 }

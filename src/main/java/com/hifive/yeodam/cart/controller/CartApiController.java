@@ -1,10 +1,8 @@
 package com.hifive.yeodam.cart.controller;
 
-import com.hifive.yeodam.cart.dto.CartRequestDto;
-import com.hifive.yeodam.cart.dto.CartResponseDto;
-import com.hifive.yeodam.cart.dto.CartTotalPriceDto;
-import com.hifive.yeodam.cart.dto.CartUpdateCountDto;
+import com.hifive.yeodam.cart.dto.*;
 import com.hifive.yeodam.cart.service.CartService;
+import com.hifive.yeodam.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +15,17 @@ import java.util.List;
 public class CartApiController {
 
     private final CartService cartService;
+
+    //로컬 - 서버 동기화
+    @PostMapping("/sync")
+    public ResponseEntity<Void> syncCart(@RequestBody List<LocalStorageCartDto> localStorageCart) {
+        try {
+            cartService.syncCartWithLocal(localStorageCart);
+            return ResponseEntity.ok().build();
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getCustomErrorCode().getHttpStatus()).build();
+        }
+    }
 
     //장바구니 상품 추가
     @PostMapping
@@ -46,8 +55,8 @@ public class CartApiController {
         try {
             CartResponseDto responseDto = cartService.updateCartCount(cartId, updateDto);
             return ResponseEntity.ok(responseDto);
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getCustomErrorCode().getHttpStatus()).build();
         }
     }
 

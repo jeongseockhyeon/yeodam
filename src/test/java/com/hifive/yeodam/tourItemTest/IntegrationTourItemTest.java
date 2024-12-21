@@ -1,7 +1,6 @@
-package com.hifive.yeodam.itemTourTest;
+package com.hifive.yeodam.tourItemTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.SellerRepository;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemResDto;
@@ -54,7 +53,7 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 등록 테스트")
-    public void itemTourSaveTest() throws Exception {
+    public void tourItemSaveTest() throws Exception {
 
         //given
         Long sellerId = 1L;
@@ -64,9 +63,7 @@ public class IntegrationTourItemTest {
         String tourRegion = "제주";
         int maximum = 2;
 
-        List<Long> categoryIds = new ArrayList<>();
-        categoryIds.add(1L);
-        categoryIds.add(2L);
+        String categoryIds = "[1,2]";
 
         List<Long> guideIds = new ArrayList<>();
         guideIds.add(1L);
@@ -74,7 +71,6 @@ public class IntegrationTourItemTest {
         int tourPrice = 100;
 
         TourItemReqDto tourItemReqDto = new TourItemReqDto();
-        tourItemReqDto.setSellerId(sellerId);
         tourItemReqDto.setTourName(tourName);
         tourItemReqDto.setTourDesc(tourDesc);
         tourItemReqDto.setTourPeriod(tourPeriod);
@@ -87,9 +83,6 @@ public class IntegrationTourItemTest {
         String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
 
-        Seller seller = sellerRepository.findById(sellerId).get();
-
-
         //when
         ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
 
@@ -98,7 +91,6 @@ public class IntegrationTourItemTest {
 
         //then
         result.andExpect(status().isCreated());
-        //assertEquals(seller.getCompanyId(), tour.getSeller().getCompanyId());
         assertEquals(tourName,tour.getTourName());
         assertEquals(tourDesc,tour.getTourDesc());
         assertEquals(tourPeriod,tour.getTourPeriod());
@@ -108,10 +100,10 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 목록 조회 테스트")
-    public void itemFindAllTest() throws Exception {
+    public void tourItemFindAllTest() throws Exception {
         //given
         String url ="/api/tours";
-        int testCount = 4;
+        int testCount = 6;
 
         //when
         ResultActions resultActions = mockMvc.perform(get(url));
@@ -127,16 +119,15 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 단일 조회 테스트")
-    public void itemFindByIdTest() throws Exception {
+    public void tourItemFindByIdTest() throws Exception {
         //given
-        //Long sellerId = 1L;
         String tourName = "test";
         String tourDesc = "test";
         String tourPeriod = "1일";
         String tourRegion = "제주";
         int tourPrice = 100;
         String url = "/api/tours/{id}";
-        Long tourItemId = 1L;
+        Long tourItemId = 10L;
 
         //when
         ResultActions resultActions = mockMvc.perform(get(url,tourItemId));
@@ -154,10 +145,10 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 수정 테스트")
-    public void itemTourUpdateTest() throws Exception {
+    public void tourItemUpdateTest() throws Exception {
         //given
         String url = "/api/tours/{id}";
-        Long tourItemId = 7L;
+        Long tourItemId = 10L;
 
         String tourName = "update name";
         String tourDesc = "update desc";
@@ -198,20 +189,16 @@ public class IntegrationTourItemTest {
 
         //then
         resultActions.andExpect(status().isOk());
-/*                .andExpect(jsonPath("$.itemName").value(tourName))
-                .andExpect(jsonPath("$.description").value(tourDesc))
-                .andExpect(jsonPath("$.period").value(tourPeriod))
-                .andExpect(jsonPath("$.region").value(tourRegion))
-                .andExpect(jsonPath("$.price").value(tourPrice));*/
+
 
     }
 
     @Test
     @DisplayName("상품_여행 삭제 테스트")
-    public void itemTourDeleteTest() throws Exception {
+    public void tourItemDeleteTest() throws Exception {
         //given
         String url = "/api/tours/{id}";
-        Long tourItemId = 2L;
+        Long tourItemId = 3L;
 
         //when
         ResultActions resultActions = mockMvc.perform(delete(url,tourItemId));

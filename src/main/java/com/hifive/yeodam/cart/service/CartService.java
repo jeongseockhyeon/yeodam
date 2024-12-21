@@ -3,6 +3,8 @@ package com.hifive.yeodam.cart.service;
 import com.hifive.yeodam.cart.dto.*;
 import com.hifive.yeodam.cart.entity.Cart;
 import com.hifive.yeodam.cart.repository.CartRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.user.entity.User;
@@ -38,9 +40,11 @@ public class CartService {
             return null;
         }
 
-        return userRepository.findById(1L) //인증 구현 후 수정 예정
-                .orElse(null);
-
+        //로그인 사용자 정보 가져오기
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+            //AuthException으로 처리 예정
     }
 
     public List<Cart> getCartList() {
@@ -56,15 +60,29 @@ public class CartService {
     public void syncCartWithLocal(List<LocalStorageCartDto> localStorageCart) {
         User user = getCurrentUser();
         if (user == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+            throw new CustomException(CustomErrorCode.LOGIN_REQUIRED);
         }
 
         for (LocalStorageCartDto localItem : localStorageCart) {
-            CartRequestDto requestDto = new CartRequestDto(localItem.getItemId(), localItem.getCount());
             try {
+                if (localItem.isReservation()) {
+                    Item item = itemRepository.findById(localItem.getItemId())
+                            .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
+
+                    boolean exists = cartRepository.findByUserAndItem(user, item).isPresent();
+                    if (exists) {
+                        log.warn("장바구니에 이미 존재하는 상품입니다. itemId: " + localItem.getItemId());
+                        continue;
+                    }
+                }
+                CartRequestDto requestDto = CartRequestDto.builder()
+                        .itemId(localItem.getItemId())
+                        .count(localItem.getCount())
+                        .reservation(localItem.isReservation())
+                        .build();
+
                 addCart(requestDto);
             } catch (Exception e) {
-                //연동 오류 처리
                 log.warn("장바구니 연동 중 오류 발생: " + e.getMessage());
             }
         }
@@ -77,12 +95,15 @@ public class CartService {
         User user = getCurrentUser();
         if (user == null) {
             //비로그인 상태는 로컬 스토리지 저장 - 예외 발생
-            throw new IllegalStateException("장바구니에 상품을 저장할 수 없습니다.");
+            throw new CustomException(CustomErrorCode.LOGIN_REQUIRED);
         }
 
         Item item = itemRepository.findById(requestDto.getItemId())
-                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
 
+        if (item.isReservation() != requestDto.isReservation()) {
+            throw new CustomException(CustomErrorCode.CART_ITEM_TYPE_MISMATCH);
+        }
         //동일 상품 확인
         Optional<Cart> existingCart = cartRepository.findByUserAndItem(user, item);
 
@@ -90,67 +111,89 @@ public class CartService {
             if (!item.isReservation()) {
                 //일반 상품인 경우 수량 증가
                 Cart cart = existingCart.get();
-                cart.updateCount(cart.getCount() + requestDto.getCount());
-                return new CartResponseDto(cart);
-            } else {
-                throw new IllegalStateException("이미 장바구니에 존재하는 상품입니다.");
+                cart.addCount(requestDto.getCount());
+                return CartResponseDto.builder()
+                        .cart(cart)
+                        .build();
             }
+            throw new CustomException(CustomErrorCode.CART_ITEM_DUPLICATE);
         }
 
-        //장바구니에 없는 상품인 경우 추가
-        Cart cart = new Cart(user, item);
+        Cart cart = Cart.builder()
+                .user(user)
+                .item(item)
+                .build();
+
         if (!item.isReservation()) {
             cart.updateCount(requestDto.getCount());
         }
-        Cart savedCart = cartRepository.save(cart);
 
-        return new CartResponseDto(savedCart);
+        Cart savedCart = cartRepository.save(cart);
+        return CartResponseDto.builder()
+                .cart(savedCart)
+                .build();
     }
 
     @Transactional
     public CartResponseDto updateCartCount(Long cartId, CartUpdateCountDto updateDto) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.CART_NOT_FOUND));
 
         //수량 변경 가능 여부 확인
-        if (!cart.isCountModifiable()) {
-            throw new IllegalStateException("예약 상품은 수량 변경이 불가능합니다.");
+        if (cart.getItem().isReservation() != updateDto.isReservation()) {
+            throw new CustomException(CustomErrorCode.CART_ITEM_TYPE_MISMATCH);
         }
-        if (updateDto.getCount() < 1) {
-            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        if (!cart.isCountModifiable()) {
+            throw new CustomException(CustomErrorCode.CART_ITEM_COUNT_NOT_MODIFIABLE);
         }
 
         cart.updateCount(updateDto.getCount());
-        return new CartResponseDto(cart);
+        return CartResponseDto.builder()
+                .cart(cart)
+                .build();
     }
 
     public CartTotalPriceDto getTotalPrice() {
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        User user = getCurrentUser();
+        if (user == null) {
+            //로컬 스토리지 이용
+            return CartTotalPriceDto.builder()
+                    .totalPrice(0)
+                    .build();
+        }
 
         int totalPrice = cartRepository.findByUser(user).stream()
                 .mapToInt(Cart::getPrice)
                 .sum();
-        return new CartTotalPriceDto(totalPrice);
+        return CartTotalPriceDto.builder()
+                .totalPrice(totalPrice)
+                .build();
     }
 
     public CartTotalPriceDto getSelectedPrice(List<Long> cartIds) {
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        User user = getCurrentUser();
+        if (user == null) {
+            //로컬 스토리지 이용
+            return CartTotalPriceDto.builder()
+                    .totalPrice(0)
+                    .build();
+        }
 
         int selectedPrice = cartRepository.findByUser(user).stream()
                 .filter(cart -> cartIds.contains(cart.getId()))
                 .mapToInt(Cart::getPrice)
                 .sum();
 
-        return new CartTotalPriceDto(selectedPrice);
+        return CartTotalPriceDto.builder()
+                .totalPrice(selectedPrice)
+                .build();
     }
 
 
     @Transactional
     public void removeCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.CART_NOT_FOUND));
 
         cartRepository.delete(cart);
     }

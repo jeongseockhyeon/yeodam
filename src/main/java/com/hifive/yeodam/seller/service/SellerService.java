@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -53,6 +54,7 @@ public class SellerService {
         existingSeller.setCompanyName(updateRequest.getCompanyName());
         existingSeller.setOwner(updateRequest.getOwner());
         existingSeller.setBio(updateRequest.getBio());
+        existingSeller.setPhone(updateRequest.getPhone());
 
         return sellerRepository.save(existingSeller);
     }
@@ -63,13 +65,18 @@ public class SellerService {
         sellerRepository.deleteById(id);
     }
 
-    // 판매자 전체 조회
-    public List<Seller> getAllSellers() {
-        return sellerRepository.findAll();
-    }
+//    // 판매자 전체 조회 (사용 X)
+//    public List<Seller> getAllSellers() {
+//        return sellerRepository.findAll();
+//    }
 
     // 판매자 단일 조회
     public Seller getSellerById(Long id) {
         return sellerRepository.findById(id).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+    }
+
+    // Auth로 판매자 조회
+    public Seller getSellerByAuth(Auth auth) {
+        return sellerRepository.findByAuthId(auth.getId()).orElseThrow(() -> new IllegalArgumentException("해당 Auth에 연결된 Seller가 없습니다."));
     }
 }

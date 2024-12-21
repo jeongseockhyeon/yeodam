@@ -4,16 +4,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 @Setter
 public class TourItemReqDto {
 
-    @NotNull
-    private Long sellerId;
 
     @NotBlank
     @Size(max = 25)
@@ -37,8 +38,29 @@ public class TourItemReqDto {
     private int maximum;
 
     @NotNull
-    private List<Long> categoryIdList;
+    private String categoryIdList;
 
-    @NotNull
     private List<Long> guideIdList;
+
+    private List<MultipartFile> tourImages;
+
+    public TourItemReqDto(String tourName,
+                          String tourDesc,
+                          String tourPeriod,
+                          String tourRegion,
+                          int tourPrice,
+                          int maximum,
+                          String categoryIdList,
+                          List<Long> guideIdList,
+                          List<MultipartFile> tourImages) {
+        this.tourName = tourName;
+        this.tourDesc = tourDesc;
+        this.tourPeriod = tourPeriod;
+        this.tourRegion = tourRegion;
+        this.tourPrice = tourPrice;
+        this.maximum = maximum;
+        this.categoryIdList = categoryIdList;
+        this.guideIdList = guideIdList;
+        this.tourImages = tourImages;
+    }
 }

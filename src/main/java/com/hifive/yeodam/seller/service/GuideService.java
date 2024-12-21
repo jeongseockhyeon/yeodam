@@ -1,7 +1,9 @@
 package com.hifive.yeodam.seller.service;
 
+import com.hifive.yeodam.seller.dto.GuideJoinRequest;
 import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,8 @@ public class GuideService {
 
     // 가이드 등록
     @Transactional
-    public Guide createGuide(Guide guide) {
+    public Guide createGuide(GuideJoinRequest joinRequest, Seller seller) {
+        Guide guide = new Guide(null, seller, joinRequest.getName(), joinRequest.getBirth(), joinRequest.getGender(), joinRequest.getPhone(), joinRequest.getBio());
         return guideRepository.save(guide);
     }
 
@@ -30,6 +33,7 @@ public class GuideService {
 
         existingGuide.setName(updateRequest.getName());
         existingGuide.setBio(updateRequest.getBio());
+        existingGuide.setPhone(updateRequest.getPhone());
 
         return guideRepository.save(existingGuide);
     }
@@ -40,10 +44,10 @@ public class GuideService {
         guideRepository.deleteById(id);
     }
 
-    // 가이드 전체 조회
-    public List<Guide> getAllGuides() {
-        return guideRepository.findAll();
-    }
+//    // 가이드 전체 조회 (사용 X)
+//    public List<Guide> getAllGuides() {
+//        return guideRepository.findAll();
+//    }
 
     // 가이드 단일 조회
     public Guide getGuideById(Long id) {
