@@ -54,6 +54,7 @@ public class SellerService {
         existingSeller.setCompanyName(updateRequest.getCompanyName());
         existingSeller.setOwner(updateRequest.getOwner());
         existingSeller.setBio(updateRequest.getBio());
+        existingSeller.setPhone(updateRequest.getPhone());
 
         return sellerRepository.save(existingSeller);
     }

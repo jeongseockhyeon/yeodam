@@ -33,6 +33,7 @@ public class GuideService {
 
         existingGuide.setName(updateRequest.getName());
         existingGuide.setBio(updateRequest.getBio());
+        existingGuide.setPhone(updateRequest.getPhone());
 
         return guideRepository.save(existingGuide);
     }
