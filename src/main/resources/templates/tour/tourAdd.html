@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <title>여행 상품 등록</title>
     <link rel="stylesheet" href="/css/tourAdd.css">
+    <style>
+        #previewContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        #previewContainer img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -20,8 +35,6 @@
             <!-- 상품 소개 -->
             <div id="intro" class="tab active-tab">
                 <h2>상품 소개</h2>
-                <label for="sellerId">판매자 ID</label>
-                <input type="number" id="sellerId" name="sellerId" required>
 
                 <label for="tourName">여행 상품명</label>
                 <input type="text" id="tourName" name="tourName" required>
@@ -39,11 +52,12 @@
                 <label for="tourRegion">여행 지역</label>
                 <input type="text" id="tourRegion" name="tourRegion" required>
 
+                <label for="maximum">최대 인원수</label>
+                <input type="number" id="maximum" name="maximum" required>
+
                 <label for="tourPrice">여행 가격</label>
                 <input type="number" id="tourPrice" name="tourPrice" required>
 
-<!--                <label for="categoryIdList">카테고리 ID 리스트 (콤마로 구분)</label>
-                <input type="text" id="categoryIdList" name="categoryIdList" placeholder="예: 1,2,3" required>-->
                 <div id="categoryCheckBox">
                     <h3>카테고리 선택</h3>
                 </div>
@@ -53,8 +67,10 @@
             <div id="photo" class="tab">
                 <h2>상품 사진</h2>
                 <label>이미지 업로드</label><br>
-                <input type="file" name="images" multiple><br>
+                <input type="file" name="images" id="tourImages" accept="image/*" multiple>
                 <p>* 최대 n장 업로드 가능</p>
+                <!-- 미리보기 영역 -->
+                <div id="previewContainer"></div>
             </div>
 
             <!-- 버튼 -->
@@ -68,5 +84,41 @@
 <script src="/js/getCategory.js"></script>
 <script src="/js/submitTour.js"></script>
 <script src="/js/showTabs.js"></script>
+<script>
+    const tourImagesInput = document.getElementById('tourImages');
+    const previewContainer = document.getElementById('previewContainer');
+    let selectedImages = []; // 업로드된 파일 배열
+
+    tourImagesInput.addEventListener('change', () => {
+        // 새로운 파일 추가
+        const files = Array.from(tourImagesInput.files);
+
+        // 기존 이미지 + 새로 선택된 이미지 처리
+        selectedImages = [...selectedImages, ...files];
+
+        // 중복 제거
+        const uniqueFiles = Array.from(new Set(selectedImages.map(file => file.name)))
+            .map(name => selectedImages.find(file => file.name === name));
+
+        selectedImages = uniqueFiles;
+
+        // 미리보기 갱신
+        updatePreview();
+    });
+
+    function updatePreview() {
+        previewContainer.innerHTML = ''; // 기존 미리보기 초기화
+
+        selectedImages.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
 </body>
 </html>
