@@ -112,11 +112,11 @@ class SellerControllerTest {
         // given
         SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "");
 
-        when(sellerService.updateSeller(sellerId, updateRequest))
+        when(sellerService.updateSeller(999L, updateRequest))
                 .thenThrow(new IllegalArgumentException("Seller not found"));
 
         // when
-        assertThrows(IllegalArgumentException.class, () -> sellerController.updateSeller(sellerId, updateRequest));
+        assertThrows(IllegalArgumentException.class, () -> sellerController.updateSeller(999L, updateRequest));
 
         // then
         verify(sellerService, times(1)).updateSeller(anyLong(), any(SellerUpdateRequest.class));
@@ -143,7 +143,7 @@ class SellerControllerTest {
         doThrow(new IllegalArgumentException("Seller not found")).when(sellerService).deleteSeller(anyLong());
 
         // when
-        assertThrows(IllegalArgumentException.class, () -> sellerController.deleteSeller(sellerId));
+        assertThrows(IllegalArgumentException.class, () -> sellerController.deleteSeller(999L));
 
         // then
         verify(sellerService, times(1)).deleteSeller(anyLong());
@@ -211,6 +211,7 @@ class SellerControllerTest {
         verify(authService, times(1)).checkEmail(anyString());
     }
 
+    // 판매자 마이 페이지 호출
     @Test
     void showMyPageTest() {
         when(authentication.getPrincipal()).thenReturn(auth);
