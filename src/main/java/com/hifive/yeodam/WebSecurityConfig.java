@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class WebSecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService authService;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
@@ -30,7 +30,7 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/join", "/order/**", "/api/**", "tours/**").permitAll()
+                        .requestMatchers("/", "/login", "/join", "/logout", "/order/**", "/api/**", "tours/**").permitAll()
                         .requestMatchers("/users/join", "/users/email-check", "/users/nickname-check", "/users/password-check").permitAll()
                         .requestMatchers("/sellers", "/sellers/join", "/sellers/check-email").permitAll()
                         .anyRequest().authenticated()
@@ -42,14 +42,19 @@ public class WebSecurityConfig {
                         .failureUrl("/login?error")
                         .permitAll()
                 )
+                .rememberMe(rm -> rm
+                        .tokenValiditySeconds(60 * 60 * 24)
+                        .key("uniqueAndSecret")
+                        .rememberMeParameter("remember-me"))
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
+                        .clearAuthentication(true)
+                        .logoutSuccessUrl("/")
                         .permitAll()
                 ).csrf(csrf -> csrf.disable())
                 .build();
     }
 
-    // 로그인 시 인증 처리할 애? 등록
+    // 로그인 시 인증 처리할 관리자 설정
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http,
                                                        PasswordEncoder passwordEncoder) throws Exception {
@@ -58,7 +63,7 @@ public class WebSecurityConfig {
                 = http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
+                .userDetailsService(authService)
                 .passwordEncoder(passwordEncoder);
 
         return authenticationManagerBuilder.build();

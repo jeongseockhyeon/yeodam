@@ -18,6 +18,11 @@ public class HomeController {
         return "login";
     }
 
+    @GetMapping("/logout")
+    public String logout() {
+
+        return "redirect:/";
+    }
 //    // 로그인 페이지 보기
 //    @GetMapping("/login")
 //    public String showLoginPage(@RequestParam(value = "error", required = false) String error, Model model) {
