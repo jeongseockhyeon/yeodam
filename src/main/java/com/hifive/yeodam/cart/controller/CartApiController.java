@@ -2,6 +2,7 @@ package com.hifive.yeodam.cart.controller;
 
 import com.hifive.yeodam.cart.dto.*;
 import com.hifive.yeodam.cart.service.CartService;
+import com.hifive.yeodam.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ public class CartApiController {
         try {
             cartService.syncCartWithLocal(localStorageCart);
             return ResponseEntity.ok().build();
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getCustomErrorCode().getHttpStatus()).build();
         }
     }
 
@@ -54,8 +55,8 @@ public class CartApiController {
         try {
             CartResponseDto responseDto = cartService.updateCartCount(cartId, updateDto);
             return ResponseEntity.ok(responseDto);
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (CustomException e) {
+            return ResponseEntity.status(e.getCustomErrorCode().getHttpStatus()).build();
         }
     }
 

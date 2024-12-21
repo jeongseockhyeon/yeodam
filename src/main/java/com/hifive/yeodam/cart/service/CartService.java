@@ -111,7 +111,7 @@ public class CartService {
             if (!item.isReservation()) {
                 //일반 상품인 경우 수량 증가
                 Cart cart = existingCart.get();
-                cart.updateCount(cart.getCount() + requestDto.getCount());
+                cart.addCount(requestDto.getCount());
                 return CartResponseDto.builder()
                         .cart(cart)
                         .build();
@@ -145,10 +145,6 @@ public class CartService {
         }
         if (!cart.isCountModifiable()) {
             throw new CustomException(CustomErrorCode.CART_ITEM_COUNT_NOT_MODIFIABLE);
-        }
-
-        if (updateDto.getCount() < 1) {
-            throw new CustomException(CustomErrorCode.INVALID_ITEM_COUNT);
         }
 
         cart.updateCount(updateDto.getCount());
