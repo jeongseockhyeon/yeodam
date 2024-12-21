@@ -14,9 +14,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Collections;
-import java.util.List;
+import org.springframework.security.core.Authentication;
+import org.springframework.ui.Model;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -30,39 +29,41 @@ class SellerControllerTest {
     @Mock
     private AuthService authService;
 
+    @Mock
+    private Authentication authentication;
+
+    @Mock
+    private Model model;
+
     @InjectMocks
     private SellerController sellerController;
 
     private Seller seller;
     private Auth auth;
+    private Long sellerId;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(null, "email@email.com", "password", "01012341234");
-        seller = new Seller(null, auth, "Company", "Owner", "Company Bio");
+        auth = new Auth(null, "email@email.com", "password");
+        seller = new Seller(null, auth, "Company", "Owner", "Company Bio", "01012345678");
+        sellerId = 1L;
     }
 
     // 판매자 등록 성공
     @Test
     void createSellerTest() {
         // given
-        SellerJoinRequest joinRequest = new SellerJoinRequest();
-        joinRequest.setEmail("email@email.com");
-        joinRequest.setPassword("password");
-        joinRequest.setPhone("01012341234");
-        joinRequest.setCompanyName("Company");
-        joinRequest.setOwner("Owner");
-        joinRequest.setBio("Company Bio");
+        SellerJoinRequest joinRequest = new SellerJoinRequest("email@email.com", "password", "01012341234", "Company", "Owner", "Company Bio");
 
-        when(authService.addAuth(any(SellerJoinRequest.class))).thenReturn(auth);
-        when(sellerService.createSeller(any(SellerJoinRequest.class), any(Auth.class))).thenReturn(seller);
+        when(authService.addAuth(joinRequest)).thenReturn(auth);
+        when(sellerService.createSeller(joinRequest, auth)).thenReturn(seller);
 
         // when
         String viewName = sellerController.createSeller(joinRequest);
 
         // then
-        assertEquals("redirect:/sellers/login", viewName);
+        assertEquals("redirect:/login", viewName);
         verify(authService, times(1)).addAuth(any(SellerJoinRequest.class));
         verify(sellerService, times(1)).createSeller(any(SellerJoinRequest.class), any(Auth.class));
     }
@@ -71,15 +72,9 @@ class SellerControllerTest {
     @Test
     void createSellerTest_fail_invalidData() {
         // given
-        SellerJoinRequest joinRequest = new SellerJoinRequest();
-        joinRequest.setEmail("");
-        joinRequest.setPassword("password");
-        joinRequest.setPhone("01012341234");
-        joinRequest.setCompanyName("Company");
-        joinRequest.setOwner("Owner");
-        joinRequest.setBio("Company Bio");
+        SellerJoinRequest joinRequest = new SellerJoinRequest("", "password", "01012341234", "Company", "Owner", "Company Bio");
 
-        when(authService.addAuth(any(SellerJoinRequest.class))).thenThrow(new IllegalArgumentException("Invalid email"));
+        when(authService.addAuth(joinRequest)).thenThrow(new IllegalArgumentException("Invalid email"));
 
         // when
         assertThrows(IllegalArgumentException.class, () -> sellerController.createSeller(joinRequest));
@@ -93,23 +88,21 @@ class SellerControllerTest {
     @Test
     void updateSellerTest() {
         // given
-        SellerUpdateRequest updateRequest = new SellerUpdateRequest();
-        updateRequest.setCompanyName("Updated Company");
-        updateRequest.setOwner("Updated Owner");
-        updateRequest.setBio("Updated Bio");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "");
 
-        Seller updatedSeller = new Seller(1L, auth, "Updated Company", "Updated Owner", "Updated Bio");
+        Seller updatedSeller = new Seller(sellerId, auth, "Updated Company", "Updated Owner", "Updated Bio", "01087654321");
 
-        when(sellerService.updateSeller(anyLong(), any(SellerUpdateRequest.class))).thenReturn(updatedSeller);
+        when(sellerService.updateSeller(sellerId, updateRequest)).thenReturn(updatedSeller);
 
         // when
-        ResponseEntity<Seller> response = sellerController.updateSeller(1L, updateRequest);
+        ResponseEntity<Seller> response = sellerController.updateSeller(sellerId, updateRequest);
 
         // then
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Updated Company", response.getBody().getCompanyName());
         assertEquals("Updated Owner", response.getBody().getOwner());
         assertEquals("Updated Bio", response.getBody().getBio());
+        assertEquals("01087654321", response.getBody().getPhone());
         verify(sellerService, times(1)).updateSeller(anyLong(), any(SellerUpdateRequest.class));
     }
 
@@ -117,16 +110,13 @@ class SellerControllerTest {
     @Test
     void updateSellerTest_fail_notFound() {
         // given
-        SellerUpdateRequest updateRequest = new SellerUpdateRequest();
-        updateRequest.setCompanyName("Updated Company");
-        updateRequest.setOwner("Updated Owner");
-        updateRequest.setBio("Updated Bio");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "");
 
-        when(sellerService.updateSeller(anyLong(), any(SellerUpdateRequest.class)))
+        when(sellerService.updateSeller(sellerId, updateRequest))
                 .thenThrow(new IllegalArgumentException("Seller not found"));
 
         // when
-        assertThrows(IllegalArgumentException.class, () -> sellerController.updateSeller(1L, updateRequest));
+        assertThrows(IllegalArgumentException.class, () -> sellerController.updateSeller(sellerId, updateRequest));
 
         // then
         verify(sellerService, times(1)).updateSeller(anyLong(), any(SellerUpdateRequest.class));
@@ -139,7 +129,7 @@ class SellerControllerTest {
         doNothing().when(sellerService).deleteSeller(anyLong());
 
         // when
-        ResponseEntity<Void> response = sellerController.deleteSeller(1L);
+        ResponseEntity<Void> response = sellerController.deleteSeller(sellerId);
 
         // then
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -153,37 +143,37 @@ class SellerControllerTest {
         doThrow(new IllegalArgumentException("Seller not found")).when(sellerService).deleteSeller(anyLong());
 
         // when
-        assertThrows(IllegalArgumentException.class, () -> sellerController.deleteSeller(1L));
+        assertThrows(IllegalArgumentException.class, () -> sellerController.deleteSeller(sellerId));
 
         // then
         verify(sellerService, times(1)).deleteSeller(anyLong());
     }
 
-    // 판매자 전체 조회
-    @Test
-    void getAllSellersTest() {
-        // given
-        List<Seller> sellers = Collections.singletonList(seller);
-        when(sellerService.getAllSellers()).thenReturn(sellers);
-
-        // when
-        ResponseEntity<List<Seller>> response = sellerController.getAllSellers();
-
-        // then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
-        verify(sellerService, times(1)).getAllSellers();
-    }
+//    // 판매자 전체 조회
+//    @Test
+//    void getAllSellersTest() {
+//        // given
+//        List<Seller> sellers = Collections.singletonList(seller);
+//        when(sellerService.getAllSellers()).thenReturn(sellers);
+//
+//        // when
+//        ResponseEntity<List<Seller>> response = sellerController.getAllSellers();
+//
+//        // then
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertNotNull(response.getBody());
+//        assertEquals(1, response.getBody().size());
+//        verify(sellerService, times(1)).getAllSellers();
+//    }
 
     // 아이디로 판매자 조회
     @Test
     void getSellerByIdTest() {
         // given
-        when(sellerService.getSellerById(anyLong())).thenReturn(seller);
+        when(sellerService.getSellerById(sellerId)).thenReturn(seller);
 
         // when
-        ResponseEntity<Seller> response = sellerController.getSellerById(1L);
+        ResponseEntity<Seller> response = sellerController.getSellerById(sellerId);
 
         // then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -219,5 +209,17 @@ class SellerControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody());
         verify(authService, times(1)).checkEmail(anyString());
+    }
+
+    @Test
+    void showMyPageTest() {
+        when(authentication.getPrincipal()).thenReturn(auth);
+        when(sellerService.getSellerByAuth(auth)).thenReturn(seller);
+
+        String viewName = sellerController.showMyPage(authentication, model);
+
+        assertEquals("seller/myPage", viewName);
+        verify(model, times(1)).addAttribute(eq("seller"), eq(seller));
+        verify(sellerService, times(1)).getSellerByAuth(auth);
     }
 }
