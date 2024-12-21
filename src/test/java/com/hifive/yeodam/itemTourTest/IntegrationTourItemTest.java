@@ -87,9 +87,6 @@ public class IntegrationTourItemTest {
         String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
 
-        Seller seller = sellerRepository.findById(sellerId).get();
-
-
         //when
         ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
 
@@ -98,7 +95,6 @@ public class IntegrationTourItemTest {
 
         //then
         result.andExpect(status().isCreated());
-        //assertEquals(seller.getCompanyId(), tour.getSeller().getCompanyId());
         assertEquals(tourName,tour.getTourName());
         assertEquals(tourDesc,tour.getTourDesc());
         assertEquals(tourPeriod,tour.getTourPeriod());
