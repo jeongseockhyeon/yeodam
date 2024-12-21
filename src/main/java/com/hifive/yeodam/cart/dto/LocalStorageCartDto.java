@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 public class LocalStorageCartDto {
     private Long itemId;
     private int count;
+    private boolean reservation;
 
     @Builder
-    public LocalStorageCartDto(Long itemId, int count) {
+    public LocalStorageCartDto(Long itemId, int count, boolean reservation) {
         this.itemId = itemId;
-        this.count = count;
+        this.count = reservation ? 1 : count; //예약상품 1로 고정
+        this.reservation = reservation;
     }
 }

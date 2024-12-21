@@ -7,10 +7,12 @@ import lombok.*;
 public class CartRequestDto {
     private Long itemId;
     private int count;
+    private boolean reservation;
 
     @Builder
-    private CartRequestDto(Long itemId, int count) {
+    public CartRequestDto(Long itemId, int count, boolean reservation) {
         this.itemId = itemId;
-        this.count = count;
+        this.count = reservation ? 1 : count;
+        this.reservation = reservation;
     }
 }

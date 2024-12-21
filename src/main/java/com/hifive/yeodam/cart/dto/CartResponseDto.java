@@ -14,6 +14,7 @@ public class CartResponseDto {
     private String itemName;
     private int price;
     private int count;
+    private boolean reservation;
     private boolean countModifiable; //수량 변경 가능 여부
 
     @Builder
@@ -23,7 +24,8 @@ public class CartResponseDto {
         this.itemName = cart.getItem().getItemName();
         this.price = cart.getPrice();
         this.count = cart.getCount();
-        this.countModifiable = cart.isCountModifiable();
+        this.reservation = cart.getItem().isReservation();
+        this.countModifiable = !cart.getItem().isReservation(); //일반 상품
     }
 
 }
