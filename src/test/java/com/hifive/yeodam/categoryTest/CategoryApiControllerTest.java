@@ -5,7 +5,6 @@ import com.hifive.yeodam.category.controller.CategoryApiController;
 import com.hifive.yeodam.category.dto.CategoryReqDto;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 
-import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.service.CategoryService;
 import com.hifive.yeodam.global.exception.CustomExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +16,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -128,8 +125,8 @@ public class CategoryApiControllerTest {
 
         //when
         ResultActions result = mockMvc.perform(
-                MockMvcRequestBuilders.get(url
-                ).contentType(MediaType.APPLICATION_JSON)
+                MockMvcRequestBuilders.get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
         );
 
         //then

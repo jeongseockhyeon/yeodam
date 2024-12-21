@@ -63,8 +63,8 @@ public class TourItemService {
                 .region(tourItemReqDto.getTourRegion())
                 .period(tourItemReqDto.getTourPeriod())
                 .description(tourItemReqDto.getTourDesc())
-                .price(tourItemReqDto.getTourPrice())
-                .maximum(tourItemReqDto.getMaximum())
+                .price(Integer.parseInt(tourItemReqDto.getTourPrice()))
+                .maximum(Integer.parseInt(tourItemReqDto.getMaximum()))
                 .stock(tourStock)
                 .reservation(reservation)
                 .build();

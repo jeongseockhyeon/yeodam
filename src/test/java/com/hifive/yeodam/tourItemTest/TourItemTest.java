@@ -43,8 +43,8 @@ public class TourItemTest {
     private final static String tourDesc = "test";
     private final static String tourPeriod = "1일";
     private final static String tourRegion = "제주";
-    private final static int tourPrice = 100;
-    private final static int tourMaximum = 2;
+    private final static String tourPrice = "100";
+    private final static String tourMaximum = "2";
     private Tour expectedTour;
 
     private MockMvc mockMvc;
@@ -76,8 +76,8 @@ public class TourItemTest {
                 .description(tourDesc)
                 .region(tourRegion)
                 .period(tourPeriod)
-                .price(tourPrice)
-                .maximum(tourMaximum)
+                .price(1000)
+                .maximum(2)
                 .build();
 
     }
