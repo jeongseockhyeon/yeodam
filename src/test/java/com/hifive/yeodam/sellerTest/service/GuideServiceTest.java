@@ -1,7 +1,9 @@
 package com.hifive.yeodam.sellerTest.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.seller.dto.GuideJoinRequest;
 import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
+import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
@@ -12,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,35 +33,39 @@ class GuideServiceTest {
 
     private Guide guide;
     private Seller seller;
+    private Auth auth;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        Auth auth = new Auth(null, "email@email.com", "password", "010-1234-1234");
-        seller = new Seller(null, auth, "Company", "Owner", "Company Bio");
-        guide = new Guide(null, seller, "Guide", "1997-09-01", "Male", "Bio");
+        auth = new Auth(1L, "email@email.com", "password");
+        seller = new Seller(1L, auth, "Company", "Owner", "Company Bio", "01012345678");
+        guide = new Guide(null, seller, "Name", LocalDate.of(2002, 2, 25), "M", "01012345678", "Guide Bio");
     }
 
+    // 가이드 등록 성공
     @Test
     void createGuideTest() {
         // given
+        GuideJoinRequest joinRequest = mock(GuideJoinRequest.class);
+        when(joinRequest.getName()).thenReturn("Name");
+
         when(guideRepository.save(any(Guide.class))).thenReturn(guide);
 
         // when
-        Guide createdGuide = guideService.createGuide(guide);
+        Guide createdGuide = guideService.createGuide(joinRequest, seller);
 
         // then
         assertNotNull(createdGuide);
-        assertEquals("Guide", createdGuide.getName());
+        assertEquals("Name", createdGuide.getName());
         verify(guideRepository, times(1)).save(any(Guide.class));
     }
 
+    // 가이드 정보 수정 성공
     @Test
     void updateGuideTest() {
         // given
-        GuideUpdateRequest updateRequest = new GuideUpdateRequest();
-        updateRequest.setName("Updated Name");
-        updateRequest.setBio("Updated Bio");
+        GuideUpdateRequest updateRequest = new GuideUpdateRequest("Updated Name", "01087654321", "Updated Bio");
 
         when(guideRepository.findById(anyLong())).thenReturn(Optional.of(guide));
         when(guideRepository.save(any(Guide.class))).thenReturn(guide);
@@ -69,13 +76,15 @@ class GuideServiceTest {
         // then
         assertNotNull(updatedGuide);
         assertEquals("Updated Name", updatedGuide.getName());
+        assertEquals("01087654321", updatedGuide.getPhone());
         assertEquals("Updated Bio", updatedGuide.getBio());
         verify(guideRepository, times(1)).findById(1L);
         verify(guideRepository, times(1)).save(any(Guide.class));
     }
 
+    // 가이드 정보 수정 실패
     @Test
-    void updateGuideNotFoundTest() {
+    void updateGuide_fail_notFound() {
         // given
         GuideUpdateRequest updateRequest = new GuideUpdateRequest();
         when(guideRepository.findById(anyLong())).thenReturn(Optional.empty());
@@ -90,6 +99,7 @@ class GuideServiceTest {
         verify(guideRepository, never()).save(any(Guide.class));
     }
 
+    // 가이드 삭제 성공
     @Test
     void deleteGuideTest() {
         doNothing().when(guideRepository).deleteById(anyLong());
@@ -99,21 +109,7 @@ class GuideServiceTest {
         verify(guideRepository, times(1)).deleteById(1L);
     }
 
-    @Test
-    void getAllGuidesTest() {
-        // given
-        when(guideRepository.findAll()).thenReturn(List.of(guide));
-
-        // when
-        List<Guide> guides = guideService.getAllGuides();
-
-        // then
-        assertNotNull(guides);
-        assertEquals(1, guides.size());
-        assertEquals("Guide", guides.get(0).getName());
-        verify(guideRepository, times(1)).findAll();
-    }
-
+    // 가이드 단일 조회 성공
     @Test
     void getGuideByIdTest() {
         // given
@@ -124,12 +120,13 @@ class GuideServiceTest {
 
         // then
         assertNotNull(foundGuide);
-        assertEquals("Guide", foundGuide.getName());
+        assertEquals("Name", foundGuide.getName());
         verify(guideRepository, times(1)).findById(1L);
     }
 
+    // 가이드 단일 조회 실패
     @Test
-    void getGuideByIdNotFoundTest() {
+    void getGuideById_fail_notFound() {
         // given
         when(guideRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -142,6 +139,7 @@ class GuideServiceTest {
         verify(guideRepository, times(1)).findById(1L);
     }
 
+    // 회사 아이디로 가이드 조회 성공
     @Test
     void getGuidesByCompanyIdTest() {
         // given
@@ -153,7 +151,7 @@ class GuideServiceTest {
         // then
         assertNotNull(guides);
         assertEquals(1, guides.size());
-        assertEquals("Guide", guides.get(0).getName());
+        assertEquals("Name", guides.get(0).getName());
         verify(guideRepository, times(1)).findBySellerCompanyId(1L);
     }
 }

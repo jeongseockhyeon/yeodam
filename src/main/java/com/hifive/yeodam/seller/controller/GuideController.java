@@ -37,7 +37,7 @@ public class GuideController {
 
     // 가이드 정보 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Guide> updateGuide(@PathVariable Long id, @ModelAttribute GuideUpdateRequest updateRequest) {
+    public ResponseEntity<Guide> updateGuide(@PathVariable Long id, @ModelAttribute @Valid GuideUpdateRequest updateRequest) {
         Guide updatedGuide = guideService.updateGuide(id, updateRequest);
         return ResponseEntity.ok(updatedGuide);
     }
@@ -49,12 +49,12 @@ public class GuideController {
         return ResponseEntity.noContent().build();
     }
 
-    // 가이드 전체 조회
-    @GetMapping
-    public ResponseEntity<List<Guide>> getAllGuides() {
-        List<Guide> guides = guideService.getAllGuides();
-        return ResponseEntity.ok(guides);
-    }
+//    // 가이드 전체 조회 (사용 X)
+//    @GetMapping
+//    public ResponseEntity<List<Guide>> getAllGuides() {
+//        List<Guide> guides = guideService.getAllGuides();
+//        return ResponseEntity.ok(guides);
+//    }
 
     // 가이드 단일 조회
     @GetMapping("/{id}")
