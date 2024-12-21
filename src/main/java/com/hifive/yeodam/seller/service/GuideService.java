@@ -43,10 +43,10 @@ public class GuideService {
         guideRepository.deleteById(id);
     }
 
-    // 가이드 전체 조회
-    public List<Guide> getAllGuides() {
-        return guideRepository.findAll();
-    }
+//    // 가이드 전체 조회 (사용 X)
+//    public List<Guide> getAllGuides() {
+//        return guideRepository.findAll();
+//    }
 
     // 가이드 단일 조회
     public Guide getGuideById(Long id) {
