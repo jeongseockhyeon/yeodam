@@ -26,19 +26,14 @@ public class CategoryTest {
     private final static  String categoryName = "액티비티";
     private final static String subCategoryName = "레저";
 
-    MockMvc mockMvc;
 
     @Mock
     private CategoryService categoryService;
 
 
-    @InjectMocks
-    private CategoryApiController categoryApiController;
-
     @BeforeEach
     public void setMockMvc(){
         MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(categoryApiController).build();
     }
 
     @Test
