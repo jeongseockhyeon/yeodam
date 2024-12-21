@@ -61,12 +61,12 @@ public class SellerController {
         return ResponseEntity.noContent().build();
     }
 
-    // 판매자 전체 조회
-    @GetMapping
-    public ResponseEntity<List<Seller>> getAllSellers() {
-        List<Seller> sellers = sellerService.getAllSellers();
-        return ResponseEntity.ok(sellers);
-    }
+//    // 판매자 전체 조회 (사용 X)
+//    @GetMapping
+//    public ResponseEntity<List<Seller>> getAllSellers() {
+//        List<Seller> sellers = sellerService.getAllSellers();
+//        return ResponseEntity.ok(sellers);
+//    }
 
     // 판매자 단일 조회
     @GetMapping("/{id}")

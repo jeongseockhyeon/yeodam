@@ -64,10 +64,10 @@ public class SellerService {
         sellerRepository.deleteById(id);
     }
 
-    // 판매자 전체 조회
-    public List<Seller> getAllSellers() {
-        return sellerRepository.findAll();
-    }
+//    // 판매자 전체 조회 (사용 X)
+//    public List<Seller> getAllSellers() {
+//        return sellerRepository.findAll();
+//    }
 
     // 판매자 단일 조회
     public Seller getSellerById(Long id) {
