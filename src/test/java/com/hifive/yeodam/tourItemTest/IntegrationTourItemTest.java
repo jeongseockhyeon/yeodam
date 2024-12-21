@@ -63,9 +63,7 @@ public class IntegrationTourItemTest {
         String tourRegion = "제주";
         int maximum = 2;
 
-        List<Long> categoryIds = new ArrayList<>();
-        categoryIds.add(1L);
-        categoryIds.add(2L);
+        String categoryIds = "[1,2]";
 
         List<Long> guideIds = new ArrayList<>();
         guideIds.add(1L);
@@ -73,7 +71,6 @@ public class IntegrationTourItemTest {
         int tourPrice = 100;
 
         TourItemReqDto tourItemReqDto = new TourItemReqDto();
-        tourItemReqDto.setSellerId(sellerId);
         tourItemReqDto.setTourName(tourName);
         tourItemReqDto.setTourDesc(tourDesc);
         tourItemReqDto.setTourPeriod(tourPeriod);
@@ -124,7 +121,6 @@ public class IntegrationTourItemTest {
     @DisplayName("상품_여행 단일 조회 테스트")
     public void tourItemFindByIdTest() throws Exception {
         //given
-        //Long sellerId = 1L;
         String tourName = "test";
         String tourDesc = "test";
         String tourPeriod = "1일";
