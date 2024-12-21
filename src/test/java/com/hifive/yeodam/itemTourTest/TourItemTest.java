@@ -324,12 +324,6 @@ public class TourItemTest {
 
         //then
         assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
-
-        //RuntimeException이 아닌 CustomExceoption으로 처리하여 404 상태 코드를 반환하게 할 것
-/*        mockMvc.perform(get(url, tourItemId))
-                .andExpect(status().isNotFound()) // 예외에 따른 HTTP 상태 코드
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof RuntimeException))
-                .andExpect(result -> assertEquals("해당 여행을 찾을 수 없습니다", result.getResolvedException().getMessage()));*/
     }
 
 
@@ -427,7 +421,6 @@ public class TourItemTest {
         when(tourItemService.update(tourItemId,tourItemUpdateReqDto)).thenThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"));
 
         //when
-        //ResultActions resultActions = mockMvc.perform(patch(url,tourItemId).contentType(MediaType.APPLICATION_JSON).content(json));
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             tourItemService.update(tourItemId,tourItemUpdateReqDto);
         });

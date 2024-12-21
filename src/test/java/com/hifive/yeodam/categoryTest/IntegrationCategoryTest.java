@@ -88,7 +88,6 @@ public class IntegrationCategoryTest {
         //then
         result.andExpect(status().isCreated());
         assertEquals(categoryName, category.getName());
-        //assertEquals(parentCategory.getName(),category.getParent().getName());
 
     }
 

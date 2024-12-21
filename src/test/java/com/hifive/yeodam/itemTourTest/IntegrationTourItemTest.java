@@ -1,7 +1,6 @@
 package com.hifive.yeodam.itemTourTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.SellerRepository;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemResDto;

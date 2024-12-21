@@ -17,7 +17,7 @@ public class ItemViewController {
 
     @GetMapping
     /*상품 목록 페이지*/
-    public String item(Model model) {
+    public String item() {
         return "item/items";
     }
 
