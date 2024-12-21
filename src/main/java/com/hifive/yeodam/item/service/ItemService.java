@@ -46,4 +46,9 @@ public class ItemService {
     public void deleteItem(Long id) {
         itemRepository.deleteById(id);
     }
+
+    /*상품 타입 조회*/
+    public List<String> findAllItemType(){
+        return itemRepository.findAllItemType();
+    }
 }
