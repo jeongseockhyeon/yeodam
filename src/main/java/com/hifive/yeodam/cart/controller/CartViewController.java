@@ -21,10 +21,14 @@ import java.util.List;
 public class CartViewController {
     private final CartService cartService;
 
+    private boolean isAnonymous() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (auth == null || auth instanceof AnonymousAuthenticationToken);
+    }
+
     @GetMapping
     public String cartList(Model model){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean anonymous = (auth == null || auth instanceof AnonymousAuthenticationToken);
+        boolean anonymous = isAnonymous();
 
         if (!anonymous){
             //로그인 상태 - 서버 장바구니 데이터
@@ -39,8 +43,7 @@ public class CartViewController {
 
     @GetMapping("/selected-price")
     public String selectedPrice(@RequestParam List<Long> cartIds, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean anonymous = (auth == null || auth instanceof AnonymousAuthenticationToken);
+        boolean anonymous = isAnonymous();
 
         if (!anonymous){
             CartTotalPriceDto selectedPrice = cartService.getSelectedPrice(cartIds);
