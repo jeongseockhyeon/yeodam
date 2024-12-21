@@ -43,5 +43,13 @@ public abstract class Item {
         this.price = price;
     }
 
+    public void addStock() {
+        this.stock += 1;
+    }
+
+    public void removeStock() {
+        this.stock -= 1;
+    }
+
     public abstract void updateSubItem(String... args);
 }
