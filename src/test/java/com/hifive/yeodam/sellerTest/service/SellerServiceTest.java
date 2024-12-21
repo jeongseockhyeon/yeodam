@@ -46,7 +46,7 @@ class SellerServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(null, "email@email.com", "password");
+        auth = new Auth(1L, "email@email.com", "password");
         role = new Role(auth, RoleType.SELLER);
         seller = new Seller(null, auth, "Company", "Owner", "Company Bio", "01012345678");
     }
@@ -177,5 +177,31 @@ class SellerServiceTest {
 
         assertEquals("판매자를 찾을 수 없습니다.", exception.getMessage());
         verify(sellerRepository, times(1)).findById(1L);
+    }
+
+    // Auth로 판매자 조회 성공
+    @Test
+    void getSellerByAuthTest() {
+        when(sellerRepository.findByAuthId(1L)).thenReturn(Optional.of(seller));
+
+        var foundSeller = sellerService.getSellerByAuth(auth);
+
+        assertNotNull(foundSeller);
+        assertEquals("Company", foundSeller.getCompanyName());
+        assertEquals(auth, foundSeller.getAuth());
+        verify(sellerRepository, times(1)).findByAuthId(auth.getId());
+    }
+
+    // Auth로 판매자 조회 실패
+    @Test
+    void getSellerByAuthTest_fail_notFound() {
+        when(sellerRepository.findByAuthId(anyLong())).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            sellerService.getSellerByAuth(auth);
+        });
+
+        assertEquals("해당 Auth에 연결된 Seller가 없습니다.", exception.getMessage());
+        verify(sellerRepository, times(1)).findByAuthId(auth.getId());
     }
 }
