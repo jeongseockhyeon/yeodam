@@ -1,6 +1,5 @@
 package com.hifive.yeodam.categoryTest;
 
-import com.hifive.yeodam.category.controller.CategoryApiController;
 import com.hifive.yeodam.category.dto.CategoryReqDto;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
@@ -8,11 +7,10 @@ import com.hifive.yeodam.category.service.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ public class CategoryTest {
 
 
     @BeforeEach
-    public void setMockMvc(){
+    public void setUp(){
         MockitoAnnotations.initMocks(this);
     }
 
