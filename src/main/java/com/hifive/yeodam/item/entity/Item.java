@@ -5,6 +5,9 @@ import com.hifive.yeodam.seller.entity.Seller;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
@@ -30,6 +33,9 @@ public abstract class Item {
     private int stock;
 
     private boolean reservation;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ItemImage> itemImages = new ArrayList<>();
 
     public Item(Seller seller, String itemName, String description,int price, boolean reservation, int stock) {
         this.seller = seller;
