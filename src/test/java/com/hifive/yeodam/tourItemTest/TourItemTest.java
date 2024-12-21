@@ -38,13 +38,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 public class TourItemTest {
-    private final static Long sellerId = 1L;
     private final static String tourName = "test";
     private final static String tourDesc = "test";
     private final static String tourPeriod = "1일";
     private final static String tourRegion = "제주";
-    private final static int tourPrice = 100;
-    private final static int tourMaximum = 2;
+    private final static String tourPrice = "100";
+    private final static String tourMaximum = "2";
     private Tour expectedTour;
 
     private MockMvc mockMvc;
@@ -56,9 +55,6 @@ public class TourItemTest {
 
     @Mock
     private SellerService sellerService;
-
-    @Mock
-    private TourRepository tourRepository;
 
     @InjectMocks
     private TourItemApiController tourItemAPIController;
@@ -76,8 +72,8 @@ public class TourItemTest {
                 .description(tourDesc)
                 .region(tourRegion)
                 .period(tourPeriod)
-                .price(tourPrice)
-                .maximum(tourMaximum)
+                .price(1000)
+                .maximum(2)
                 .build();
 
     }
@@ -226,7 +222,7 @@ public class TourItemTest {
 
         // then
         assertThat(results).hasSize(1);
-        assertEquals("액티비티", results.get(0).getCategoryResDtoList().get(0).getName());
+        assertEquals("액티비티", results.getFirst().getCategoryResDtoList().getFirst().getName());
         verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
     }
 
@@ -251,7 +247,7 @@ public class TourItemTest {
 
         //then
         assertThat(results).hasSize(1);
-        assertEquals("제주도",results.get(0).getTourName());
+        assertEquals("제주도",results.getFirst().getTourName());
         verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
     }
 
@@ -275,7 +271,7 @@ public class TourItemTest {
 
         //then
         assertThat(results).hasSize(1);
-        assertEquals("제주",results.get(0).getTourRegion());
+        assertEquals("제주",results.getFirst().getTourRegion());
         verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
 
     }
@@ -299,7 +295,7 @@ public class TourItemTest {
 
         //then
         assertThat(results).hasSize(1);
-        assertEquals("1일",results.get(0).getTourPeriod());
+        assertEquals("1일",results.getFirst().getTourPeriod());
         verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
 
     }
@@ -331,9 +327,7 @@ public class TourItemTest {
         when(tourItemService.findById(tourItemId)).thenThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"));
 
         //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            tourItemService.findById(tourItemId);
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tourItemService.findById(tourItemId));
 
         //then
         assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
@@ -434,9 +428,7 @@ public class TourItemTest {
         when(tourItemService.update(tourItemId,tourItemUpdateReqDto)).thenThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"));
 
         //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            tourItemService.update(tourItemId,tourItemUpdateReqDto);
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tourItemService.update(tourItemId,tourItemUpdateReqDto));
 
         //then
         assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
@@ -465,9 +457,7 @@ public class TourItemTest {
 
 
         //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            tourItemService.delete(tourItemId);
-        });
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> tourItemService.delete(tourItemId));
 
         //then
         assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());

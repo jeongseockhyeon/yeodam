@@ -32,10 +32,10 @@ public class TourItemReqDto {
     private String tourRegion;
 
     @NotNull
-    private int tourPrice;
+    private String tourPrice;
 
     @NotNull
-    private int maximum;
+    private String maximum;
 
     @NotNull
     private String categoryIdList;
@@ -48,8 +48,8 @@ public class TourItemReqDto {
                           String tourDesc,
                           String tourPeriod,
                           String tourRegion,
-                          int tourPrice,
-                          int maximum,
+                          String tourPrice,
+                          String maximum,
                           String categoryIdList,
                           List<Long> guideIdList,
                           List<MultipartFile> tourImages) {

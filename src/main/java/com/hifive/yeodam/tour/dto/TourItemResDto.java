@@ -9,24 +9,25 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Getter
 public class TourItemResDto {
-    private Long id;
+    private final Long id;
 
-    private String tourName;
+    private final String tourName;
 
-    private String tourDesc;
+    private final String tourDesc;
 
-    private String tourPeriod;
+    private final String tourPeriod;
 
-    private String tourRegion;
+    private final String tourRegion;
 
-    private int tourPrice;
+    private final int tourPrice;
 
-    private int maximum;
+    private final int maximum;
 
-    private List<CategoryResDto> categoryResDtoList = new ArrayList<>();
-    private List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
+    private final List<CategoryResDto> categoryResDtoList = new ArrayList<>();
+    private final List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
 
     public TourItemResDto(Tour tour) {
         this.id = tour.getId();

@@ -2,7 +2,6 @@ package com.hifive.yeodam.category.controller;
 
 import com.hifive.yeodam.category.dto.CategoryReqDto;
 import com.hifive.yeodam.category.dto.CategoryResDto;
-import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ public class CategoryApiController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<Category> addCategory(@RequestBody CategoryReqDto categoryReqDto) {
+    public ResponseEntity<CategoryResDto> addCategory(@RequestBody CategoryReqDto categoryReqDto) {
         return ResponseEntity.status(CREATED).body(categoryService.saveCategory(categoryReqDto));
     }
 
@@ -34,7 +33,7 @@ public class CategoryApiController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody CategoryReqDto categoryReqDto) {
+    public ResponseEntity<CategoryResDto> updateCategory(@PathVariable Long id, @RequestBody CategoryReqDto categoryReqDto) {
         return ResponseEntity.ok(categoryService.updateCategory(id, categoryReqDto));
     }
 
