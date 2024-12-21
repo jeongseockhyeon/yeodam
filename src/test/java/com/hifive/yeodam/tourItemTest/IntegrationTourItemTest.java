@@ -1,4 +1,4 @@
-package com.hifive.yeodam.itemTourTest;
+package com.hifive.yeodam.tourItemTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.seller.repository.SellerRepository;
@@ -53,7 +53,7 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 등록 테스트")
-    public void itemTourSaveTest() throws Exception {
+    public void tourItemSaveTest() throws Exception {
 
         //given
         Long sellerId = 1L;
@@ -103,7 +103,7 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 목록 조회 테스트")
-    public void itemFindAllTest() throws Exception {
+    public void tourItemFindAllTest() throws Exception {
         //given
         String url ="/api/tours";
         int testCount = 6;
@@ -122,7 +122,7 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 단일 조회 테스트")
-    public void itemFindByIdTest() throws Exception {
+    public void tourItemFindByIdTest() throws Exception {
         //given
         //Long sellerId = 1L;
         String tourName = "test";
@@ -149,7 +149,7 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 수정 테스트")
-    public void itemTourUpdateTest() throws Exception {
+    public void tourItemUpdateTest() throws Exception {
         //given
         String url = "/api/tours/{id}";
         Long tourItemId = 10L;
@@ -199,7 +199,7 @@ public class IntegrationTourItemTest {
 
     @Test
     @DisplayName("상품_여행 삭제 테스트")
-    public void itemTourDeleteTest() throws Exception {
+    public void tourItemDeleteTest() throws Exception {
         //given
         String url = "/api/tours/{id}";
         Long tourItemId = 3L;

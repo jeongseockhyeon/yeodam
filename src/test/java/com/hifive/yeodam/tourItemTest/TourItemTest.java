@@ -1,4 +1,4 @@
-package com.hifive.yeodam.itemTourTest;
+package com.hifive.yeodam.tourItemTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.category.dto.CategoryResDto;
@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -80,7 +79,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("상품_여행 등록 테스트 성공")
-    public void itemTourSaveSuccessTest() throws Exception {
+    public void tourItemSaveSuccessTest() {
 
         //given
         List<Long> categoryIds = new ArrayList<>();
@@ -162,7 +161,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("상품_여행 목록 조회 테스트")
-    public void itemFindAllTest() throws Exception {
+    public void tourItemFindAllTest() {
         //given
         int testCount = 4;
         List<TourItemResDto> mockTourList = new ArrayList<>();
@@ -182,7 +181,7 @@ public class TourItemTest {
     }
     @Test
     @DisplayName("카테고리 필터링 테스트")
-    public void itemTourSearchFilterTest() throws Exception {
+    public void tourItemSearchFilterTest()  {
         // given
         List<TourItemResDto> mockTourList = new ArrayList<>();
 
@@ -219,7 +218,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("키워드 필터링 테스트")
-    public void itemTourSearchFilterKeywordTest() throws Exception {
+    public void tourItemSearchFilterKeywordTest()  {
         //given
         List<TourItemResDto> mockTourList = new ArrayList<>();
 
@@ -244,7 +243,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("지역 필터링 테스트")
-    public void itemTourSearchFilterRegionTest() throws Exception {
+    public void tourItemSearchFilterRegionTest() {
         //given
         List<TourItemResDto> mockTourList = new ArrayList<>();
 
@@ -269,7 +268,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("기간 필터링 테스트")
-    public void itemTourSearchFilterPeriodTest() throws Exception {
+    public void tourItemSearchFilterPeriodTest() {
         //given
         List<TourItemResDto> mockTourList = new ArrayList<>();
         TourItemResDto resMock = mock(TourItemResDto.class);
@@ -293,7 +292,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("상품_여행 단일 조회 테스트")
-    public void itemFindByIdSuccessTest() throws Exception {
+    public void tourItemFindByIdSuccessTest() throws Exception {
         //given
         String url = "/api/tours/{id}";
         Long tourItemId = 1L;
@@ -311,7 +310,7 @@ public class TourItemTest {
     }
     @Test
     @DisplayName("상품_여행 단일 조회 실패 테스트")
-    public void itemFindByIdFailTest() throws Exception {
+    public void tourItemFindByIdFailTest() {
         //given
         Long tourItemId = 2L;
 
@@ -329,7 +328,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("상품_여행 수정 성공 테스트")
-    public void itemTourUpdateSuccessTest() throws Exception {
+    public void tourItemUpdateSuccessTest() {
         //given
         Long tourItemId = 1L;
 
@@ -385,7 +384,7 @@ public class TourItemTest {
     }
     @Test
     @DisplayName("상품_여행 수정 실패 테스트")
-    public void itemTourUpdateFailTest() throws Exception {
+    public void tourItemUpdateFailTest() {
         //given
         Long tourItemId = 1L;
 
@@ -432,7 +431,7 @@ public class TourItemTest {
 
     @Test
     @DisplayName("상품_여행 삭제 성공 테스트")
-    public void itemTourDeleteSuccessTest() throws Exception {
+    public void TourItemDeleteSuccessTest() {
         //given
         Long tourItemId = 1L;
 
@@ -444,7 +443,7 @@ public class TourItemTest {
     }
     @Test
     @DisplayName("상품_여행 삭제 실패 테스트")
-    public void itemTourDeleteFailTest() throws Exception {
+    public void tourItemDeleteFailTest() {
         //given
         Long tourItemId = 2L;
         doThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"))
@@ -460,6 +459,5 @@ public class TourItemTest {
         assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
         verify(tourItemService,times(1)).delete(tourItemId);
     }
-
 
 }
