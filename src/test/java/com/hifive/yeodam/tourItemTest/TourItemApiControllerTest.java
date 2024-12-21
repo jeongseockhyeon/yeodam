@@ -5,9 +5,6 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.global.exception.CustomExceptionHandler;
-import com.hifive.yeodam.seller.entity.Guide;
-import com.hifive.yeodam.seller.entity.Seller;
-import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.tour.dto.GuideInTourResDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemResDto;
@@ -25,14 +22,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.hifive.yeodam.tour.entity.Tour;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,10 +42,6 @@ public class TourItemApiControllerTest {
 
     @Mock
     private TourItemService tourItemService;
-
-    @Mock
-    private SellerService sellerService;
-
 
     @BeforeEach
     public void setMockMvc(){

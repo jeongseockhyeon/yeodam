@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 
 @Getter
 public class CategoryResDto {
-    private Long id;
-    private Long parentId;
-    private String name;
-    private List<CategoryResDto> children;
+    private final Long id;
+    private final Long parentId;
+    private final String name;
+    private final List<CategoryResDto> children;
 
     public CategoryResDto(Category category) {
         this.id = category.getId();

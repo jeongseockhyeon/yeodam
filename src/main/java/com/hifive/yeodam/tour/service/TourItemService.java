@@ -75,7 +75,7 @@ public class TourItemService {
         if(tourItemReqDto.getCategoryIdList() != null ) {
             List<Long> categoryIdList = Arrays.stream(tourItemReqDto.getCategoryIdList().replaceAll("[\\[\\]\\s]", "").split(","))
                     .map(Long::valueOf)
-                    .collect(Collectors.toList());
+                    .toList();
             for(Long categoryId : categoryIdList){
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
@@ -200,9 +200,8 @@ public class TourItemService {
     public List<TourItemResDto> findBySeller(Auth auth){
         Seller seller = sellerService.getSellerByAuth(auth);
         List<Tour> sellerTours = tourRepository.findBySeller(seller);
-        List<TourItemResDto> tourItemResDtos = sellerTours.stream()
+        return sellerTours.stream()
                 .map(TourItemResDto::new)
                 .toList();
-        return tourItemResDtos;
     }
 }
