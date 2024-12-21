@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,13 +88,15 @@ public class TourItemTest {
     public void tourItemSaveSuccessTest() {
 
         //given
-        List<Long> categoryIds = new ArrayList<>();
-        categoryIds.add(1L);
-        categoryIds.add(2L);
+        String categoryIds = "[1,2]"; //formData로 인해 스트링 값으로 넘어감
+
 
         List<Long> guideIds = new ArrayList<>();
         guideIds.add(1L);
 
+        MultipartFile image = mock(MultipartFile.class);
+        List<MultipartFile> images = new ArrayList<>();
+        images.add(image);
 
         TourItemReqDto tourItemReqDto = mock(TourItemReqDto.class);
         when(tourItemReqDto.getTourName()).thenReturn(tourName);
@@ -104,15 +107,21 @@ public class TourItemTest {
         when(tourItemReqDto.getMaximum()).thenReturn(tourMaximum);
         when(tourItemReqDto.getCategoryIdList()).thenReturn(categoryIds);
         when(tourItemReqDto.getGuideIdList()).thenReturn(guideIds);
+        //이미지 저장
+        when(tourItemReqDto.getTourImages()).thenReturn(images);
+
+        Auth mockAuth = mock(Auth.class);
+        Seller mockSeller = mock(Seller.class);
+        when(sellerService.getSellerByAuth(mockAuth)).thenReturn(mockSeller);
 
 
         TourItemResDto expectedTourItemResDto = new TourItemResDto(expectedTour);
 
-        when(tourItemService.saveTourItem(tourItemReqDto)).thenReturn(expectedTourItemResDto);
+        when(tourItemService.saveTourItem(tourItemReqDto,mockAuth)).thenReturn(expectedTourItemResDto);
 
 
         //when
-        TourItemResDto result = tourItemService.saveTourItem(tourItemReqDto);
+        TourItemResDto result = tourItemService.saveTourItem(tourItemReqDto,mockAuth);
 
 
         //then
@@ -122,23 +131,20 @@ public class TourItemTest {
         assertEquals(result.getTourRegion(), expectedTourItemResDto.getTourRegion());
         assertEquals(result.getTourPrice(), expectedTourItemResDto.getTourPrice());
         assertEquals(result.getMaximum(), expectedTourItemResDto.getMaximum());
-        verify(tourItemService, times(1)).saveTourItem(any(TourItemReqDto.class));
+        verify(tourItemService, times(1)).saveTourItem(any(TourItemReqDto.class), any(Auth.class));
     }
     @Test
     @DisplayName("상품_여행 등록 테스트 실패")
     public void tourItemSaveFailTest() throws Exception {
 
         //given
-        List<Long> categoryIds = new ArrayList<>();
-        categoryIds.add(1L);
-        categoryIds.add(2L);
+        String categoryIds = "[1,2]";
 
         List<Long> guideIds = new ArrayList<>();
         guideIds.add(1L);
 
 
         TourItemReqDto tourItemReqDto = mock(TourItemReqDto.class);
-        when(tourItemReqDto.getSellerId()).thenReturn(sellerId);
         when(tourItemReqDto.getTourName()).thenReturn(tourName);
         //when(tourItemReqDto.getTourDesc()).thenReturn(tourDesc);
         when(tourItemReqDto.getTourPeriod()).thenReturn(tourPeriod);
@@ -151,9 +157,12 @@ public class TourItemTest {
         String url = "/api/tours";
         String json = objectMapper.writeValueAsString(tourItemReqDto);
 
+        Auth mockAuth = mock(Auth.class);
+        Seller mockSeller = mock(Seller.class);
+        when(sellerService.getSellerByAuth(mockAuth)).thenReturn(mockSeller);
 
         TourItemResDto expectedTourItemResDto = new TourItemResDto(expectedTour);
-        when(tourItemService.saveTourItem(tourItemReqDto)).thenReturn(expectedTourItemResDto);
+        when(tourItemService.saveTourItem(tourItemReqDto,mockAuth)).thenReturn(expectedTourItemResDto);
 
 
         //when
