@@ -1,11 +1,9 @@
 package com.hifive.yeodam.categoryTest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.category.controller.CategoryApiController;
 import com.hifive.yeodam.category.dto.CategoryReqDto;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
-import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.category.service.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

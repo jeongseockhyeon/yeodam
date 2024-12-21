@@ -1,5 +1,6 @@
 package com.hifive.yeodam.tour.service;
 
+import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
@@ -168,5 +169,13 @@ public class TourItemService {
                         .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
         tourRepository.delete(targetTour);
     }
-
+    /*상품_여행 판매자 조회*/
+    public List<TourItemResDto> findBySeller(Auth auth){
+        Seller seller = sellerService.getSellerByAuth(auth);
+        List<Tour> sellerTours = tourRepository.findBySeller(seller);
+        List<TourItemResDto> tourItemResDtos = sellerTours.stream()
+                .map(TourItemResDto::new)
+                .toList();
+        return tourItemResDtos;
+    }
 }
