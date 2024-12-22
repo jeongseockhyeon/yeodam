@@ -2,18 +2,51 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>마이페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="${user.nickname} + '님 페이지'" >마이페이지</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        .custom-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-right: 20px;
+        }
+
+        .custom-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+
+    </style>
 </head>
 
 <body>
-<h2 th:text="${#authentication.principal.Username} + '님'">Anonymous</h2>
-<hr>
-<div>
-    <button onclick="location.href='#'">예약 내역 확인</button>
-    <button onclick="location.href='#'">내가 쓴 리뷰</button>
-    <button onclick="location.href='#'">문의 내역</button>
-    <button onclick="location.href='/users/logout'">로그아웃</button>
-</div>
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <div class="custom-circle"></div>
+            <div>
+                <div class="d-flex align-items-center">
+                    <span th:text="${user.nickname}" class="fw-bold fs-5 me-3">닉네임</span>
+                    <span class="me-3">|</span>
+                    <span th:text="${user.name}" class="text-muted">이름</span>
+                </div>
+                <div th:text="${#authentication.principal.Username}" class="mt-1 text-secondary">이메일</div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-outline-secondary" onclick="location.href='/logout'">로그아웃</button>
+    </div>
+    <div class="custom-links">
+        <button class="btn btn-outline-secondary p-3 mx-4" onclick="location.href='#'">예약 내역 확인</button>
+        <button class="btn btn-outline-secondary p-3 mx-4" onclick="location.href='#'">내가 쓴 리뷰</button>
+        <button class="btn btn-outline-secondary p-3 mx-4" onclick="location.href='#'">문의 내역</button>
+    </div>
 
 </body>
 </html>

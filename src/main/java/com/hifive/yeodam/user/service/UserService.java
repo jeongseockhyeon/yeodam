@@ -90,4 +90,11 @@ public class UserService {
 
         userRepository.delete(user);
     }
+
+    public User getUserByAuth(Auth auth) {
+
+        Optional<User> optionalUser = userRepository.findByAuthId(auth.getId());
+
+        return optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+    }
 }

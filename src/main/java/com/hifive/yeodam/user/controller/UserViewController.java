@@ -3,12 +3,14 @@ package com.hifive.yeodam.user.controller;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -66,7 +68,12 @@ public class UserViewController {
     }
 
     @GetMapping("/myPage")
-    public String myPage(Model model) {
+    public String myPage(Authentication authentication, Model model) {
+
+        Auth auth = (Auth) authentication.getPrincipal();
+        User user = userService.getUserByAuth(auth);
+
+        model.addAttribute("user", user);
 
         return "user/detail";
     }
