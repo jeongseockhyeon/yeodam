@@ -29,7 +29,7 @@ public class TourItemViewController {
     @GetMapping("/{id}")
     public String tourItemDetail(@PathVariable Long id, Model model) {
         TourItemResDto tourItemResDto = tourItemService.findById(id);
-        model.addAttribute("tour", tourItemResDto);
-        return "tour/tourDetail";
+        model.addAttribute("tourItemResDto", tourItemResDto);
+        return "tour/tourDetailSample";
     }
 }
