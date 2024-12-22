@@ -1,0 +1,6 @@
+/*모든 화면에 공통적으로 사용되는 css*/
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0 70px;
+}
