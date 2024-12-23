@@ -5,18 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>유저 회원가입</title>
 
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
     <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 35%;
+        }
+
         .error-message {
             color: red;
             font-size: 12px;
         }
     </style>
 
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-
 </head>
 
 <body class="container mt-5">
+
+    <h2 class="mb-3 text-center">회원 가입</h2>
 
     <form th:action="@{/users/join}" method="post" th:object="${joinRequest}">
 
@@ -36,7 +46,6 @@
             <div class="input-group">
                 <input type="password" class="form-control" id="password" onkeyup="passwordCheck();" th:field="*{password}" minlength="8" maxlength="16" required
                        th:errorclass="border-danger"/>
-                <span id="password-success" style="display: none;">✅</span>
             </div>
             <p id="password-check-result"></p>
             <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message">비밀번호 오류</p>
@@ -46,8 +55,8 @@
             <label for="rePassword" class="form-label">비밀번호 확인</label>
             <div class="input-group">
                 <input type="password" class="form-control" id="rePassword" onkeyup="rePasswordCheck();" minlength="8" maxlength="16" required />
-                <span id="rePassword-success" style="display: none;">✅</span>
             </div>
+            <p id="rePassword-check-result"></p>
         </div>
 
         <div class="mb-3">
@@ -72,25 +81,35 @@
             <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="error-message">전화번호 오류</p>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">생년월일</label>
             <input type="date" class="form-control" name="birthDate">
         </div>
 
-        <div class="mb-3">
-            <input type="radio" id="male" name="gender" value="M">
-            <label for="male" class="form-label">남</label>
-            <input type="radio" id="female" name="gender" value="F">
-            <label for="female" class="form-label">여</label>
+        <div class="d-flex justify-content-center align-items-center mb-3">
+            <div class="form-check-inline mx-3">
+                <input type="radio" class="form-check-input" id="male" name="gender" value="M">
+                <label for="male" class="form-label">남</label>
+            </div>
+            <div class="form-check-inline mx-3">
+                <input type="radio" class="form-check-input" id="female" name="gender" value="F">
+                <label for="female" class="form-label">여</label>
+            </div>
         </div>
 
         <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary mx-1">회원가입</button>
-            <button type="button" class="btn btn-secondary mx-1" onclick="history.back()">취소</button>
+            <button type="submit" id="joinSubmitButton" class="btn btn-primary mx-1" disabled>회원가입</button>
+            <button type="button" class="btn btn-secondary mx-1" onclick="checkCancel()">취소</button>
         </div>
     </form>
 
 <script th:inline="javascript">
+    const joinSubmitBtn = document.getElementById("joinSubmitButton");
+    let isEmailValid = false;
+    let isPasswordValid = false;
+    let isRePasswordValid = false;
+    let isNicknameValid = false;
+
     const emailCheck = async () => {
         const email = document.getElementById("userEmail").value;
         const checkResult = document.getElementById("email-check-result");
@@ -99,6 +118,8 @@
             checkResult.style.color = "red";
             checkResult.innerHTML = "이메일을 입력해주세요";
             document.getElementById("userEmail").focus();
+            isEmailValid = false;
+            updateJoinSubmitBtn();
             return false;
         }
 
@@ -118,12 +139,18 @@
             if (res === "ok") {
                 checkResult.style.color = "green";
                 checkResult.innerHTML = "사용가능한 이메일입니다";
+                isEmailValid = true;
+                updateJoinSubmitBtn();
             } else if (res === "duplicated") {
                 checkResult.style.color = "red";
                 checkResult.innerHTML = "이미 사용 중입니다";
+                isEmailValid = false;
+                updateJoinSubmitBtn();
             } else if (res === "invalid") {
                 checkResult.style.color = "red";
                 checkResult.innerHTML = "이메일 형식이 올바르지 않습니다";
+                isEmailValid = false;
+                updateJoinSubmitBtn();
             }
         } catch (error) {
             checkResult.style.color = "red";
@@ -133,12 +160,13 @@
 
     const passwordCheck = async () => {
         const password = document.getElementById("password").value;
-        const checkResult = document.getElementById("password-check-result");
-        const pwdSuccess = document.getElementById("password-success");
+        const pwdCheckResult = document.getElementById("password-check-result");
 
         if(password === "") {
-            pwdSuccess.style.display = "none";
-            checkResult.innerHTML = "비밀번호를 입력해주세요";
+            pwdCheckResult.style.color = "red";
+            pwdCheckResult.innerHTML = "비밀번호를 입력해주세요";
+            isPasswordValid = false;
+            updateJoinSubmitBtn();
             return false;
         }
 
@@ -156,33 +184,45 @@
             const res = await response.text();
 
             if (res === "ok") {
-                pwdSuccess.style.display = "inline-block";
-                checkResult.innerHTML = "";
+                pwdCheckResult.style.color = "green";
+                pwdCheckResult.innerHTML = "사용가능한 비밀번호입니다";
+                isPasswordValid = true;
+                updateJoinSubmitBtn();
             } else {
-                pwdSuccess.style.display = "none";
-                checkResult.style.color = "red";
-                checkResult.innerHTML = "영대소문자, 특수문자, 숫자를 포함해주세요";
+                pwdCheckResult.style.color = "red";
+                pwdCheckResult.innerHTML = "영대소문자, 특수문자, 숫자를 포함해주세요";
+                isPasswordValid = false;
+                updateJoinSubmitBtn();
             }
         } catch (error) {
-            checkResult.style.color = "red";
-            checkResult.innerHTML = "서버 오류 발생";
+            pwdCheckResult.style.color = "red";
+            pwdCheckResult.innerHTML = "서버 오류 발생";
         }
     }
 
     const rePasswordCheck = () => {
 
         const rePassword = document.getElementById("rePassword").value;
-        const rePwdSuccess = document.getElementById("rePassword-success");
+        const rePwdCheckResult = document.getElementById("rePassword-check-result");
 
         if (rePassword === "") {
-            rePwdSuccess.style.display = "none";
+            rePwdCheckResult.style.color = "red";
+            rePwdCheckResult.innerHTML = "비밀번호를 입력해주세요";
+            isRePasswordValid = false;
+            updateJoinSubmitBtn();
             return false;
         }
 
         if (rePassword === document.getElementById("password").value) {
-            rePwdSuccess.style.display = "inline-block";
+            rePwdCheckResult.style.color = "green";
+            rePwdCheckResult.innerHTML = "비밀번호가 일치합니다";
+            isRePasswordValid = true;
+            updateJoinSubmitBtn();
         } else {
-            rePwdSuccess.style.display = "none";
+            rePwdCheckResult.style.color = "red";
+            rePwdCheckResult.innerHTML = "비밀번호가 틀렸습니다";
+            isRePasswordValid = false;
+            updateJoinSubmitBtn();
         }
     }
 
@@ -193,6 +233,8 @@
         if (nickname === "") {
             checkResult.style.color = "red";
             checkResult.innerHTML = "닉네임을 입력해주세요";
+            isNicknameValid = false;
+            updateJoinSubmitBtn();
             document.getElementById("nickname").focus();
             return false;
         }
@@ -213,13 +255,27 @@
             if (res === "ok") {
                 checkResult.style.color = "green";
                 checkResult.innerHTML = "사용가능한 닉네임입니다";
+                isNicknameValid = true;
+                updateJoinSubmitBtn();
             } else {
                 checkResult.style.color = "red";
                 checkResult.innerHTML = "이미 사용 중입니다";
+                isNicknameValid = false;
+                updateJoinSubmitBtn();
             }
         } catch (error) {
             checkResult.style.color = "red";
             checkResult.innerHTML = "서버 오류 발생";
+        }
+    }
+
+    const updateJoinSubmitBtn = () => {
+        joinSubmitBtn.disabled = !(isEmailValid && isPasswordValid && isRePasswordValid && isNicknameValid);
+    }
+
+    const checkCancel = () => {
+        if (window.confirm("회원가입을 취소하시겠습니까?")) {
+            location.href='/login';
         }
     }
 
