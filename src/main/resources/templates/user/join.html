@@ -18,7 +18,12 @@
 
         .error-message {
             color: red;
-            font-size: 12px;
+            font-size: 16px;
+        }
+
+        .success-message {
+            color: green;
+            font-size: 16px;
         }
     </style>
 
@@ -98,179 +103,16 @@
         </div>
 
         <div class="d-flex justify-content-center">
-            <button type="submit" id="joinSubmitButton" class="btn btn-primary mx-1" disabled>회원가입</button>
+            <button type="submit" id="submitButton" class="btn btn-primary mx-1" disabled>회원가입</button>
             <button type="button" class="btn btn-secondary mx-1" onclick="checkCancel()">취소</button>
         </div>
     </form>
 
+<script src="/js/user/userRequestCheck.js"></script>
 <script th:inline="javascript">
-    const joinSubmitBtn = document.getElementById("joinSubmitButton");
-    let isEmailValid = false;
-    let isPasswordValid = false;
-    let isRePasswordValid = false;
-    let isNicknameValid = false;
 
-    const emailCheck = async () => {
-        const email = document.getElementById("userEmail").value;
-        const checkResult = document.getElementById("email-check-result");
-
-        if (email === "") {
-            checkResult.style.color = "red";
-            checkResult.innerHTML = "이메일을 입력해주세요";
-            document.getElementById("userEmail").focus();
-            isEmailValid = false;
-            updateJoinSubmitBtn();
-            return false;
-        }
-
-        try {
-            const response = await fetch("/users/email-check", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(email)
-            });
-
-            if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-            const res = await response.text();
-
-            if (res === "ok") {
-                checkResult.style.color = "green";
-                checkResult.innerHTML = "사용가능한 이메일입니다";
-                isEmailValid = true;
-                updateJoinSubmitBtn();
-            } else if (res === "duplicated") {
-                checkResult.style.color = "red";
-                checkResult.innerHTML = "이미 사용 중입니다";
-                isEmailValid = false;
-                updateJoinSubmitBtn();
-            } else if (res === "invalid") {
-                checkResult.style.color = "red";
-                checkResult.innerHTML = "이메일 형식이 올바르지 않습니다";
-                isEmailValid = false;
-                updateJoinSubmitBtn();
-            }
-        } catch (error) {
-            checkResult.style.color = "red";
-            checkResult.innerHTML = "서버 오류 발생";
-        }
-    }
-
-    const passwordCheck = async () => {
-        const password = document.getElementById("password").value;
-        const pwdCheckResult = document.getElementById("password-check-result");
-
-        if(password === "") {
-            pwdCheckResult.style.color = "red";
-            pwdCheckResult.innerHTML = "비밀번호를 입력해주세요";
-            isPasswordValid = false;
-            updateJoinSubmitBtn();
-            return false;
-        }
-
-        try {
-            const response = await fetch("/users/password-check", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(password)
-            });
-
-            if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-            const res = await response.text();
-
-            if (res === "ok") {
-                pwdCheckResult.style.color = "green";
-                pwdCheckResult.innerHTML = "사용가능한 비밀번호입니다";
-                isPasswordValid = true;
-                updateJoinSubmitBtn();
-            } else {
-                pwdCheckResult.style.color = "red";
-                pwdCheckResult.innerHTML = "영대소문자, 특수문자, 숫자를 포함해주세요";
-                isPasswordValid = false;
-                updateJoinSubmitBtn();
-            }
-        } catch (error) {
-            pwdCheckResult.style.color = "red";
-            pwdCheckResult.innerHTML = "서버 오류 발생";
-        }
-    }
-
-    const rePasswordCheck = () => {
-
-        const rePassword = document.getElementById("rePassword").value;
-        const rePwdCheckResult = document.getElementById("rePassword-check-result");
-
-        if (rePassword === "") {
-            rePwdCheckResult.style.color = "red";
-            rePwdCheckResult.innerHTML = "비밀번호를 입력해주세요";
-            isRePasswordValid = false;
-            updateJoinSubmitBtn();
-            return false;
-        }
-
-        if (rePassword === document.getElementById("password").value) {
-            rePwdCheckResult.style.color = "green";
-            rePwdCheckResult.innerHTML = "비밀번호가 일치합니다";
-            isRePasswordValid = true;
-            updateJoinSubmitBtn();
-        } else {
-            rePwdCheckResult.style.color = "red";
-            rePwdCheckResult.innerHTML = "비밀번호가 틀렸습니다";
-            isRePasswordValid = false;
-            updateJoinSubmitBtn();
-        }
-    }
-
-    const nicknameCheck = async () => {
-        const nickname = document.getElementById("nickname").value;
-        const checkResult = document.getElementById("nickname-check-result");
-
-        if (nickname === "") {
-            checkResult.style.color = "red";
-            checkResult.innerHTML = "닉네임을 입력해주세요";
-            isNicknameValid = false;
-            updateJoinSubmitBtn();
-            document.getElementById("nickname").focus();
-            return false;
-        }
-
-        try {
-            const response = await fetch("/users/nickname-check", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(nickname)
-            });
-
-            if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-            const res = await response.text();
-
-            if (res === "ok") {
-                checkResult.style.color = "green";
-                checkResult.innerHTML = "사용가능한 닉네임입니다";
-                isNicknameValid = true;
-                updateJoinSubmitBtn();
-            } else {
-                checkResult.style.color = "red";
-                checkResult.innerHTML = "이미 사용 중입니다";
-                isNicknameValid = false;
-                updateJoinSubmitBtn();
-            }
-        } catch (error) {
-            checkResult.style.color = "red";
-            checkResult.innerHTML = "서버 오류 발생";
-        }
-    }
-
-    const updateJoinSubmitBtn = () => {
-        joinSubmitBtn.disabled = !(isEmailValid && isPasswordValid && isRePasswordValid && isNicknameValid);
+    const updateSubmitBtn = () => {
+        submitBtn.disabled = !(isEmailValid && isPasswordValid && isRePasswordValid && isNicknameValid);
     }
 
     const checkCancel = () => {
@@ -278,13 +120,6 @@
             location.href='/login';
         }
     }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const invalidInput = document.querySelector('.is-invalid');
-        if (invalidInput) {
-            invalidInput.focus();
-        }
-    });
 </script>
 
 </body>
