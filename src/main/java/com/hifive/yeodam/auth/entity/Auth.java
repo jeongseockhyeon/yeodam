@@ -20,8 +20,10 @@ public class Auth implements UserDetails {
     @Column(name = "auth_id")
     private Long id;
 
+    @Column(updatable = false ,unique = true)
     private String email;
 
+    @Setter
     private String password;
 
     @Override

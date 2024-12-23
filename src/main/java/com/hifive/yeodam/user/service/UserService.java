@@ -79,6 +79,7 @@ public class UserService {
 
         user.setName(request.getName());
         user.setNickname(request.getNickname());
+        user.setPhone(request.getPhone());
 
         return new UserResponse(userRepository.save(user));
     }

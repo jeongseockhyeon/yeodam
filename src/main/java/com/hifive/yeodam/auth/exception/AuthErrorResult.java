@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum AuthErrorResult {
 
     DUPLICATED_EMAIL_JOIN(HttpStatus.BAD_REQUEST, "Duplicated Email Join Request"),
+    AUTH_NOT_FOUND(HttpStatus.NOT_FOUND, "Auth Not Found"),
     ;
 
     private final HttpStatus httpStatus;
