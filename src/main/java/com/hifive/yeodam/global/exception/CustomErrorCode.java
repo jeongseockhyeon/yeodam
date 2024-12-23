@@ -17,6 +17,12 @@ public enum CustomErrorCode {
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품이 존재하지 않습니다"),
     GUIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 가이드가 존재하지 않습니다"),
 
+    // Wish 관련 ERROR
+    WISH_NOT_FOUND(HttpStatus.NOT_FOUND, "찜 목록을 찾을 수 없습니다"),
+    WISH_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "찜한 상품을 찾을 수 없습니다"),
+    WISH_ITEM_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다"),
+    WISH_ITEM_DELETE_FAILED(HttpStatus.BAD_REQUEST, "찜한 상품 삭제에 실패했습니다"),
+
     // Cart 관련 ERROR
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"),

@@ -31,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -155,7 +154,7 @@ public class TourItemService {
         if(tourItemUpdateReqDto.getAddCategoryIds() != null){
             for(Long categoryId : tourItemUpdateReqDto.getAddCategoryIds()){
                 Category category = categoryRepository.findById(categoryId)
-                        .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));//예외처리 추가
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
                 TourCategory addTourCategory = TourCategory.builder()
                                 .tour(targetTour)
                                 .category(category)
@@ -166,7 +165,9 @@ public class TourItemService {
         }
         if(tourItemUpdateReqDto.getRemoveCategoryIds() != null){
             for(Long categoryId : tourItemUpdateReqDto.getRemoveCategoryIds()){
-                tourCategoryRepository.deleteByCategoryId(categoryId);
+                Category category = categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
+                tourCategoryRepository.deleteByCategory(category);
             }
         }
         if(tourItemUpdateReqDto.getAddGuideIds() != null){
