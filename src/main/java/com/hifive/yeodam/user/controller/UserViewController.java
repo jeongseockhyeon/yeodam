@@ -3,6 +3,8 @@ package com.hifive.yeodam.user.controller;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
+import com.hifive.yeodam.user.dto.UserResponse;
+import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +30,7 @@ public class UserViewController {
     private final AuthService authService;
 
     @GetMapping("/join")
-    public String userJoinForm(Model model) {
+    public String userJoinView(Model model) {
 
         model.addAttribute("joinRequest", new JoinRequest());
 
@@ -76,6 +78,43 @@ public class UserViewController {
         model.addAttribute("user", user);
 
         return "user/detail";
+    }
+
+    @GetMapping("/{id}")
+    public String userEditView(@PathVariable Long id, Model model) {
+
+        UserResponse userResponse = userService.getUser(id);
+        Auth auth = authService.getAuth(userResponse.getAuth().getId());
+
+        UserUpdateRequest userUpdateRequest = UserUpdateRequest.builder()
+                .email(auth.getEmail())
+                .password(auth.getPassword())
+                .name(userResponse.getName())
+                .nickname(userResponse.getNickname())
+                .phone(userResponse.getPhone())
+                .birthDate(userResponse.getBirthDate())
+                .gender(userResponse.getGender())
+                .build();
+
+        model.addAttribute("userId", id);
+        model.addAttribute("user", userUpdateRequest);
+
+        return "user/edit";
+    }
+
+    @PostMapping("/{id}")
+    public String userEdit(@PathVariable Long id,
+                           @Valid @ModelAttribute("user") UserUpdateRequest request, BindingResult result, Model model) {
+
+        if(result.hasErrors()) {
+            model.addAttribute("userId", id);
+            return "user/edit";
+        }
+
+        UserResponse user = userService.updateUser(id, request);
+        authService.updateAuth(user.getAuth().getId(), request);
+
+        return "redirect:/users/myPage";
     }
 
     @PostMapping("/email-check")

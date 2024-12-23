@@ -29,6 +29,7 @@ public class User {
 
     private String gender;
 
+    @Setter
     private String phone;
 
     @ManyToOne
