@@ -50,6 +50,12 @@ public class UserService {
         }
     }
 
+    public void checkDuplicatedNickname(UserUpdateRequest request, BindingResult result) {
+        if (userRepository.existsByNickname(request.getNickname())) {
+            result.addError(new FieldError("userUpdateRequest", "nickname", "이미 존재하는 닉네임입니다"));
+        }
+    }
+
     public boolean checkNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
@@ -92,10 +98,12 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User getUserByAuth(Auth auth) {
+    public UserResponse getUserByAuth(Auth auth) {
 
         Optional<User> optionalUser = userRepository.findByAuthId(auth.getId());
 
-        return optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+
+        return new UserResponse(user);
     }
 }

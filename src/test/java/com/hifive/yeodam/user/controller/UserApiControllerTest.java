@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-public class UserControllerTest {
+public class UserApiControllerTest {
 
     private static final String email = "emailName@domain.com";
     private static final String password = "Passw0rd!";
@@ -52,7 +52,7 @@ public class UserControllerTest {
     private static final LocalDate birthDate = LocalDate.of(2000, 3, 16);
 
     @InjectMocks
-    private UserController target;
+    private UserApiController target;
 
     @Mock
     private UserService userService;

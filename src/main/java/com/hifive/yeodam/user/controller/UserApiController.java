@@ -5,7 +5,6 @@ import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
-import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-public class UserController {
+public class UserApiController {
 
     private final UserService userService;
     private final AuthService authService;
@@ -67,6 +66,22 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+
+    @PostMapping("/email-check")
+    @ResponseBody
+    public ResponseEntity<Boolean> emailCheck(@RequestBody String userEmail) {
+
+        boolean isDuplicated = authService.checkEmail(userEmail);
+        return ResponseEntity.ok(isDuplicated);
+    }
+
+    @PostMapping("/nickname-check")
+    @ResponseBody
+    public ResponseEntity<Boolean> nicknameCheck(@RequestBody String nickname) {
+
+        boolean isDuplicated = userService.checkNickname(nickname);
+        return ResponseEntity.ok(isDuplicated);
     }
 }
 

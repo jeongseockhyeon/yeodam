@@ -237,7 +237,7 @@ public class UserServiceTest {
         doReturn(Optional.of(user)).when(userRepository).findByAuthId(auth.getId());
 
         //when
-        User result = target.getUserByAuth(auth);
+        UserResponse result = target.getUserByAuth(auth);
 
         //then
         assertThat(result.getAuth().getId()).isEqualTo(auth.getId());
