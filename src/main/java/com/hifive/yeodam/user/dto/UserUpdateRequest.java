@@ -3,16 +3,17 @@ package com.hifive.yeodam.user.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
+import java.time.LocalDate;
+
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UserUpdateRequest {
+
+    private String email;
 
     @NotBlank
     @Size(max = 25, message = "25자 이하로 작성해 주세요")
@@ -32,4 +33,8 @@ public class UserUpdateRequest {
     @NotBlank
     @Pattern(regexp = "^010\\d{8}$", message = "올바른 전화번호를 입력해 주세요")
     private String phone;
+
+    private LocalDate birthDate;
+
+    private String gender;
 }

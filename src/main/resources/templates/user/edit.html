@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>회원 수정</title>
+
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: 35%;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body class="container mt-5">
+
+  <form th:action="@{'/users/' + ${userId}}" method="POST" th:object="${user}">
+
+    <h2 class="mb-3 text-center">회원 수정</h2>
+
+    <div class="mb-3">
+      <label class="form-label">이메일</label>
+      <input type="email" class="form-control" th:field="*{email}" disabled />
+      <input type="hidden" th:field="*{email}">
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">비밀번호</label>
+      <div class="input-group">
+        <input type="password" class="form-control" id="password" onkeyup="passwordCheck();" th:field="*{password}" minlength="8" maxlength="16" required
+          th:errorclass="border-danger" />
+      </div>
+      <p id="password-check-result"></p>
+      <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message">비밀번호 오류</p>
+    </div>
+
+    <div class="mb-3">
+      <label for="rePassword" class="form-label">비밀번호 확인</label>
+      <div class="input-group d-flex justify-content-center align-items-center">
+        <input type="password" id="rePassword" class="form-control" onkeyup="rePasswordCheck();" minlength="8" maxlength="16" required>
+      </div>
+      <p id="rePassword-check-result"></p>
+    </div>
+
+    <div class="mb-3">
+      <label th:for="name" class="form-label">이름</label>
+      <input type="text" th:field="*{name}" class="form-control" required maxlength="25" th:errorclass="border-danger">
+      <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message">이름 오류</p>
+    </div>
+
+    <div class="mb-3">
+      <label for="nickname" class="form-label">닉네임</label>
+      <div class="input-group">
+        <input type="text" id="nickname" th:field="*{nickname}" class="form-control" th:errorclass="border-danger" maxlength="25" required>
+        <button type="button" class="btn btn-secondary mx-1 idCheck" onclick="nicknameCheck()" >중복 체크</button>
+      </div>
+      <p id="nickname-check-result"></p>
+      <p th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="error-message">닉네임 오류</p>
+    </div>
+
+    <div class="mb-3">
+      <label th:for="phone" class="form-label">전화번호</label>
+      <input type="tel" th:field="*{phone}" class="form-control" placeholder="전화번호" th:errorclass="border-danger" required />
+      <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="error-message">전화번호 오류</p>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">생년월일</label>
+      <input type="date" class="form-control" th:value="*{birthDate}" disabled>
+      <input type="hidden" th:field="*{birthDate}">
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center mb-3">
+      <div class="form-check-inline mx-3">
+        <input type="radio" class="form-check-input" id="male" name="gender" value="M" th:checked="${#strings.equals(user.gender, 'M')}" disabled>
+        <label for="male" class="form-check-label">남</label>
+      </div>
+      <div class="form-check-inline mx-3">
+        <input type="radio" class="form-check-input" id="female" name="gender" value="F" th:checked="${#strings.equals(user.gender, 'F')}" disabled>
+        <label for="female" class="form-check-label">여</label>
+      </div>
+      <input name="gender" type="hidden" th:value="*{gender}"/>
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center">
+      <button type="submit" id="updateSubmitButton" class="btn btn-primary mx-3" disabled>수정</button>
+      <button type="button" class="btn btn-secondary" onclick="checkCancel()">취소</button>
+    </div>
+  </form>
+</body>
+
+<script th:inline="javascript">
+  const submitBtn = document.getElementById("updateSubmitButton");
+  let isPasswordValid = false;
+  let isRePasswordValid = false;
+  let isNicknameValid = false;
+
+  const passwordCheck = async () => {
+    const password = document.getElementById("password").value;
+    const checkResult = document.getElementById("password-check-result");
+
+    if(password === "") {
+      checkResult.style.color = "red";
+      checkResult.innerHTML = "비밀번호를 입력해주세요";
+      isPasswordValid = false;
+      updateSubmitBtn();
+      return false;
+    }
+
+    try {
+      const response = await fetch("/users/password-check", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(password)
+      });
+
+      if (!response.ok) throw new Error(`Error: ${response.status}`);
+
+      const res = await response.text();
+
+      if (res === "ok") {
+        checkResult.style.color = "green";
+        checkResult.innerHTML = "사용가능한 비밀번호입니다";
+        isPasswordValid = true;
+        updateSubmitBtn();
+      } else {
+        checkResult.style.color = "red";
+        checkResult.innerHTML = "영대소문자, 특수문자, 숫자를 포함해주세요";
+        isPasswordValid = false;
+        updateSubmitBtn();
+      }
+    } catch (error) {
+      checkResult.style.color = "red";
+      checkResult.innerHTML = "서버 오류 발생";
+    }
+  }
+
+  const rePasswordCheck = () => {
+
+    const rePassword = document.getElementById("rePassword").value;
+    const rePwdResult = document.getElementById("rePassword-check-result");
+
+    if (rePassword === "") {
+      rePwdResult.style.color = "red";
+      rePwdResult.innerHTML = "비밀번호를 입력해주세요";
+      isRePasswordValid = false;
+      updateSubmitBtn();
+      return false;
+    }
+
+    if (rePassword === document.getElementById("password").value) {
+      rePwdResult.style.color = "green";
+      rePwdResult.innerHTML = "비밀번호가 일치합니다";
+      isRePasswordValid = true;
+      updateSubmitBtn();
+    } else {
+      rePwdResult.style.color = "red";
+      rePwdResult.innerHTML = "비밀번호가 틀렸습니다";
+      isRePasswordValid = false;
+      updateSubmitBtn();
+    }
+  }
+
+  const nicknameCheck = async () => {
+    const nickname = document.getElementById("nickname").value;
+    const checkResult = document.getElementById("nickname-check-result");
+
+    if (nickname === "") {
+      checkResult.style.color = "red";
+      checkResult.innerHTML = "닉네임을 입력해주세요";
+      document.getElementById("nickname").focus();
+      isNicknameValid = false;
+      updateSubmitBtn();
+      return false;
+    }
+
+    try {
+      const response = await fetch("/users/nickname-check", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(nickname)
+      });
+
+      if (!response.ok) throw new Error(`Error: ${response.status}`);
+
+      const res = await response.text();
+
+      if (res === "ok") {
+        checkResult.style.color = "green";
+        checkResult.innerHTML = "사용가능한 닉네임입니다";
+        isNicknameValid = true;
+        updateSubmitBtn();
+      } else {
+        checkResult.style.color = "red";
+        checkResult.innerHTML = "이미 사용 중입니다";
+        isNicknameValid = false;
+        updateSubmitBtn();
+      }
+    } catch (error) {
+      checkResult.style.color = "red";
+      checkResult.innerHTML = "서버 오류 발생";
+    }
+  }
+
+  const updateSubmitBtn = () => {
+    submitBtn.disabled = !(isPasswordValid && isRePasswordValid && isNicknameValid);
+  }
+
+  const checkCancel = () => {
+    if (window.confirm("수정하기를 취소하시겠습니까?")) {
+      location.href='/users/myPage';
+    }
+  }
+</script>
+</html>

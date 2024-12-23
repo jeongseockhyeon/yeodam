@@ -2,6 +2,7 @@ package com.hifive.yeodam.user.dto;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.user.entity.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,8 @@ public class UserResponse {
 
     private String gender;
 
+    private String phone;
+
     private Auth auth;
 
     public UserResponse(User entity) {
@@ -28,6 +31,7 @@ public class UserResponse {
         this.birthDate = entity.getBirthDate();
         this.nickname = entity.getNickname();
         this.gender = entity.getGender();
+        this.phone = entity.getPhone();
         this.auth = entity.getAuth();
     }
 }
