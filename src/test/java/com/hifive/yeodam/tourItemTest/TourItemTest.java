@@ -1,172 +1,135 @@
 package com.hifive.yeodam.tourItemTest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.category.dto.CategoryResDto;
+import com.hifive.yeodam.category.entity.Category;
+import com.hifive.yeodam.category.repository.CategoryRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
+import com.hifive.yeodam.image.service.ImageService;
+import com.hifive.yeodam.item.entity.ItemImage;
+import com.hifive.yeodam.item.repository.ItemImageRepository;
+import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
+import com.hifive.yeodam.seller.repository.GuideRepository;
+import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
-import com.hifive.yeodam.tour.controller.TourItemApiController;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.dto.TourItemReqDto;
 import com.hifive.yeodam.tour.dto.TourItemResDto;
 import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
+import com.hifive.yeodam.tour.entity.TourCategory;
+import com.hifive.yeodam.tour.entity.TourGuide;
+import com.hifive.yeodam.tour.repository.TourCategoryRepository;
+import com.hifive.yeodam.tour.repository.TourGuideRepository;
 import com.hifive.yeodam.tour.repository.TourRepository;
 import com.hifive.yeodam.tour.service.TourItemService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import com.hifive.yeodam.tour.entity.Tour;
-import org.mockito.MockitoAnnotations;
 
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+@ExtendWith(MockitoExtension.class)
 public class TourItemTest {
-    private final static String tourName = "test";
+    private final static String tourName = "제주도";
     private final static String tourDesc = "test";
     private final static String tourPeriod = "1일";
     private final static String tourRegion = "제주";
     private final static String tourPrice = "100";
     private final static String tourMaximum = "2";
-    private Tour expectedTour;
 
-    private MockMvc mockMvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Mock
+    @InjectMocks
     private TourItemService tourItemService;
 
     @Mock
     private SellerService sellerService;
 
-    @InjectMocks
-    private TourItemApiController tourItemAPIController;
+    @Mock
+    private TourRepository tourRepository;
 
+    @Mock
+    private CategoryRepository categoryRepository;
 
+    @Mock
+    private TourCategoryRepository tourCategoryRepository;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(tourItemAPIController).build();
-        Seller seller = new Seller();
-        expectedTour = Tour.builder()
-                .seller(seller)
-                .itemName(tourName)
-                .description(tourDesc)
-                .region(tourRegion)
-                .period(tourPeriod)
-                .price(1000)
-                .maximum(2)
-                .build();
+    @Mock
+    private GuideService guideService;
 
-    }
+    @Mock
+    private GuideRepository guideRepository;
 
+    @Mock
+    private TourGuideRepository tourGuideRepository;
+
+    @Mock
+    private ImageService imageService;
+
+    @Mock
+    private ItemImageRepository itemImageRepository;
 
     @Test
-    @DisplayName("상품_여행 등록 테스트 성공")
-    public void tourItemSaveSuccessTest() {
+    void testSaveTourItem() {
+        // given
+        TourItemReqDto mockRequest = mock(TourItemReqDto.class);
+        when(mockRequest.getTourName()).thenReturn(tourName);
+        when(mockRequest.getTourDesc()).thenReturn(tourDesc);
+        when(mockRequest.getTourPeriod()).thenReturn(tourPeriod);
+        when(mockRequest.getTourRegion()).thenReturn(tourRegion);
+        when(mockRequest.getTourPrice()).thenReturn(tourPrice);
+        when(mockRequest.getMaximum()).thenReturn(tourMaximum);
+        when(mockRequest.getCategoryIdList()).thenReturn("[1, 2]");
+        when(mockRequest.getGuideIdList()).thenReturn(Arrays.asList(1L,2L));
 
-        //given
-        String categoryIds = "[1,2]"; //formData로 인해 스트링 값으로 넘어감
-
-
-        List<Long> guideIds = new ArrayList<>();
-        guideIds.add(1L);
-
-        MultipartFile image = mock(MultipartFile.class);
-        List<MultipartFile> images = new ArrayList<>();
-        images.add(image);
-
-        TourItemReqDto tourItemReqDto = mock(TourItemReqDto.class);
-        when(tourItemReqDto.getTourName()).thenReturn(tourName);
-        when(tourItemReqDto.getTourDesc()).thenReturn(tourDesc);
-        when(tourItemReqDto.getTourPeriod()).thenReturn(tourPeriod);
-        when(tourItemReqDto.getTourRegion()).thenReturn(tourRegion);
-        when(tourItemReqDto.getTourPrice()).thenReturn(tourPrice);
-        when(tourItemReqDto.getMaximum()).thenReturn(tourMaximum);
-        when(tourItemReqDto.getCategoryIdList()).thenReturn(categoryIds);
-        when(tourItemReqDto.getGuideIdList()).thenReturn(guideIds);
-        //이미지 저장
-        when(tourItemReqDto.getTourImages()).thenReturn(images);
+        MultipartFile mockImage = mock(MultipartFile.class);
+        when(mockRequest.getTourImages()).thenReturn(List.of(mockImage));
 
         Auth mockAuth = mock(Auth.class);
-        Seller mockSeller = mock(Seller.class);
+        Seller mockSeller = new Seller();
         when(sellerService.getSellerByAuth(mockAuth)).thenReturn(mockSeller);
 
+        Tour mockTour = Tour.builder().build();
+        when(tourRepository.save(any(Tour.class))).thenReturn(mockTour);
 
-        TourItemResDto expectedTourItemResDto = new TourItemResDto(expectedTour);
+        Category mockCategory1 = Category.builder().build();
+        Category mockCategory2 = Category.builder().build();
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(mockCategory1));
+        when(categoryRepository.findById(2L)).thenReturn(Optional.of(mockCategory2));
 
-        when(tourItemService.saveTourItem(tourItemReqDto,mockAuth)).thenReturn(expectedTourItemResDto);
+        Guide mockGuide1 = new Guide();
+        Guide mockGuide2 = new Guide();
+        when(guideService.getGuideById(1L)).thenReturn(mockGuide1);
+        when(guideService.getGuideById(2L)).thenReturn(mockGuide2);
 
+        when(mockImage.getOriginalFilename()).thenReturn("image.jpg");
+        when(imageService.upload(mockImage)).thenReturn("/images/image.jpg");
 
-        //when
-        TourItemResDto result = tourItemService.saveTourItem(tourItemReqDto,mockAuth);
+        // when
+        TourItemResDto response = tourItemService.saveTourItem(mockRequest, mockAuth);
 
-
-        //then
-        assertEquals(result.getTourName(), expectedTourItemResDto.getTourName());
-        assertEquals(result.getTourDesc(), expectedTourItemResDto.getTourDesc());
-        assertEquals(result.getTourPeriod(), expectedTourItemResDto.getTourPeriod());
-        assertEquals(result.getTourRegion(), expectedTourItemResDto.getTourRegion());
-        assertEquals(result.getTourPrice(), expectedTourItemResDto.getTourPrice());
-        assertEquals(result.getMaximum(), expectedTourItemResDto.getMaximum());
-        verify(tourItemService, times(1)).saveTourItem(any(TourItemReqDto.class), any(Auth.class));
-    }
-    @Test
-    @DisplayName("상품_여행 등록 테스트 실패")
-    public void tourItemSaveFailTest() throws Exception {
-
-        //given
-        String categoryIds = "[1,2]";
-
-        List<Long> guideIds = new ArrayList<>();
-        guideIds.add(1L);
-
-
-        TourItemReqDto tourItemReqDto = mock(TourItemReqDto.class);
-        when(tourItemReqDto.getTourName()).thenReturn(tourName);
-        //when(tourItemReqDto.getTourDesc()).thenReturn(tourDesc);
-        when(tourItemReqDto.getTourPeriod()).thenReturn(tourPeriod);
-        when(tourItemReqDto.getTourRegion()).thenReturn(tourRegion);
-        when(tourItemReqDto.getTourPrice()).thenReturn(tourPrice);
-        when(tourItemReqDto.getMaximum()).thenReturn(tourMaximum);
-        when(tourItemReqDto.getCategoryIdList()).thenReturn(categoryIds);
-        when(tourItemReqDto.getGuideIdList()).thenReturn(guideIds);
-
-        String url = "/api/tours";
-        String json = objectMapper.writeValueAsString(tourItemReqDto);
-
-        Auth mockAuth = mock(Auth.class);
-        Seller mockSeller = mock(Seller.class);
-        when(sellerService.getSellerByAuth(mockAuth)).thenReturn(mockSeller);
-
-        TourItemResDto expectedTourItemResDto = new TourItemResDto(expectedTour);
-        when(tourItemService.saveTourItem(tourItemReqDto,mockAuth)).thenReturn(expectedTourItemResDto);
-
-
-        //when
-        ResultActions result = mockMvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json));
-
-
-        //then
-        result.andExpect(status().isBadRequest());
+        // then
+        assertNotNull(response);
+        verify(sellerService).getSellerByAuth(mockAuth);
+        verify(tourRepository).save(any(Tour.class));
+        verify(categoryRepository, times(2)).findById(anyLong());
+        verify(tourCategoryRepository, times(2)).save(any(TourCategory.class));
+        verify(guideService, times(2)).getGuideById(anyLong());
+        verify(tourGuideRepository, times(2)).save(any(TourGuide.class));
+        verify(imageService).upload(mockImage);
+        verify(itemImageRepository).save(any(ItemImage.class));
     }
 
     @Test
@@ -174,48 +137,43 @@ public class TourItemTest {
     public void tourItemFindAllTest() {
         //given
         int testCount = 4;
-        List<TourItemResDto> mockTourList = new ArrayList<>();
+        List<Tour> mockTours = new ArrayList<>();
         for (int i = 0; i < testCount; i++) {
-            Tour tour = Tour.builder().build();
-            TourItemResDto tourItemResDto = new TourItemResDto(tour);
-            mockTourList.add(tourItemResDto);
+
+            Tour mockTour = Tour.builder().build();
+            mockTours.add(mockTour);
         }
-        when(tourItemService.findAll()).thenReturn(mockTourList);
+        when(tourRepository.findAll()).thenReturn(mockTours);
 
         //when
         List<TourItemResDto> result = tourItemService.findAll();
 
         //then
         assertEquals(testCount, result.size());
-        verify(tourItemService, times(1)).findAll();
+        verify(tourRepository, times(1)).findAll();
     }
     @Test
     @DisplayName("카테고리 필터링 테스트")
     public void tourItemSearchFilterTest()  {
         // given
-        List<TourItemResDto> mockTourList = new ArrayList<>();
+        List<Tour> mockTours = new ArrayList<>();
 
-        // 카테고리 응답 dto 모킹
-        CategoryResDto categoryResDtoMock = mock(CategoryResDto.class);
-        when(categoryResDtoMock.getName()).thenReturn("액티비티");
+        Category categoryMock = mock(Category.class);
+        when(categoryMock.getName()).thenReturn("액티비티");
 
-        List<CategoryResDto> categoryResDtoListMock = new ArrayList<>();
-        categoryResDtoListMock.add(categoryResDtoMock);
+        TourCategory tourCategoryMock = mock(TourCategory.class);
+        when(tourCategoryMock.getCategory()).thenReturn(categoryMock);
 
-        // 여행상품 응답 dto 모킹
-        TourItemResDto resMock = mock(TourItemResDto.class);
-        when(resMock.getCategoryResDtoList()).thenReturn(categoryResDtoListMock);
+        Tour tourMock = mock(Tour.class);
+        when(tourMock.getTourCategories()).thenReturn(List.of(tourCategoryMock));
 
-        mockTourList.add(resMock);
+        mockTours.add(tourMock);
 
         // filter 모킹
         SearchFilterDto filterMock = mock(SearchFilterDto.class);
-        List<String> categories = new ArrayList<>();
-        categories.add("액티비티");
+        when(filterMock.getCategories()).thenReturn(List.of("액티비티"));
 
-        when(filterMock.getCategories()).thenReturn(categories);
-
-        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+        when(tourRepository.searchByFilter(filterMock)).thenReturn(mockTours);
 
         // when
         List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
@@ -223,24 +181,27 @@ public class TourItemTest {
         // then
         assertThat(results).hasSize(1);
         assertEquals("액티비티", results.getFirst().getCategoryResDtoList().getFirst().getName());
-        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+        assertEquals("액티비티",filterMock.getCategories().getFirst());
+        verify(tourRepository, times(1)).searchByFilter(any(SearchFilterDto.class));
     }
 
     @Test
     @DisplayName("키워드 필터링 테스트")
     public void tourItemSearchFilterKeywordTest()  {
         //given
-        List<TourItemResDto> mockTourList = new ArrayList<>();
+        List<Tour> mockTours = new ArrayList<>();
 
-        TourItemResDto resMock = mock(TourItemResDto.class);
-        when(resMock.getTourName()).thenReturn("제주도");
+        Tour tourMock = mock(Tour.class);
+        when(tourMock.getItemName()).thenReturn(tourName);
 
-        mockTourList.add(resMock);
+        mockTours.add(tourMock);
+
+        String keyword = "제주";
 
         SearchFilterDto filterMock = mock(SearchFilterDto.class);
-        when(filterMock.getKeyword()).thenReturn("제주");
+        when(filterMock.getKeyword()).thenReturn(keyword);
 
-        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+        when(tourRepository.searchByFilter(filterMock)).thenReturn(mockTours);
 
         // when
         List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
@@ -248,31 +209,34 @@ public class TourItemTest {
         //then
         assertThat(results).hasSize(1);
         assertEquals("제주도",results.getFirst().getTourName());
-        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+        assertEquals("제주",filterMock.getKeyword());
+        verify(tourRepository, times(1)).searchByFilter(any(SearchFilterDto.class));
     }
 
     @Test
     @DisplayName("지역 필터링 테스트")
     public void tourItemSearchFilterRegionTest() {
         //given
-        List<TourItemResDto> mockTourList = new ArrayList<>();
+        List<Tour> mockTours = new ArrayList<>();
 
-        TourItemResDto resMock = mock(TourItemResDto.class);
-        when(resMock.getTourRegion()).thenReturn("제주");
-        mockTourList.add(resMock);
+        Tour tourMock = mock(Tour.class);
+        when(tourMock.getRegion()).thenReturn(tourRegion);
+
+        mockTours.add(tourMock);
 
         SearchFilterDto filterMock = mock(SearchFilterDto.class);
-        when(filterMock.getRegion()).thenReturn("제주");
+        when(filterMock.getRegion()).thenReturn(tourRegion);
 
-        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+        when(tourRepository.searchByFilter(filterMock)).thenReturn(mockTours);
 
         //when
         List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
 
         //then
         assertThat(results).hasSize(1);
-        assertEquals("제주",results.getFirst().getTourRegion());
-        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+        assertEquals(tourRegion,results.getFirst().getTourRegion());
+        assertEquals(tourRegion,filterMock.getRegion());
+        verify(tourRepository, times(1)).searchByFilter(any(SearchFilterDto.class));
 
     }
 
@@ -280,188 +244,166 @@ public class TourItemTest {
     @DisplayName("기간 필터링 테스트")
     public void tourItemSearchFilterPeriodTest() {
         //given
-        List<TourItemResDto> mockTourList = new ArrayList<>();
-        TourItemResDto resMock = mock(TourItemResDto.class);
-        when(resMock.getTourPeriod()).thenReturn("1일");
-        mockTourList.add(resMock);
+        List<Tour> mockTours = new ArrayList<>();
+
+        Tour tourMock = mock(Tour.class);
+        when(tourMock.getPeriod()).thenReturn(tourPeriod);
+
+        mockTours.add(tourMock);
 
         SearchFilterDto filterMock = mock(SearchFilterDto.class);
-        when(filterMock.getPeriod()).thenReturn("1일");
+        when(filterMock.getPeriod()).thenReturn(tourPeriod);
 
-        when(tourItemService.getSearchFilterTour(filterMock)).thenReturn(mockTourList);
+        when(tourRepository.searchByFilter(filterMock)).thenReturn(mockTours);
 
         //when
         List<TourItemResDto> results = tourItemService.getSearchFilterTour(filterMock);
 
         //then
         assertThat(results).hasSize(1);
-        assertEquals("1일",results.getFirst().getTourPeriod());
-        verify(tourItemService, times(1)).getSearchFilterTour(any(SearchFilterDto.class));
+        assertEquals(filterMock.getPeriod(),results.getFirst().getTourPeriod());
+        verify(tourRepository, times(1)).searchByFilter(any(SearchFilterDto.class));
 
     }
 
     @Test
     @DisplayName("상품_여행 단일 조회 테스트")
-    public void tourItemFindByIdSuccessTest() throws Exception {
+    public void tourItemFindByIdSuccessTest() {
         //given
-        String url = "/api/tours/{id}";
         Long tourItemId = 1L;
 
-        TourItemResDto expectedTourItemResDto = new TourItemResDto(expectedTour);
+        Tour tourMock = mock(Tour.class);
+        when(tourMock.getId()).thenReturn(tourItemId);
+        when(tourMock.getItemName()).thenReturn(tourName);
 
-        when(tourItemService.findById(tourItemId)).thenReturn(expectedTourItemResDto);
-
-        //when
-        ResultActions resultActions = mockMvc.perform(get(url,tourItemId));
-
-        //then
-        resultActions.andExpect(status().isOk());
-        //assertEquals(seller, resultTour.getSeller());
-    }
-    @Test
-    @DisplayName("상품_여행 단일 조회 실패 테스트")
-    public void tourItemFindByIdFailTest() {
-        //given
-        Long tourItemId = 2L;
-
-        when(tourItemService.findById(tourItemId)).thenThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"));
+        when(tourRepository.findById(tourItemId)).thenReturn(Optional.of(tourMock));
 
         //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> tourItemService.findById(tourItemId));
+        TourItemResDto result = tourItemService.findById(tourItemId);
 
         //then
-        assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
+        assertEquals(tourName,result.getTourName());
+        assertEquals(tourItemId,result.getId());
+        verify(tourRepository, times(1)).findById(tourItemId);
     }
 
 
     @Test
     @DisplayName("상품_여행 수정 성공 테스트")
     public void tourItemUpdateSuccessTest() {
-        //given
-        Long tourItemId = 1L;
+        // given
+        Long tourId = 1L;
+        Long categoryId1 = 1L;
+        Long categoryId2 = 2L;
+        Long guideId1 = 1L;
+        Long guideId2 = 2L;
 
-        String updateTourName = "update name";
-        String updateTourDesc = "update desc";
-        String updateTourPeriod = "반나절";
-        String updateTourRegion = "강원도";
-        int updateTourPrice = 100;
+        TourItemUpdateReqDto updateReq = mock(TourItemUpdateReqDto.class);
+        when(updateReq.getTourName()).thenReturn("Updated Name");
+        when(updateReq.getDescription()).thenReturn("Updated Description");
+        when(updateReq.getPrice()).thenReturn(100);
+        when(updateReq.getRegion()).thenReturn("Updated Region");
+        when(updateReq.getPeriod()).thenReturn("Updated Period");
+        when(updateReq.getMaximum()).thenReturn(10);
+        when(updateReq.getAddCategoryIds()).thenReturn(List.of(categoryId1));
+        when(updateReq.getRemoveCategoryIds()).thenReturn(List.of(categoryId2));
+        when(updateReq.getAddGuideIds()).thenReturn(List.of(guideId1));
+        when(updateReq.getRemoveGuideIds()).thenReturn(List.of(guideId2));
 
-        List<Long> addCategories = new ArrayList<>();
-        addCategories.add(1L);
-        addCategories.add(2L);
+        Tour tour = mock(Tour.class);
+        when(tourRepository.findById(tourId)).thenReturn(Optional.of(tour));
 
-        List<Long> removeCategories = new ArrayList<>();
-        removeCategories.add(3L);
+        Category category1 = mock(Category.class);
+        Category category2 = mock(Category.class);
+        when(categoryRepository.findById(categoryId1)).thenReturn(Optional.of(category1));
+        when(categoryRepository.findById(categoryId2)).thenReturn(Optional.of(category2));
 
-        List<Long> addGuides = new ArrayList<>();
-        addGuides.add(4L);
-        List<Long> removeGuides = new ArrayList<>();
-        removeGuides.add(5L);
+        Guide guide1 = mock(Guide.class);
+        Guide guide2 = mock(Guide.class);
+        when(guideRepository.findById(guideId1)).thenReturn(Optional.of(guide1));
+        when(guideRepository.findById(guideId2)).thenReturn(Optional.of(guide2));
 
-        TourItemUpdateReqDto tourItemUpdateReqDto = mock(TourItemUpdateReqDto.class);
-        when(tourItemUpdateReqDto.getTourName()).thenReturn(updateTourName);
-        when(tourItemUpdateReqDto.getDescription()).thenReturn(updateTourDesc);
-        when(tourItemUpdateReqDto.getPeriod()).thenReturn(updateTourPeriod);
-        when(tourItemUpdateReqDto.getRegion()).thenReturn(updateTourRegion);
-        when(tourItemUpdateReqDto.getPrice()).thenReturn(updateTourPrice);
-        when(tourItemUpdateReqDto.getAddCategoryIds()).thenReturn(addCategories);
-        when(tourItemUpdateReqDto.getAddGuideIds()).thenReturn(addGuides);
-        when(tourItemUpdateReqDto.getRemoveCategoryIds()).thenReturn(removeCategories);
-        when(tourItemUpdateReqDto.getRemoveGuideIds()).thenReturn(removeGuides);
+        // when
+        TourItemResDto result = tourItemService.update(tourId, updateReq);
 
-        Tour updatedTour = Tour.builder()
-                .itemName(updateTourName)
-                .description(updateTourDesc)
-                .region(updateTourRegion)
-                .period(updateTourPeriod)
-                .price(updateTourPrice)
-                .build();
-        TourItemResDto expectedTourItemResDto = new TourItemResDto(updatedTour);
+        // then
+        verify(tourRepository, times(1)).findById(tourId);
+        verify(tour).updateItem("Updated Name", "Updated Description", 100);
+        verify(tour).updateSubItem("Updated Region", "Updated Period", 10);
 
-        when(tourItemService.update(tourItemId,tourItemUpdateReqDto)).thenReturn(expectedTourItemResDto);
+        // Add Categories
+        verify(categoryRepository, times(1)).findById(categoryId1);
+        verify(tourCategoryRepository, times(1)).save(any(TourCategory.class));
 
-        //when
-        TourItemResDto result = tourItemService.update(tourItemId,tourItemUpdateReqDto);
+        // Remove Categories
+        verify(categoryRepository, times(1)).findById(categoryId2);
+        verify(tourCategoryRepository, times(1)).deleteByCategory(category2);
 
-        //then
-        assertEquals(updateTourName, result.getTourName());
-        assertEquals(updateTourDesc,result.getTourDesc());
-        assertEquals(updateTourPeriod,result.getTourPeriod());
-        assertEquals(updateTourPrice,result.getTourPrice());
-        verify(tourItemService, times(1)).update(any(Long.class),any(TourItemUpdateReqDto.class));
+        // Add Guides
+        verify(guideRepository, times(1)).findById(guideId1);
+        verify(tourGuideRepository, times(1)).save(any(TourGuide.class));
+
+        // Remove Guides
+        verify(guideRepository, times(1)).findById(guideId2);
+        verify(tourGuideRepository, times(1)).deleteByGuide(guide2);
+
+        // Result Verification
+        assertNotNull(result);
+        verify(tour, times(1)).getId();
+
     }
     @Test
-    @DisplayName("상품_여행 수정 실패 테스트")
-    public void tourItemUpdateFailTest() {
-        //given
-        Long tourItemId = 1L;
+    @DisplayName("상품_여행 수정 실패 - 여행이 존재하지 않을 때")
+    void updateTourItemNotFound() {
+        // given
+        Long tourId = 1L;
+        TourItemUpdateReqDto updateReq = mock(TourItemUpdateReqDto.class);
 
-        String updateTourName = "update name";
-        String updateTourDesc = "update desc";
-        String updateTourPeriod = "반나절";
-        String updateTourRegion = "강원도";
-        int updateTourPrice = 100;
+        when(tourRepository.findById(tourId)).thenReturn(Optional.empty());
 
-        List<Long> addCategories = new ArrayList<>();
-        addCategories.add(1L);
-        addCategories.add(2L);
-
-        List<Long> removeCategories = new ArrayList<>();
-        removeCategories.add(3L);
-
-        List<Long> addGuides = new ArrayList<>();
-        addGuides.add(4L);
-        List<Long> removeGuides = new ArrayList<>();
-        removeGuides.add(5L);
-
-        TourItemUpdateReqDto tourItemUpdateReqDto = mock(TourItemUpdateReqDto.class);
-        when(tourItemUpdateReqDto.getTourName()).thenReturn(updateTourName);
-        when(tourItemUpdateReqDto.getDescription()).thenReturn(updateTourDesc);
-        when(tourItemUpdateReqDto.getPeriod()).thenReturn(updateTourPeriod);
-        when(tourItemUpdateReqDto.getRegion()).thenReturn(updateTourRegion);
-        when(tourItemUpdateReqDto.getPrice()).thenReturn(updateTourPrice);
-        when(tourItemUpdateReqDto.getAddCategoryIds()).thenReturn(addCategories);
-        when(tourItemUpdateReqDto.getAddGuideIds()).thenReturn(addGuides);
-        when(tourItemUpdateReqDto.getRemoveCategoryIds()).thenReturn(removeCategories);
-        when(tourItemUpdateReqDto.getRemoveGuideIds()).thenReturn(removeGuides);
-
-        when(tourItemService.update(tourItemId,tourItemUpdateReqDto)).thenThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"));
-
-        //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> tourItemService.update(tourItemId,tourItemUpdateReqDto));
-
-        //then
-        assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
-        verify(tourItemService, times(1)).update(any(Long.class),any(TourItemUpdateReqDto.class));
+        // when & then
+        CustomException exception = assertThrows(CustomException.class,
+                () -> tourItemService.update(tourId, updateReq)
+        );
+        assertEquals(CustomErrorCode.ITEM_NOT_FOUND, exception.getCustomErrorCode());
+        verify(tourRepository, times(1)).findById(tourId);
     }
+
+    @Test
+    @DisplayName("상품_여행 수정 실패 - 카테고리 존재하지 않을 때")
+    void updateTourItemCategoryNotFound() {
+        // given
+        Long tourId = 1L;
+        Long categoryId = 1L;
+        TourItemUpdateReqDto updateReq = mock(TourItemUpdateReqDto.class);
+
+        when(tourRepository.findById(tourId)).thenReturn(Optional.of(mock(Tour.class)));
+        when(updateReq.getAddCategoryIds()).thenReturn(List.of(categoryId));
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+
+        // when & then
+        CustomException exception = assertThrows(CustomException.class,
+                () -> tourItemService.update(tourId, updateReq)
+        );
+        assertEquals(CustomErrorCode.CATEGORY_NOT_FOUND, exception.getCustomErrorCode());
+        verify(categoryRepository, times(1)).findById(categoryId);
+    }
+
 
     @Test
     @DisplayName("상품_여행 삭제 성공 테스트")
     public void TourItemDeleteSuccessTest() {
         //given
         Long tourItemId = 1L;
+        Tour tour = mock(Tour.class);
+        when(tourRepository.findById(tourItemId)).thenReturn(Optional.of(tour));
+        doNothing().when(tourRepository).delete(tour);
 
         //when
        tourItemService.delete(tourItemId);
 
         //then
-        verify(tourItemService,times(1)).delete(tourItemId);
-    }
-    @Test
-    @DisplayName("상품_여행 삭제 실패 테스트")
-    public void tourItemDeleteFailTest() {
-        //given
-        Long tourItemId = 2L;
-        doThrow(new RuntimeException("해당 여행을 찾을 수 없습니다"))
-                .when(tourItemService).delete(tourItemId);
-
-
-        //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> tourItemService.delete(tourItemId));
-
-        //then
-        assertEquals("해당 여행을 찾을 수 없습니다", exception.getMessage());
-        verify(tourItemService,times(1)).delete(tourItemId);
+        verify(tourRepository,times(1)).delete(tour);
     }
     @Test
     @DisplayName("업체별 여행 상품 목록 조회")
@@ -473,17 +415,15 @@ public class TourItemTest {
         Tour mockTour1 = mock(Tour.class);
         when(mockTour1.getId()).thenReturn(1L);
         when(mockTour1.getItemName()).thenReturn("test1");
-        when(mockTour1.getSeller()).thenReturn(mockSeller);
 
         Tour mockTour2 = mock(Tour.class);
         when(mockTour2.getId()).thenReturn(2L);
         when(mockTour2.getItemName()).thenReturn("test2");
-        when(mockTour2.getSeller()).thenReturn(mockSeller);
 
-        List <TourItemResDto> mockTourItemResDtoList =  List.of(new TourItemResDto(mockTour1),new TourItemResDto(mockTour2));
+        List<Tour> mockTourList = Arrays.asList(mockTour1, mockTour2);
 
         when(sellerService.getSellerByAuth(mockAuth)).thenReturn(mockSeller);
-        when(tourItemService.findBySeller(mockAuth)).thenReturn(mockTourItemResDtoList);
+        when(tourRepository.findBySeller(mockSeller)).thenReturn(mockTourList);
 
         //when
         List<TourItemResDto> result = tourItemService.findBySeller(mockAuth);
@@ -492,8 +432,7 @@ public class TourItemTest {
         assertEquals(2, result.size());
         assertEquals("test1", result.get(0).getTourName());
         assertEquals("test2", result.get(1).getTourName());
-
-        verify(tourItemService, times(1)).findBySeller(mockAuth);
+        verify(tourRepository, times(1)).findBySeller(mockSeller);
     }
 
 
