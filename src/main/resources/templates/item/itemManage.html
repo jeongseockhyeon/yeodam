@@ -6,10 +6,12 @@
     <title>Tour List</title>
     <link rel="stylesheet" href="/css/itemMange.css">
 </head>
-<body>
+<body class="manage-body">
 <div class="container">
     <h1>여행 상품 목록</h1>
-    <button class="add-button">추가</button>
+    <a href="/tours/add">
+        <button class="add-button">추가</button>
+    </a>
     <table>
         <thead>
         <tr>
@@ -21,7 +23,7 @@
         </tr>
         </thead>
         <tbody>
-        <!-- Iterate over tourList -->
+        <!-- 여행 상품 목록 -->
         <tr th:each="tour, iterStat : ${tourList}">
             <td th:text="${iterStat.index + 1}"></td>
             <td th:text="${tour.tourName}"></td>
