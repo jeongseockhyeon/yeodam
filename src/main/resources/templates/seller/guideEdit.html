@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>가이드 정보 수정</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .input-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        input[readonly] {
+            background-color: #f9f9f9;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/guides/edit/{id}(id=${guide.guideId})}" method="post">
+    <input type="hidden" name="_method" value="put">
+
+    <h1>가이드 정보 수정</h1>
+    <div class="input-container">
+        <input type="text" id="name" name="name" placeholder="이름" th:value="${guide.name}" required>
+    </div>
+
+    <div class="input-container">
+        <input type="date" id="birth" name="birth" th:value="${guide.birth}" readonly>
+        <input type="hidden" name="birth" th:value="${guide.birth}">
+    </div>
+
+    <div class="input-container radio-group">
+        <input type="radio" id="male" name="gender" value="M" th:checked="${guide.gender == 'M'}">
+        <label for="male">남자</label>
+        <input type="radio" id="female" name="gender" value="F" th:checked="${guide.gender == 'F'}">
+        <label for="female">여자</label>
+        <input type="hidden" name="gender" th:value="${guide.gender}">
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="phone" name="phone" placeholder="전화번호" th:value="${guide.phone}" required>
+    </div>
+
+    <div class="input-container">
+        <textarea id="bio" name="bio" placeholder="가이드 소개" required th:text="${guide.bio}"></textarea>
+    </div>
+
+    <button type="submit">수정</button>
+</form>
+</body>
+</html>

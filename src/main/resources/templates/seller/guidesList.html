@@ -7,11 +7,14 @@
         body {
             text-align: center;
         }
+        .guide-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
         .guide-card {
-            display: inline-block;
             width: 500px;
-            height: 25px;
-            margin: 10px;
             padding: 20px;
             border: 2px solid #ccc;
             border-radius: 15px;
@@ -22,8 +25,6 @@
             margin-bottom: 10px;
         }
         .guide-card .info {
-            display: inline-block;
-            width: 100%;
             margin-bottom: 10px;
         }
         .guide-card .phone {
@@ -35,11 +36,14 @@
             top: 10px;
             right: 10px;
         }
+        .button-container button {
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
 <h1>Guides List</h1>
-<div>
+<div class="guide-list">
     <div>
         <button onclick="window.location.href='/guides/join'">가이드 추가</button>
     </div>
@@ -48,6 +52,15 @@
             <span th:text="${guide.name}">Name</span> |
             <span th:text="${guide.gender}">Gender</span> |
             <span th:text="${guide.phone}">Phone</span>
+        </div>
+        <div class="button-container">
+            <a th:href="'/guides/edit/' + ${guide.guideId}">
+                <button>수정</button>
+            </a>
+            <form th:action="@{'/guides/delete/' + ${guide.guideId}}" method="post" onsubmit="return confirm('삭제하시겠습니까?');">
+                <input type="hidden" name="_method" value="delete">
+                <button type="submit">삭제</button>
+            </form>
         </div>
     </div>
 </div>
