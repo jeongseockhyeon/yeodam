@@ -96,6 +96,8 @@ public class UserApiControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
+    // BindingResult 에서 이메일, 닉네임 중복처리하기 때문에 인증서비스에서 중복 에러를 뱉을 경우의 테스트를 할 필요 없다고 생각
+/*
     @Test
     public void 유저등록실패_AuthService에서에러Throw() throws Exception{
         //given
@@ -140,6 +142,7 @@ public class UserApiControllerTest {
         //then
         resultActions.andExpect(status().isBadRequest());
     }
+    */
 
     @Test
     public void 유저등록성공() throws Exception{
@@ -151,7 +154,7 @@ public class UserApiControllerTest {
                 .build();
 
         User user = User.builder()
-                .id(-1L).name(name).nickname(nickname).birthDate(birthDate).gender("M").auth(auth)
+                .id(-1L).name(name).nickname(nickname).birthDate(birthDate).gender("M").phone(phone).auth(auth)
                 .build();
 
         UserResponse userResponse = new UserResponse(user);

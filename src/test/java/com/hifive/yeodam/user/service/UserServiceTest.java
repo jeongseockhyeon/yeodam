@@ -152,9 +152,6 @@ public class UserServiceTest {
     public void 회원수정성공() throws Exception{
         //given
         doReturn(Optional.of(user())).when(userRepository).findById(-1L);
-        doReturn(User.builder().name("kim").nickname("kim12")
-                .build())
-                .when(userRepository).save(any(User.class));
 
         //when
         UserResponse result = target.updateUser(-1L, userUpdateRequest());
@@ -162,6 +159,7 @@ public class UserServiceTest {
         //then
         assertThat(result.getName()).isEqualTo("kim");
         assertThat(result.getNickname()).isEqualTo("kim12");
+        assertThat(result.getPhone()).isEqualTo("01012345678");
     }
 
     @Test
@@ -249,6 +247,7 @@ public class UserServiceTest {
                 .name(name)
                 .birthDate(birthDate)
                 .gender("M")
+                .phone(phone)
                 .auth(auth())
                 .build();
     }
@@ -265,6 +264,7 @@ public class UserServiceTest {
         return UserUpdateRequest.builder()
                 .name("kim")
                 .nickname("kim12")
+                .phone("01012345678")
                 .build();
     }
 }

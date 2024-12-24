@@ -83,11 +83,9 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
         User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
 
-        user.setName(request.getName());
-        user.setNickname(request.getNickname());
-        user.setPhone(request.getPhone());
+        user.update(request.getName(), request.getNickname(), request.getPhone());
 
-        return new UserResponse(userRepository.save(user));
+        return new UserResponse(user);
     }
 
     public void deleteUser(Long id) {
