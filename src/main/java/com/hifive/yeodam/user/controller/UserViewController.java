@@ -38,22 +38,6 @@ public class UserViewController {
         return "user/join";
     }
 
-    @PostMapping("/join")
-    public String userJoin(@Valid @ModelAttribute JoinRequest joinRequest, BindingResult result) {
-
-        authService.checkDuplicatedEmail(joinRequest, result);
-        userService.checkDuplicatedNickname(joinRequest, result);
-
-        if (result.hasErrors()) {
-            return "user/join";
-        }
-
-        Auth auth = authService.addAuth(joinRequest);
-        userService.addUser(joinRequest, auth);
-
-        return "redirect:/login";
-    }
-
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
 

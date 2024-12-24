@@ -10,9 +10,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +26,22 @@ public class UserApiController {
     private final AuthService authService;
 
     @PostMapping
-    public ResponseEntity<UserResponse> addUser(@RequestBody @Valid JoinRequest request) {
+    public ResponseEntity<?> addUser(@Valid JoinRequest request, BindingResult result) {
+
+        authService.checkDuplicatedEmail(request, result);
+        userService.checkDuplicatedNickname(request, result);
+
+        if (result.hasErrors()) {
+
+            Map<String, String> errorMessages = new HashMap<>();
+
+            result.getFieldErrors().forEach(error -> {
+                errorMessages.put(error.getField(), error.getDefaultMessage());
+            });
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(errorMessages);
+        }
 
         Auth auth = authService.addAuth(request);
         UserResponse userResponse = userService.addUser(request, auth);

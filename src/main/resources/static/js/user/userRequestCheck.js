@@ -4,13 +4,16 @@ let isPasswordValid = false;
 let isRePasswordValid = false;
 let isNicknameValid = false;
 
+const checkEmailResult = document.getElementById("email-check-result");
+const checkPwdResult = document.getElementById("password-check-result");
+const checkNicknameResult = document.getElementById("nickname-check-result");
+
 const emailCheck = () => {
     const email = document.getElementById("userEmail").value;
-    const checkResult = document.getElementById("email-check-result");
 
     if (email === "") {
-        checkResult.innerHTML = "이메일을 입력해주세요";
-        checkResult.className = "error-message";
+        checkEmailResult.innerHTML = "이메일을 입력해주세요";
+        checkEmailResult.className = "error-message";
         document.getElementById("userEmail").focus();
         isEmailValid = false;
         updateSubmitBtn();
@@ -20,8 +23,8 @@ const emailCheck = () => {
     const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+(\.[a-z]+)+$/;
 
     if (!emailRegex.test(email)) {
-        checkResult.innerHTML = "유효한 이메일 형식이 아닙니다";
-        checkResult.className = "error-message";
+        checkEmailResult.innerHTML = "유효한 이메일 형식이 아닙니다";
+        checkEmailResult.className = "error-message";
         isEmailValid = false;
         updateSubmitBtn();
         return false;
@@ -39,13 +42,13 @@ const emailCheck = () => {
         })
         .then(isDuplicated => {
             if (isDuplicated) {
-                checkResult.innerHTML = "이미 사용 중입니다";
-                checkResult.className = "error-message";
+                checkEmailResult.innerHTML = "이미 사용 중입니다";
+                checkEmailResult.className = "error-message";
                 isEmailValid = false;
                 updateSubmitBtn();
             } else {
-                checkResult.innerHTML = "사용 가능한 이메일입니다";
-                checkResult.className = "success-message";
+                checkEmailResult.innerHTML = "사용 가능한 이메일입니다";
+                checkEmailResult.className = "success-message";
                 isEmailValid = true;
                 updateSubmitBtn();
             }
@@ -58,11 +61,10 @@ const emailCheck = () => {
 
 const passwordCheck = () => {
     const password = document.getElementById("password").value;
-    const pwdCheckResult = document.getElementById("password-check-result");
 
     if(password === "") {
-        pwdCheckResult.innerHTML = "비밀번호를 입력해주세요";
-        pwdCheckResult.className = "error-message";
+        checkPwdResult.innerHTML = "비밀번호를 입력해주세요";
+        checkPwdResult.className = "error-message";
         isPasswordValid = false;
         updateSubmitBtn();
         return false;
@@ -70,13 +72,13 @@ const passwordCheck = () => {
 
     const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
     if (passwordRegex.test(password)) {
-        pwdCheckResult.innerHTML = "사용가능한 비밀번호입니다";
-        pwdCheckResult.className = "success-message";
+        checkPwdResult.innerHTML = "사용가능한 비밀번호입니다";
+        checkPwdResult.className = "success-message";
         isPasswordValid = true;
         updateSubmitBtn();
     } else {
-        pwdCheckResult.innerHTML = "영대소문자, 특수문자, 숫자를 포함해 입력해주세요 (8~16자)";
-        pwdCheckResult.className = "error-message";
+        checkPwdResult.innerHTML = "영대소문자, 특수문자, 숫자를 포함해 입력해주세요 (8~16자)";
+        checkPwdResult.className = "error-message";
         isPasswordValid = false;
         updateSubmitBtn();
     }
@@ -91,7 +93,7 @@ const rePasswordCheck = () => {
         rePwdCheckResult.innerHTML = "비밀번호를 입력해주세요";
         rePwdCheckResult.className = "error-message";
         isRePasswordValid = false;
-        updateJoinSubmitBtn();
+        updateSubmitBtn();
         return false;
     }
 
@@ -99,22 +101,21 @@ const rePasswordCheck = () => {
         rePwdCheckResult.innerHTML = "비밀번호가 일치합니다";
         rePwdCheckResult.className = "success-message";
         isRePasswordValid = true;
-        updateJoinSubmitBtn();
+        updateSubmitBtn();
     } else {
         rePwdCheckResult.innerHTML = "비밀번호가 틀렸습니다";
         rePwdCheckResult.className = "error-message";
         isRePasswordValid = false;
-        updateJoinSubmitBtn();
+        updateSubmitBtn();
     }
 }
 
 const nicknameCheck = () => {
     const nickname = document.getElementById("nickname").value;
-    const checkResult = document.getElementById("nickname-check-result");
 
     if (nickname === "") {
-        checkResult.innerHTML = "닉네임을 입력해주세요";
-        checkResult.className = "error-message";
+        checkNicknameResult.innerHTML = "닉네임을 입력해주세요";
+        checkNicknameResult.className = "error-message";
         isNicknameValid = false;
         updateSubmitBtn();
         document.getElementById("nickname").focus();
@@ -133,13 +134,13 @@ const nicknameCheck = () => {
         })
         .then(isDuplicated => {
             if(isDuplicated) {
-                checkResult.innerHTML = "이미 사용 중입니다";
-                checkResult.className = "error-message";
+                checkNicknameResult.innerHTML = "이미 사용 중입니다";
+                checkNicknameResult.className = "error-message";
                 isNicknameValid = false;
                 updateSubmitBtn();
             } else {
-                checkResult.innerHTML = "사용 가능한 닉네임입니다";
-                checkResult.className = "success-message";
+                checkNicknameResult.innerHTML = "사용 가능한 닉네임입니다";
+                checkNicknameResult.className = "success-message";
                 isNicknameValid = true;
                 updateSubmitBtn();
             }
