@@ -9,7 +9,6 @@ import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -36,17 +35,25 @@ public class GuideController {
     }
 
     // 가이드 정보 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<Guide> updateGuide(@PathVariable Long id, @ModelAttribute @Valid GuideUpdateRequest updateRequest) {
+    @GetMapping("/edit/{id}")
+    public String getGuideUpdatePage(@PathVariable Long id, Model model) {
+        Guide guide = guideService.getGuideById(id);
+        model.addAttribute("guide", guide);
+        return "seller/guideEdit";
+    }
+
+    // 가이드 정보 수정
+    @PutMapping("edit/{id}")
+    public String updateGuide(@PathVariable Long id, @ModelAttribute @Valid GuideUpdateRequest updateRequest) {
         Guide updatedGuide = guideService.updateGuide(id, updateRequest);
-        return ResponseEntity.ok(updatedGuide);
+        return "redirect:/guides/list";
     }
 
     // 가이드 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGuide(@PathVariable Long id) {
+    @DeleteMapping("delete/{id}")
+    public String deleteGuide(@PathVariable Long id) {
         guideService.deleteGuide(id);
-        return ResponseEntity.noContent().build();
+        return "redirect:/guides/list";
     }
 
 //    // 가이드 전체 조회 (사용 X)

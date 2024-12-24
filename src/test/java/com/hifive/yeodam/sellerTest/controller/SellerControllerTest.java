@@ -88,21 +88,17 @@ class SellerControllerTest {
     @Test
     void updateSellerTest() {
         // given
-        SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest("password", "Updated Company", "Updated Owner", "Updated Bio", "");
 
         Seller updatedSeller = new Seller(sellerId, auth, "Updated Company", "Updated Owner", "Updated Bio", "01087654321");
 
         when(sellerService.updateSeller(sellerId, updateRequest)).thenReturn(updatedSeller);
 
         // when
-        ResponseEntity<Seller> response = sellerController.updateSeller(sellerId, updateRequest);
+        String response = sellerController.updateSeller(sellerId, updateRequest);
 
         // then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Updated Company", response.getBody().getCompanyName());
-        assertEquals("Updated Owner", response.getBody().getOwner());
-        assertEquals("Updated Bio", response.getBody().getBio());
-        assertEquals("01087654321", response.getBody().getPhone());
+        assertEquals("redirect:/sellers/myPage", response);
         verify(sellerService, times(1)).updateSeller(anyLong(), any(SellerUpdateRequest.class));
     }
 
@@ -110,7 +106,7 @@ class SellerControllerTest {
     @Test
     void updateSellerTest_fail_notFound() {
         // given
-        SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest("password", "Updated Company", "Updated Owner", "Updated Bio", "");
 
         when(sellerService.updateSeller(999L, updateRequest))
                 .thenThrow(new IllegalArgumentException("Seller not found"));
