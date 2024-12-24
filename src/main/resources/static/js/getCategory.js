@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 fragment.appendChild(div);
             });
             categoryCheckBox.appendChild(fragment);
+
+            // 카테고리 로드 완료 이벤트 트리거
+            document.dispatchEvent(new Event("categoriesLoaded"));
         })
         .catch(error => console.error("카테고리 불러오기 실패:", error));
 });

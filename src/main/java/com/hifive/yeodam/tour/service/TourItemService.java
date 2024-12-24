@@ -148,11 +148,12 @@ public class TourItemService {
     public TourItemResDto update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
         Tour targetTour = tourRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
-        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getDescription(),tourItemUpdateReqDto.getPrice());
-        targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(),tourItemUpdateReqDto.getMaximum());
+        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getTourDesc(),Integer.parseInt(tourItemUpdateReqDto.getTourPrice()));
+        targetTour.updateSubItem(tourItemUpdateReqDto.getTourRegion(), tourItemUpdateReqDto.getTourPeriod(),Integer.parseInt(tourItemUpdateReqDto.getMaximum()));
 
         if(tourItemUpdateReqDto.getAddCategoryIds() != null){
-            for(Long categoryId : tourItemUpdateReqDto.getAddCategoryIds()){
+            List<Long> addCategoryIdList = convertToList(tourItemUpdateReqDto.getAddCategoryIds());
+            for(Long categoryId : addCategoryIdList){
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
                 TourCategory addTourCategory = TourCategory.builder()
@@ -164,14 +165,16 @@ public class TourItemService {
             }
         }
         if(tourItemUpdateReqDto.getRemoveCategoryIds() != null){
-            for(Long categoryId : tourItemUpdateReqDto.getRemoveCategoryIds()){
+            List<Long> removeCategoryIdList = convertToList(tourItemUpdateReqDto.getRemoveCategoryIds());
+            for(Long categoryId : removeCategoryIdList){
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
                 tourCategoryRepository.deleteByCategory(category);
             }
         }
         if(tourItemUpdateReqDto.getAddGuideIds() != null){
-            for(Long guideId : tourItemUpdateReqDto.getAddGuideIds()){
+            List<Long> addGuideIdList = convertToList(tourItemUpdateReqDto.getAddGuideIds());
+            for(Long guideId : addGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
                         .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
                 TourGuide addTourGuide = TourGuide.builder()
@@ -182,7 +185,8 @@ public class TourItemService {
             }
         }
         if(tourItemUpdateReqDto.getRemoveGuideIds() != null){
-            for(Long guideId : tourItemUpdateReqDto.getRemoveGuideIds()){
+            List<Long> removeGuideIdList = convertToList(tourItemUpdateReqDto.getRemoveGuideIds());
+            for(Long guideId : removeGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
                         .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
                 tourGuideRepository.deleteByGuide(guide);
@@ -203,6 +207,12 @@ public class TourItemService {
         List<Tour> sellerTours = tourRepository.findBySeller(seller);
         return sellerTours.stream()
                 .map(TourItemResDto::new)
+                .toList();
+    }
+    //formData로 인해 문자열로 들어오는 id들을 리스트 List<Long>으로 변환
+    public List<Long> convertToList(String arg){
+        return Arrays.stream(arg.replaceAll("[\\[\\]\\s]", "").split(","))
+                .map(Long::valueOf)
                 .toList();
     }
 }

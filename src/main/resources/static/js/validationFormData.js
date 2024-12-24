@@ -14,7 +14,7 @@ function validationFormData() {
 
 
     const maximum = parseInt(document.getElementById("maximum").value, 10);
-    const tourPrice = parseInt(document.getElementById("toruPrice").value, 10)
+    const tourPrice = parseInt(document.getElementById("tourPrice").value, 10)
     if (isNaN(maximum) || maximum <= 0){
         alert("최대 인원은 양수로 입력해주세요.");
         getElement("maximum").focus();
