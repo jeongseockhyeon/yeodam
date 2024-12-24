@@ -336,7 +336,7 @@ public class TourItemTest {
         verify(tourCategoryRepository, times(1)).save(any(TourCategory.class));
 
         verify(categoryRepository, times(1)).findById(categoryId2);
-        verify(tourCategoryRepository, times(1)).deleteByCategory(category2);
+        verify(tourCategoryRepository, times(1)).deleteByTourAndCategory(tour,category2);
 
         // Add Guides
         verify(guideRepository, times(1)).findById(guideId1);
