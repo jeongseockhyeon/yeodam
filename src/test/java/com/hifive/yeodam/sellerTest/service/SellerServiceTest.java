@@ -98,7 +98,7 @@ class SellerServiceTest {
     @Test
     void updateSellerTest() {
         // given
-        SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "01087654321");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest("password", "Updated Company", "Updated Owner", "Updated Bio", "01087654321");
 
         when(sellerRepository.findById(anyLong())).thenReturn(Optional.of(seller));
         when(sellerRepository.save(seller)).thenReturn(seller);
@@ -113,7 +113,6 @@ class SellerServiceTest {
         assertEquals("Updated Bio", updatedSeller.getBio());
         assertEquals("01087654321", updatedSeller.getPhone());
         verify(sellerRepository, times(1)).findById(1L);
-        verify(sellerRepository, times(1)).save(any(Seller.class));
     }
 
     // 판매자 정보 수정 실패

@@ -47,11 +47,20 @@ public class SellerController {
         return ResponseEntity.ok(isDuplicate);
     }
 
+    @GetMapping("/edit/{id}")
+    public String getSellerUpdatePage (@PathVariable Long id, Model model) {
+        Seller seller = sellerService.getSellerById(id);
+        model.addAttribute("seller", seller);
+        return "seller/sellerEdit";
+    }
+
     // 판매자 정보 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<Seller> updateSeller(@PathVariable Long id, @ModelAttribute @Valid SellerUpdateRequest updateRequest) {
+    @PutMapping("/edit/{id}")
+    public String updateSeller(@PathVariable Long id, @ModelAttribute @Valid SellerUpdateRequest updateRequest) {
         Seller updatedSeller = sellerService.updateSeller(id, updateRequest);
-        return ResponseEntity.ok(updatedSeller);
+        Auth auth = updatedSeller.getAuth();
+        authService.updateAuth(auth.getId(), updateRequest);
+        return "redirect:/sellers/myPage";
     }
 
     // 판매자 삭제
