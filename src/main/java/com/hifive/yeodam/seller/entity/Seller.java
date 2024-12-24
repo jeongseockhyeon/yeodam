@@ -2,14 +2,11 @@ package com.hifive.yeodam.seller.entity;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Seller {
@@ -26,4 +23,11 @@ public class Seller {
     private String owner;
     private String bio;
     private String phone;
+
+    public void update(String companyName, String owner, String bio, String phone) {
+        this.companyName = companyName;
+        this.owner = owner;
+        this.bio = bio;
+        this.phone = phone;
+    }
 }

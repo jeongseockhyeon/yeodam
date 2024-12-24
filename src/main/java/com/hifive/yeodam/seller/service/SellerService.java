@@ -15,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @Service
 public class SellerService {
@@ -33,12 +30,13 @@ public class SellerService {
             throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
         }
 
-        Seller seller = new Seller();
-        seller.setAuth(auth);
-        seller.setCompanyName(joinRequest.getCompanyName());
-        seller.setOwner(joinRequest.getOwner());
-        seller.setBio(joinRequest.getBio());
-        seller.setPhone(joinRequest.getPhone());
+        Seller seller = Seller.builder()
+                .auth(auth)
+                .companyName(joinRequest.getCompanyName())
+                .owner(joinRequest.getOwner())
+                .bio(joinRequest.getBio())
+                .phone(joinRequest.getPhone())
+                .build();
 
         Role role = new Role(auth, RoleType.SELLER);
         roleRepository.save(role);
@@ -51,12 +49,9 @@ public class SellerService {
     public Seller updateSeller(Long id, SellerUpdateRequest updateRequest) {
         Seller existingSeller = sellerRepository.findById(id).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
 
-        existingSeller.setCompanyName(updateRequest.getCompanyName());
-        existingSeller.setOwner(updateRequest.getOwner());
-        existingSeller.setBio(updateRequest.getBio());
-        existingSeller.setPhone(updateRequest.getPhone());
+        existingSeller.update(updateRequest.getCompanyName(), updateRequest.getOwner(), updateRequest.getBio(), updateRequest.getPhone());
 
-        return sellerRepository.save(existingSeller);
+        return existingSeller;
     }
 
     // 판매자 삭제
