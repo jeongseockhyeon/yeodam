@@ -67,11 +67,19 @@
                 <button class="btn" onclick="location.href='/join'">회원가입</button>
             </th:block>
 
-            <th:block sec:authorize="isAuthenticated()">
-                <!-- 인증 받음 -->
+            <!-- 판매자일 경우 -->
+            <th:block th:if="${isSeller}">
+                <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
+            </th:block>
+
+            <!-- 유저일 경우 -->
+            <th:block th:if="${isUser}">
                 <button class="btn" onclick="location.href='#'">장바구니</button>
                 <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
-                <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
+            </th:block>
+
+            <th:block sec:authorize="isAuthenticated()">
+                <!-- 인증 받음 -->
                 <button class="btn" onclick="location.href='/logout'">로그아웃</button>
             </th:block>
         </div>
