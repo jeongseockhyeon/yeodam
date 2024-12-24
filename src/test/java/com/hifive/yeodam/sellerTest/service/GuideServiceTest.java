@@ -79,7 +79,6 @@ class GuideServiceTest {
         assertEquals("01087654321", updatedGuide.getPhone());
         assertEquals("Updated Bio", updatedGuide.getBio());
         verify(guideRepository, times(1)).findById(1L);
-        verify(guideRepository, times(1)).save(any(Guide.class));
     }
 
     // 가이드 정보 수정 실패

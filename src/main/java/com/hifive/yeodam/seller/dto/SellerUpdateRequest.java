@@ -14,6 +14,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SellerUpdateRequest {
     @NotBlank
+    @Size(min = 8, max = 16)
+    private String password;
+
+    @NotBlank
     @Size(max = 25)
     private String companyName;
 

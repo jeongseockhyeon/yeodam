@@ -100,8 +100,7 @@ class GuideControllerTest {
         var response = guideController.updateGuide(1L, updateRequest);
 
         // then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Updated Name", response.getBody().getName());
+        assertEquals("redirect:/guides/list", response);
         verify(guideService, times(1)).updateGuide(anyLong(), any(GuideUpdateRequest.class));
     }
 
@@ -130,7 +129,7 @@ class GuideControllerTest {
         var response = guideController.deleteGuide(1L);
 
         // then
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals("redirect:/guides/list", response);
         verify(guideService, times(1)).deleteGuide(1L);
     }
 
