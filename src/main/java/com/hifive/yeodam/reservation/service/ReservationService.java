@@ -20,7 +20,6 @@ import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -64,6 +63,13 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.RESERVATION_NOT_FOUND));
         reservationRepository.delete(reservation);
+    }
+
+    /*예약 정보 단일 조회*/
+    public ReservationResDto getReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.RESERVATION_NOT_FOUND));
+        return new ReservationResDto(reservation);
     }
 
     /*업체별 예약 정보 조회*/

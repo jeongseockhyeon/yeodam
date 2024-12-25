@@ -158,4 +158,40 @@ public class ReservationServiceTest {
         verify(userRepository, times(1)).findByAuthId(auth.getId());
         verify(reservationRepository, times(1)).findReservationByUser(user);
     }
+
+    @Test
+    @DisplayName("예약 정보 단일 조회")
+    public void getReservationsByReservationIdTest(){
+        //given
+        Long reservationId = 1L;
+
+        User user = mock(User.class);
+        when(user.getName()).thenReturn("test user");
+
+        Seller seller = mock(Seller.class);
+        when(seller.getCompanyName()).thenReturn("test company");
+
+        Item item = mock(Item.class);
+        when(item.getItemName()).thenReturn("test item");
+        when(item.getSeller()).thenReturn(seller);
+
+        Guide guide = mock(Guide.class);
+        when(guide.getName()).thenReturn("test guide");
+
+        Reservation reservation = mock(Reservation.class);
+        when(reservation.getId()).thenReturn(reservationId);
+        when(reservation.getUser()).thenReturn(user);
+        when(reservation.getItem()).thenReturn(item);
+        when(reservation.getGuide()).thenReturn(guide);
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+        //when
+        ReservationResDto result = reservationService.getReservation(reservationId);
+
+        //then
+        assertNotNull(result);
+        assertEquals(reservationId,result.getReservationId());
+        verify(reservationRepository, times(1)).findById(reservationId);
+    }
 }
