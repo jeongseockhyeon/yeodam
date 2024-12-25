@@ -32,18 +32,21 @@ public abstract class Item {
 
     private int stock;
 
+    private double rate;
+
     private boolean reservation;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ItemImage> itemImages = new ArrayList<>();
 
-    public Item(Seller seller, String itemName, String description,int price, boolean reservation, int stock) {
+    public Item(Seller seller, String itemName, String description,int price, boolean reservation, int stock , double rate) {
         this.seller = seller;
         this.itemName = itemName;
         this.description = description;
         this.price = price;
         this.reservation = reservation;
         this.stock = stock;
+        this.rate = rate;
     }
 
     public void updateItem(String itemName,String description,int price) {

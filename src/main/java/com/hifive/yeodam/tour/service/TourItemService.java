@@ -46,6 +46,8 @@ public class TourItemService {
 
     private final static int tourStock = 1;
     private final static boolean reservation = true;
+    private final static double defaultRate = 0.0;
+
     private final CategoryRepository categoryRepository;
     private final GuideRepository guideRepository;
     private final ImageService imageService;
@@ -67,6 +69,7 @@ public class TourItemService {
                 .price(Integer.parseInt(tourItemReqDto.getTourPrice()))
                 .maximum(Integer.parseInt(tourItemReqDto.getMaximum()))
                 .stock(tourStock)
+                .rate(defaultRate)
                 .reservation(reservation)
                 .build();
 
