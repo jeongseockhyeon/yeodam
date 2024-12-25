@@ -40,12 +40,38 @@ function populateForm(data) {
     }
 
     // 이미지 미리보기
-    if (data.images) {
-        const previewContainer = document.getElementById("previewContainer");
-        data.images.forEach(imageUrl => {
+    const previewContainer = document.getElementById("previewContainer");
+    if (data.itemImgResDtoList) {
+        data.itemImgResDtoList.forEach((image) => {
+            const imgContainer = document.createElement("div");
+            imgContainer.style.position = "relative";
+
             const img = document.createElement("img");
-            img.src = imageUrl; // 서버에서 반환된 이미지 URL
-            previewContainer.appendChild(img);
+            img.src = image.imgUrl; // 서버에서 반환된 이미지 URL
+            img.dataset.url = image.imgUrl; // 이미지 URL 저장
+            img.alt = image.imgName; // 이미지 이름 설정
+            imgContainer.appendChild(img);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "삭제";
+            deleteButton.classList.add("remove-image");
+            deleteButton.style.position = "absolute";
+            deleteButton.style.top = "5px";
+            deleteButton.style.right = "5px";
+
+            // 이미지 ID를 데이터 속성으로 저장
+            deleteButton.setAttribute("data-image-id", image.id);
+
+            deleteButton.onclick = () => {
+                const imageId = deleteButton.getAttribute("data-image-id"); // 이미지 ID 가져오기
+
+                // 서버 이미지 삭제 목록에서 제거
+                data.itemImgResDtoList = data.itemImgResDtoList.filter((img) => img.id !== Number(imageId));
+                imgContainer.remove(); // 화면에서 삭제
+            };
+            imgContainer.appendChild(deleteButton);
+
+            previewContainer.appendChild(imgContainer);
         });
     }
 }
