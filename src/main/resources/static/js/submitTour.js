@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("submitBtn").addEventListener("click", () => {
+        if (!validationFormData()){
+            return;
+        }
         const selectedCategories = Array.from(
             document.querySelectorAll('input[name="categories"]:checked')
         ).map(checkbox => parseInt(checkbox.value));

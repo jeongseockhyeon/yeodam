@@ -300,15 +300,15 @@ public class TourItemTest {
 
         TourItemUpdateReqDto updateReq = mock(TourItemUpdateReqDto.class);
         when(updateReq.getTourName()).thenReturn("Updated Name");
-        when(updateReq.getDescription()).thenReturn("Updated Description");
-        when(updateReq.getPrice()).thenReturn(100);
-        when(updateReq.getRegion()).thenReturn("Updated Region");
-        when(updateReq.getPeriod()).thenReturn("Updated Period");
-        when(updateReq.getMaximum()).thenReturn(10);
-        when(updateReq.getAddCategoryIds()).thenReturn(List.of(categoryId1));
-        when(updateReq.getRemoveCategoryIds()).thenReturn(List.of(categoryId2));
-        when(updateReq.getAddGuideIds()).thenReturn(List.of(guideId1));
-        when(updateReq.getRemoveGuideIds()).thenReturn(List.of(guideId2));
+        when(updateReq.getTourDesc()).thenReturn("Updated Description");
+        when(updateReq.getTourPrice()).thenReturn("100");
+        when(updateReq.getTourRegion()).thenReturn("Updated Region");
+        when(updateReq.getTourPeriod()).thenReturn("Updated Period");
+        when(updateReq.getMaximum()).thenReturn("10");
+        when(updateReq.getAddCategoryIds()).thenReturn(List.of(categoryId1).toString());
+        when(updateReq.getRemoveCategoryIds()).thenReturn(List.of(categoryId2).toString());
+        when(updateReq.getAddGuideIds()).thenReturn(List.of(guideId1).toString());
+        when(updateReq.getRemoveGuideIds()).thenReturn(List.of(guideId2).toString());
 
         Tour tour = mock(Tour.class);
         when(tourRepository.findById(tourId)).thenReturn(Optional.of(tour));
@@ -331,13 +331,12 @@ public class TourItemTest {
         verify(tour).updateItem("Updated Name", "Updated Description", 100);
         verify(tour).updateSubItem("Updated Region", "Updated Period", 10);
 
-        // Add Categories
+        //카테고리 수정
         verify(categoryRepository, times(1)).findById(categoryId1);
         verify(tourCategoryRepository, times(1)).save(any(TourCategory.class));
 
-        // Remove Categories
         verify(categoryRepository, times(1)).findById(categoryId2);
-        verify(tourCategoryRepository, times(1)).deleteByCategory(category2);
+        verify(tourCategoryRepository, times(1)).deleteByTourAndCategory(tour,category2);
 
         // Add Guides
         verify(guideRepository, times(1)).findById(guideId1);
@@ -378,7 +377,7 @@ public class TourItemTest {
         TourItemUpdateReqDto updateReq = mock(TourItemUpdateReqDto.class);
 
         when(tourRepository.findById(tourId)).thenReturn(Optional.of(mock(Tour.class)));
-        when(updateReq.getAddCategoryIds()).thenReturn(List.of(categoryId));
+        when(updateReq.getAddCategoryIds()).thenReturn(String.valueOf(List.of(categoryId)));
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
         // when & then

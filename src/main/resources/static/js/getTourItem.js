@@ -4,8 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const applyFiltersBtn = document.getElementById("applyFiltersBtn");
 
     function fetchTours(filters = {}) {
-        const params = new URLSearchParams(filters).toString();
-        fetch(`/api/tours?${params}`)
+        const params = new URLSearchParams();
+        Object.keys(filters).forEach((key) => {
+            if (filters[key] && filters[key].length > 0){
+                params.append(key, filters[key]);
+            }
+        });
+
+        fetch(`/api/tours?${params.toString()}`)
             .then((response) => response.json())
             .then((data) => {
                 renderTours(data);

@@ -22,14 +22,22 @@ public class TourItemViewController {
     public String tourItemList() {
         return "tour/tours";
     }
+
     @GetMapping("/add")
     public String tourItemAdd() {
         return "tour/tourAdd";
     }
+
     @GetMapping("/{id}")
     public String tourItemDetail(@PathVariable Long id, Model model) {
         TourItemResDto tourItemResDto = tourItemService.findById(id);
         model.addAttribute("tourItemResDto", tourItemResDto);
         return "tour/tourDetailSample";
     }
+
+    @GetMapping("/{id}/update")
+    public String tourItemUpdate(@PathVariable Long id) {
+        return "tour/tourUpdate";
+    }
+
 }
