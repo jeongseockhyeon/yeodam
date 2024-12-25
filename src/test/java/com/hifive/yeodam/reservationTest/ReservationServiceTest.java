@@ -4,11 +4,14 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.reservation.dto.ReservationReqDto;
+import com.hifive.yeodam.reservation.dto.ReservationResDto;
 import com.hifive.yeodam.reservation.entity.Reservation;
 import com.hifive.yeodam.reservation.repository.ReservationRepository;
 import com.hifive.yeodam.reservation.service.ReservationService;
 import com.hifive.yeodam.seller.entity.Guide;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
+import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +45,9 @@ public class ReservationServiceTest {
 
     @Mock
     private GuideRepository guideRepository;
+
+    @Mock
+    private SellerService sellerService;
 
     @Test
     @DisplayName("예약 정보 추가 테스트")
@@ -90,7 +98,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("예약 정보 삭제")
-    public void getReservationTest() {
+    public void deleteReservationTest() {
         //when
         Long reservationId = 1L;
 
@@ -105,5 +113,27 @@ public class ReservationServiceTest {
         //then
         verify(reservationRepository, times(1)).findById(reservationId);
         verify(reservationRepository, times(1)).delete(reservation);
+    }
+
+    @Test
+    @DisplayName("업체별 예약 정보 조회")
+    public void getReservationsBySellerTest(){
+        //given
+        Auth auth = mock(Auth.class);
+
+        Seller seller = mock(Seller.class);
+        when(sellerService.getSellerByAuth(auth)).thenReturn(seller);
+
+        List<Reservation> reservations = new ArrayList<>();
+
+        when(reservationRepository.findReservationBySeller(seller)).thenReturn(reservations);
+
+        //when
+        List<ReservationResDto> result = reservationService.getReservationsBySeller(auth);
+
+        assertNotNull(result);
+        assertEquals(reservations.size(),result.size());
+        verify(sellerService, times(1)).getSellerByAuth(auth);
+        verify(reservationRepository, times(1)).findReservationBySeller(seller);
     }
 }
