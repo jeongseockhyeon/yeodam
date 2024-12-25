@@ -87,4 +87,23 @@ public class ReservationServiceTest {
         verify(reservationRepository, times(1)).save(any(Reservation.class));
 
     }
+
+    @Test
+    @DisplayName("예약 정보 삭제")
+    public void getReservationTest() {
+        //when
+        Long reservationId = 1L;
+
+        Reservation reservation = mock(Reservation.class);
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+        doNothing().when(reservationRepository).delete(reservation);
+
+        //when
+        reservationService.deleteReservation(reservationId);
+
+        //then
+        verify(reservationRepository, times(1)).findById(reservationId);
+        verify(reservationRepository, times(1)).delete(reservation);
+    }
 }

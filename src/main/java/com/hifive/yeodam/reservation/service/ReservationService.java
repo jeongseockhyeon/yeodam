@@ -32,9 +32,11 @@ public class ReservationService {
         User user = userRepository.findByAuthId(auth.getId())
                 .orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
 
+        /*가이드 정보*/
         Guide guide = guideRepository.findById(reservationReqDto.getGuideId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
 
+        /*상품 정보*/
         Item item = itemRepository.findById(reservationReqDto.getItemId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
 
@@ -47,5 +49,11 @@ public class ReservationService {
                 .build();
 
         return reservationRepository.save(reservation).getId();
+    }
+
+    public void deleteReservation(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.RESERVATION_NOT_FOUND));
+        reservationRepository.delete(reservation);
     }
 }
