@@ -1,30 +1,39 @@
 package com.hifive.yeodam.tour.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Getter
 public class TourItemUpdateReqDto {
 
-    private String tourName;
+    private final String tourName;
 
-    private String tourDesc;
+    private final String tourDesc;
 
-    private String tourPeriod;
+    private final String tourPeriod;
 
-    private String tourRegion;
+    private final String tourRegion;
 
-    private String tourPrice;
+    private final String tourPrice;
 
-    private String maximum;
+    private final String maximum;
 
-    private String addCategoryIds;
-    private String removeCategoryIds;
 
-    private String addGuideIds;
-    private String removeGuideIds;
+    /*카테고리 추가 삭제*/
+    private final String addCategoryIds;
+    private final String removeCategoryIds;
+
+    /*가이드 추가 삭제*/
+    private final String addGuideIds;
+    private final String removeGuideIds;
+
+    /*이미지 추가 삭제*/
+    private final List<MultipartFile> addTourImages;
+    private final String removeImageIds;
 
     public TourItemUpdateReqDto(String tourName,
                                 String tourDesc,
@@ -35,7 +44,9 @@ public class TourItemUpdateReqDto {
                                 String addCategoryIds,
                                 String removeCategoryIds,
                                 String addGuideIds,
-                                String removeGuideIds) {
+                                String removeGuideIds,
+                                List<MultipartFile> addTourImages,
+                                String removeImageIds) {
         this.tourName = tourName;
         this.tourDesc = tourDesc;
         this.tourPeriod = tourPeriod;
@@ -46,6 +57,8 @@ public class TourItemUpdateReqDto {
         this.removeCategoryIds = removeCategoryIds;
         this.addGuideIds = addGuideIds;
         this.removeGuideIds = removeGuideIds;
+        this.addTourImages = addTourImages;
+        this.removeImageIds = removeImageIds;
     }
 
 }

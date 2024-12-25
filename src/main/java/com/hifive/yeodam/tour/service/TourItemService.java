@@ -157,8 +157,9 @@ public class TourItemService {
         targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getTourDesc(),Integer.parseInt(tourItemUpdateReqDto.getTourPrice()));
         targetTour.updateSubItem(tourItemUpdateReqDto.getTourRegion(), tourItemUpdateReqDto.getTourPeriod(),Integer.parseInt(tourItemUpdateReqDto.getMaximum()));
 
-        if(tourItemUpdateReqDto.getAddCategoryIds() != null) {
-            List<Long> addCategoryIdList = convertToList(tourItemUpdateReqDto.getAddCategoryIds());
+        //카테고리 추가
+        List<Long> addCategoryIdList = convertToList(tourItemUpdateReqDto.getAddCategoryIds());
+        if(isNotNullCheck(addCategoryIdList)) {
             for(Long categoryId : addCategoryIdList) {
                 // Category가 존재하는지 확인
                 Category category = categoryRepository.findById(categoryId)
@@ -177,15 +178,19 @@ public class TourItemService {
                 }
             }
         }
-        if (tourItemUpdateReqDto.getRemoveCategoryIds() != null) {
-            List<Long> removeCategoryIdList = convertToList(tourItemUpdateReqDto.getRemoveCategoryIds());
+
+        //카테고리 삭제
+        List<Long> removeCategoryIdList = convertToList(tourItemUpdateReqDto.getRemoveCategoryIds());
+        if (isNotNullCheck(removeCategoryIdList)) {
             List<Category> categories = categoryRepository.findAllById(removeCategoryIdList);
             for (Category category : categories) {
                 tourCategoryRepository.deleteByTourAndCategory(targetTour, category);
             }
         }
-        if(tourItemUpdateReqDto.getAddGuideIds() != null){
-            List<Long> addGuideIdList = convertToList(tourItemUpdateReqDto.getAddGuideIds());
+
+        //가이드 추가
+        List<Long> addGuideIdList = convertToList(tourItemUpdateReqDto.getAddGuideIds());
+        if(isNotNullCheck(addGuideIdList)){
             for(Long guideId : addGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
                         .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
@@ -196,12 +201,37 @@ public class TourItemService {
                 tourGuideRepository.save(addTourGuide);
             }
         }
-        if(tourItemUpdateReqDto.getRemoveGuideIds() != null){
-            List<Long> removeGuideIdList = convertToList(tourItemUpdateReqDto.getRemoveGuideIds());
+
+        //가이드 삭제
+        List<Long> removeGuideIdList = convertToList(tourItemUpdateReqDto.getRemoveGuideIds());
+        if(isNotNullCheck(removeGuideIdList)){
             for(Long guideId : removeGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
                         .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
                 tourGuideRepository.deleteByGuide(guide);
+            }
+        }
+        //상품 이미지 추가
+        if(isNotNullCheck(tourItemUpdateReqDto.getAddTourImages())){
+            for(MultipartFile imageFile : tourItemUpdateReqDto.getAddTourImages()){
+                String originalName = imageFile.getOriginalFilename();
+                String storePath = imageService.upload(imageFile);
+
+                ItemImage itemImage = ItemImage.builder()
+                        .item(targetTour)
+                        .originalName(originalName)
+                        .storePath(storePath)
+                        .build();
+
+                itemImageRepository.save(itemImage);
+            }
+        }
+
+        //상품 이미지 삭제
+        List<Long> removeTourImageList = convertToList(tourItemUpdateReqDto.getRemoveImageIds());
+        if(isNotNullCheck(removeTourImageList)){
+            for(Long imageId : removeTourImageList){
+                itemImageRepository.deleteById(imageId);
             }
         }
 
@@ -225,9 +255,18 @@ public class TourItemService {
     }
     //formData로 인해 문자열로 들어오는 id들을 리스트 List<Long>으로 변환
     public List<Long> convertToList(String arg) {
+        if (arg == null || arg.trim().equals("[]")) {
+            return new ArrayList<>(); // 빈 리스트 반환
+        }
         return Arrays.stream(arg.replaceAll("[\\[\\]\\s]", "").split(","))
                 .map(String::trim)
                 .map(Long::valueOf)
                 .toList();
+    }
+
+
+    //리스트가 비어있는지 검사
+    public boolean isNotNullCheck(List<?> arg){
+        return arg != null && !arg.isEmpty();
     }
 }
