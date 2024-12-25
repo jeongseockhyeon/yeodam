@@ -16,15 +16,15 @@ public class ItemViewController {
     private final TourItemService tourItemService;
 
     @GetMapping
-    /*상품 목록 페이지*/
+    /*모든 종류의 상품 목록 페이지*/
     public String item() {
-        return "item/items";
+        return "item-list";
     }
 
-    /*상품 관리 페이지*/
+    /*업체의 상품 관리 페이지*/
     @GetMapping("/manage")
     public String manageItem(Model model, @AuthenticationPrincipal Auth auth) {
         model.addAttribute("tourList", tourItemService.findBySeller(auth) );
-        return "item/itemManage";
+        return "item/item-manage";
     }
 }
