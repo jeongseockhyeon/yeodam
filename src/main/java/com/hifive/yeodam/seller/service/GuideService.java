@@ -22,7 +22,14 @@ public class GuideService {
     // 가이드 등록
     @Transactional
     public Guide createGuide(GuideJoinRequest joinRequest, Seller seller) {
-        Guide guide = new Guide(null, seller, joinRequest.getName(), joinRequest.getBirth(), joinRequest.getGender(), joinRequest.getPhone(), joinRequest.getBio());
+        Guide guide = Guide.builder()
+                .seller(seller)
+                .name(joinRequest.getName())
+                .birth(joinRequest.getBirth())
+                .gender(joinRequest.getGender())
+                .phone(joinRequest.getPhone())
+                .bio(joinRequest.getBio())
+                .build();
         return guideRepository.save(guide);
     }
 
@@ -31,11 +38,9 @@ public class GuideService {
     public Guide updateGuide(Long id, GuideUpdateRequest updateRequest) {
         Guide existingGuide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
 
-        existingGuide.setName(updateRequest.getName());
-        existingGuide.setBio(updateRequest.getBio());
-        existingGuide.setPhone(updateRequest.getPhone());
+        existingGuide.update(updateRequest.getName(), updateRequest.getPhone(), updateRequest.getBio());
 
-        return guideRepository.save(existingGuide);
+        return existingGuide;
     }
 
     // 가이드 삭제
@@ -51,8 +56,7 @@ public class GuideService {
 
     // 가이드 단일 조회
     public Guide getGuideById(Long id) {
-        return guideRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
+        return guideRepository.findById(id).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
     }
 
     // 회사 아이디로 가이드 조회

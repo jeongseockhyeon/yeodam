@@ -24,6 +24,19 @@
             padding: 20px;
         }
 
+        .link-box {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .link-box a {
+            color: #333;
+        }
+
     </style>
 </head>
 
@@ -40,12 +53,15 @@
                 <div th:text="${#authentication.principal.Username}" class="mt-1 text-secondary">이메일</div>
             </div>
         </div>
-        <button type="button" class="btn btn-outline-secondary" onclick="location.href='/logout'">로그아웃</button>
+        <div class="d-flex align-items-center">
+            <button type="submit" class="btn btn-outline-secondary mx-3" onclick="location.href='/users/edit'">수정하기</button>
+            <button type="button" class="btn btn-outline-secondary" onclick="location.href='/logout'">로그아웃</button>
+        </div>
     </div>
     <div class="custom-links">
-        <button class="btn btn-outline-secondary p-3 mx-4" onclick="location.href='#'">예약 내역 확인</button>
-        <button class="btn btn-outline-secondary p-3 mx-4" onclick="location.href='#'">내가 쓴 리뷰</button>
-        <button class="btn btn-outline-secondary p-3 mx-4" onclick="location.href='#'">문의 내역</button>
+        <div class="link-box"><a href="#" class="text-decoration-none">예약 내역 확인</a></div>
+        <div class="link-box"><a href="#" class="text-decoration-none">내가 쓴 리뷰</a></div>
+        <div class="link-box"><a href="#" class="text-decoration-none">문의 내역</a></div>
     </div>
 
 </body>

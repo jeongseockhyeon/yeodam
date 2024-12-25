@@ -1,6 +1,7 @@
 package com.hifive.yeodam.tour.dto;
 
 import com.hifive.yeodam.category.dto.CategoryResDto;
+import com.hifive.yeodam.item.dto.ItemImgResDto;
 import com.hifive.yeodam.item.entity.ItemImage;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.tour.entity.TourCategory;
@@ -29,7 +30,7 @@ public class TourItemResDto {
 
     private final List<CategoryResDto> categoryResDtoList = new ArrayList<>();
     private final List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
-    private final List<String> images = new ArrayList<>();
+    private final List<ItemImgResDto> itemImgResDtoList = new ArrayList<>();
 
     public TourItemResDto(Tour tour) {
         this.id = tour.getId();
@@ -51,8 +52,8 @@ public class TourItemResDto {
         }
 
         for(ItemImage itemImage : tour.getItemImages()){
-            String image = itemImage.getStorePath();
-            this.images.add(image);
+            this.itemImgResDtoList.add(new ItemImgResDto(itemImage));
         }
+
     }
 }

@@ -69,3 +69,20 @@ td ul {
     background-color: blue;
     border-radius: 50%;
 }
+.edit-button, .delete-button {
+    margin: 2px;
+    padding: 5px 10px;
+    background-color: #007BFF; /* 수정 버튼 색상 */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.delete-button {
+    background-color: #DC3545; /* 삭제 버튼 색상 */
+}
+
+.edit-button:hover, .delete-button:hover {
+    opacity: 0.9;
+}

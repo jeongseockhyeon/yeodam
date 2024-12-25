@@ -211,14 +211,7 @@ public class TourItemApiControllerTest {
         List<Long> removeGuides = new ArrayList<>();
         removeGuides.add(1L);
 
-        TourItemUpdateReqDto tourItemUpdateReqDto = new TourItemUpdateReqDto();
-
-        tourItemUpdateReqDto.setTourName(tourName);
-        tourItemUpdateReqDto.setDescription(tourDesc);
-        tourItemUpdateReqDto.setAddCategoryIds(addCategories);
-        tourItemUpdateReqDto.setRemoveCategoryIds(removeCategories);
-        tourItemUpdateReqDto.setAddGuideIds(addGuides);
-        tourItemUpdateReqDto.setRemoveGuideIds(removeGuides);
+        TourItemUpdateReqDto tourItemUpdateReqDto = mock(TourItemUpdateReqDto.class);
 
         TourItemResDto tourItemResDto = mock(TourItemResDto.class);
         when(tourItemResDto.getId()).thenReturn(tourItemId);

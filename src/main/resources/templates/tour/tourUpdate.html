@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>여행 상품 등록</title>
+    <title>여행 상품 수정</title>
     <link rel="stylesheet" href="/css/tourAdd.css">
     <link rel="stylesheet" href="/css/categoryCheckBox.css">
     <style>
@@ -20,7 +20,6 @@
             border-radius: 5px;
         }
     </style>
-    <script src="../../static/js/getTourDetail.js"></script>
 </head>
 <body>
 <div class="container">
@@ -76,27 +75,41 @@
             </div>
 
             <!-- 버튼 -->
-            <button type="button" id="submitBtn">저장</button>
+            <button type="button" id="submitBtn">수정</button>
             <button type="button" onclick="alert('임시 저장 기능 추가')">임시 저장</button>
             <a href="/item/manage">상품 관리로 이동</a> <!-- 추후 상품 관리 페이지 생성 시 연결 -->
         </form>
     </div>
 </div>
-<script src="/js/validationFormData.js"></script>
 <script src="/js/getCategory.js"></script>
-<script src="/js/submitTour.js"></script>
+<script src="/js/getTourDetail.js"></script>
+<script src="/js/validationFormData.js"></script>
 <script src="/js/showTabs.js"></script>
+<script src="/js/updateTourItem.js"></script>
 <script>
     const tourImagesInput = document.getElementById('tourImages');
     const previewContainer = document.getElementById('previewContainer');
     let selectedImages = []; // 업로드된 파일 배열
+    let existingImages = []; // 서버에서 가져온 기존 이미지 배열
 
+    // 기존 이미지를 설정하는 함수
+    function setExistingImages(images) {
+        existingImages = images;
+        updatePreview();
+    }
+
+    // 파일 입력 이벤트
     tourImagesInput.addEventListener('change', () => {
         // 새로운 파일 추가
         const files = Array.from(tourImagesInput.files);
 
-        // 기존 이미지 + 새로 선택된 이미지 처리
-        selectedImages = [...selectedImages, ...files];
+        // 기존 이미지와 새로 선택된 이미지 처리
+        const newFiles = files.filter(file =>
+            !existingImages.some(existingImage => existingImage.imgName === file.name)
+        );
+
+        // 새로 선택된 이미지만 selectedImages에 추가
+        selectedImages = [...selectedImages, ...newFiles];
 
         // 중복 제거
         const uniqueFiles = Array.from(new Set(selectedImages.map(file => file.name)))
@@ -108,17 +121,72 @@
         updatePreview();
     });
 
+    // 미리보기 업데이트 함수
     function updatePreview() {
-        previewContainer.innerHTML = ''; // 기존 미리보기 초기화
+        previewContainer.innerHTML = ""; // 기존 미리보기 초기화
 
+        // 기존 이미지 미리보기 추가
+        existingImages.forEach(image => {
+            const imgContainer = document.createElement("div");
+            imgContainer.style.position = "relative";
+
+            const img = document.createElement("img");
+            img.src = image.imgUrl;
+            img.alt = image.imgName;
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "삭제";
+            deleteButton.className = "remove-image";
+            deleteButton.style.position = "absolute";
+            deleteButton.style.top = "5px";
+            deleteButton.style.right = "5px";
+
+            // 이미지 id를 데이터 속성으로 추가
+            deleteButton.setAttribute("data-image-id", image.id);
+
+            deleteButton.onclick = () => {
+                const imageId = deleteButton.getAttribute("data-image-id");
+                // 삭제 요청 보내기
+                removeImageList.add(parseInt(imageId)); // 삭제 목록에 추가
+                existingImages = existingImages.filter(existingImage => existingImage.id !== Number(imageId));
+                imgContainer.remove(); // 화면에서 삭제
+            };
+
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(deleteButton);
+            previewContainer.appendChild(imgContainer);
+        });
+
+        // 새로 업로드된 파일 미리보기 추가
         selectedImages.forEach(file => {
+            const imgContainer = document.createElement("div");
+            imgContainer.style.position = "relative";
+
+            const img = document.createElement("img");
             const reader = new FileReader();
+
+            // FileReader로 파일을 읽어 미리보기 적용
             reader.onload = () => {
-                const img = document.createElement('img');
-                img.src = reader.result;
-                previewContainer.appendChild(img);
+                img.src = reader.result; // 새로 업로드된 파일
             };
             reader.readAsDataURL(file);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "삭제";
+            deleteButton.className = "remove-image";
+            deleteButton.style.position = "absolute";
+            deleteButton.style.top = "5px";
+            deleteButton.style.right = "5px";
+
+            deleteButton.onclick = () => {
+                // 업로드된 파일에서 제거
+                selectedImages = selectedImages.filter(f => f !== file);
+                imgContainer.remove();
+            };
+
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(deleteButton);
+            previewContainer.appendChild(imgContainer);
         });
     }
 </script>

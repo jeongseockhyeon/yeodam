@@ -24,6 +24,7 @@ import com.hifive.yeodam.tour.repository.TourCategoryRepository;
 import com.hifive.yeodam.tour.repository.TourGuideRepository;
 import com.hifive.yeodam.tour.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
+@Slf4j
 public class TourItemService {
 
     private final TourRepository tourRepository;
@@ -52,6 +53,7 @@ public class TourItemService {
 
 
     /*상품_여행 등록*/
+    @Transactional
     public TourItemResDto saveTourItem(TourItemReqDto tourItemReqDto,Auth auth)  {
 
         Seller seller = sellerService.getSellerByAuth(auth);
@@ -116,6 +118,7 @@ public class TourItemService {
         return new TourItemResDto(savedTour);
     }
     /*상품_여행 목록 조회*/
+    @Transactional(readOnly = true)
     public List<TourItemResDto> findAll() {
         List<Tour> tours = tourRepository.findAll();
         List<TourItemResDto> tourItemResDtos = new ArrayList<>();
@@ -127,6 +130,7 @@ public class TourItemService {
     }
 
     /*카테고리 적용 조회*/
+    @Transactional(readOnly = true)
     public List<TourItemResDto> getSearchFilterTour(SearchFilterDto searchFilterDto) {
         List<Tour> filterTours = tourRepository.searchByFilter(searchFilterDto);
         List<TourItemResDto> tourItemResDtos = new ArrayList<>();
@@ -138,6 +142,7 @@ public class TourItemService {
     }
 
     /*상품_여행 단일 조회*/
+    @Transactional(readOnly = true)
     public TourItemResDto findById(Long id) {
         Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
@@ -145,33 +150,48 @@ public class TourItemService {
     }
 
     /*상품_여행 수정*/
+    @Transactional
     public TourItemResDto update(Long id, TourItemUpdateReqDto tourItemUpdateReqDto) {
         Tour targetTour = tourRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
-        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getDescription(),tourItemUpdateReqDto.getPrice());
-        targetTour.updateSubItem(tourItemUpdateReqDto.getRegion(), tourItemUpdateReqDto.getPeriod(),tourItemUpdateReqDto.getMaximum());
+        targetTour.updateItem(tourItemUpdateReqDto.getTourName(),tourItemUpdateReqDto.getTourDesc(),Integer.parseInt(tourItemUpdateReqDto.getTourPrice()));
+        targetTour.updateSubItem(tourItemUpdateReqDto.getTourRegion(), tourItemUpdateReqDto.getTourPeriod(),Integer.parseInt(tourItemUpdateReqDto.getMaximum()));
 
-        if(tourItemUpdateReqDto.getAddCategoryIds() != null){
-            for(Long categoryId : tourItemUpdateReqDto.getAddCategoryIds()){
+        //카테고리 추가
+        List<Long> addCategoryIdList = convertToList(tourItemUpdateReqDto.getAddCategoryIds());
+        if(isNotNullCheck(addCategoryIdList)) {
+            for(Long categoryId : addCategoryIdList) {
+                // Category가 존재하는지 확인
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
-                TourCategory addTourCategory = TourCategory.builder()
-                                .tour(targetTour)
-                                .category(category)
-                                .build();
-                tourCategoryRepository.save(addTourCategory);
 
+                // 이미 해당 Tour와 Category의 조합이 존재하는지 확인
+                boolean exists = tourCategoryRepository.existsByTourAndCategory(targetTour, category);
+
+                if (!exists) {
+                    // 존재하지 않으면 새로운 TourCategory 추가
+                    TourCategory addTourCategory = TourCategory.builder()
+                            .tour(targetTour)
+                            .category(category)
+                            .build();
+                    tourCategoryRepository.save(addTourCategory);
+                }
             }
         }
-        if(tourItemUpdateReqDto.getRemoveCategoryIds() != null){
-            for(Long categoryId : tourItemUpdateReqDto.getRemoveCategoryIds()){
-                Category category = categoryRepository.findById(categoryId)
-                        .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
-                tourCategoryRepository.deleteByCategory(category);
+
+        //카테고리 삭제
+        List<Long> removeCategoryIdList = convertToList(tourItemUpdateReqDto.getRemoveCategoryIds());
+        if (isNotNullCheck(removeCategoryIdList)) {
+            List<Category> categories = categoryRepository.findAllById(removeCategoryIdList);
+            for (Category category : categories) {
+                tourCategoryRepository.deleteByTourAndCategory(targetTour, category);
             }
         }
-        if(tourItemUpdateReqDto.getAddGuideIds() != null){
-            for(Long guideId : tourItemUpdateReqDto.getAddGuideIds()){
+
+        //가이드 추가
+        List<Long> addGuideIdList = convertToList(tourItemUpdateReqDto.getAddGuideIds());
+        if(isNotNullCheck(addGuideIdList)){
+            for(Long guideId : addGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
                         .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
                 TourGuide addTourGuide = TourGuide.builder()
@@ -181,28 +201,72 @@ public class TourItemService {
                 tourGuideRepository.save(addTourGuide);
             }
         }
-        if(tourItemUpdateReqDto.getRemoveGuideIds() != null){
-            for(Long guideId : tourItemUpdateReqDto.getRemoveGuideIds()){
+
+        //가이드 삭제
+        List<Long> removeGuideIdList = convertToList(tourItemUpdateReqDto.getRemoveGuideIds());
+        if(isNotNullCheck(removeGuideIdList)){
+            for(Long guideId : removeGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
                         .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
                 tourGuideRepository.deleteByGuide(guide);
+            }
+        }
+        //상품 이미지 추가
+        if(isNotNullCheck(tourItemUpdateReqDto.getAddTourImages())){
+            for(MultipartFile imageFile : tourItemUpdateReqDto.getAddTourImages()){
+                String originalName = imageFile.getOriginalFilename();
+                String storePath = imageService.upload(imageFile);
+
+                ItemImage itemImage = ItemImage.builder()
+                        .item(targetTour)
+                        .originalName(originalName)
+                        .storePath(storePath)
+                        .build();
+
+                itemImageRepository.save(itemImage);
+            }
+        }
+
+        //상품 이미지 삭제
+        List<Long> removeTourImageList = convertToList(tourItemUpdateReqDto.getRemoveImageIds());
+        if(isNotNullCheck(removeTourImageList)){
+            for(Long imageId : removeTourImageList){
+                itemImageRepository.deleteById(imageId);
             }
         }
 
         return new TourItemResDto(targetTour);
     }
     /*상품_여행 삭제*/
+    @Transactional
     public void delete(Long id) {
         Tour targetTour = tourRepository.findById(id)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
         tourRepository.delete(targetTour);
     }
     /*상품_여행 판매자 조회*/
+    @Transactional(readOnly = true)
     public List<TourItemResDto> findBySeller(Auth auth){
         Seller seller = sellerService.getSellerByAuth(auth);
         List<Tour> sellerTours = tourRepository.findBySeller(seller);
         return sellerTours.stream()
                 .map(TourItemResDto::new)
                 .toList();
+    }
+    //formData로 인해 문자열로 들어오는 id들을 리스트 List<Long>으로 변환
+    public List<Long> convertToList(String arg) {
+        if (arg == null || arg.trim().equals("[]")) {
+            return new ArrayList<>(); // 빈 리스트 반환
+        }
+        return Arrays.stream(arg.replaceAll("[\\[\\]\\s]", "").split(","))
+                .map(String::trim)
+                .map(Long::valueOf)
+                .toList();
+    }
+
+
+    //리스트가 비어있는지 검사
+    public boolean isNotNullCheck(List<?> arg){
+        return arg != null && !arg.isEmpty();
     }
 }

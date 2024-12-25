@@ -20,8 +20,10 @@ public class Auth implements UserDetails {
     @Column(name = "auth_id")
     private Long id;
 
+    @Column(updatable = false ,unique = true)
     private String email;
 
+    @Setter
     private String password;
 
     @Override
@@ -52,5 +54,9 @@ public class Auth implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    public void update(String password) {
+        this.password = password;
     }
 }

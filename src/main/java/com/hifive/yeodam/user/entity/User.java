@@ -19,12 +19,10 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Setter
     private String name;
 
     private LocalDate birthDate;
 
-    @Setter
     private String nickname;
 
     private String gender;
@@ -34,4 +32,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "auth_id")
     private Auth auth;
+
+    public void update(String name, String nickname, String phone) {
+        this.name = name;
+        this.nickname = nickname;
+        this.phone = phone;
+    }
 }

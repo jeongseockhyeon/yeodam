@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -43,6 +45,9 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private BindingResult errorResult;
 
     @Test
     public void 유저등록실패_닉네임존재() throws Exception{
@@ -147,9 +152,6 @@ public class UserServiceTest {
     public void 회원수정성공() throws Exception{
         //given
         doReturn(Optional.of(user())).when(userRepository).findById(-1L);
-        doReturn(User.builder().name("kim").nickname("kim12")
-                .build())
-                .when(userRepository).save(any(User.class));
 
         //when
         UserResponse result = target.updateUser(-1L, userUpdateRequest());
@@ -157,6 +159,7 @@ public class UserServiceTest {
         //then
         assertThat(result.getName()).isEqualTo("kim");
         assertThat(result.getNickname()).isEqualTo("kim12");
+        assertThat(result.getPhone()).isEqualTo("01012345678");
     }
 
     @Test
@@ -182,12 +185,69 @@ public class UserServiceTest {
         //then
     }
 
+    @Test
+    public void 닉네임중복여부() throws Exception{
+        //given
+        doReturn(true).when(userRepository).existsByNickname(nickname);
+
+        //when
+        boolean result = target.checkNickname(nickname);
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void 닉네임중복시에러추가() throws Exception{
+        //given
+        JoinRequest request = JoinRequest.builder().nickname(nickname).build();
+
+        doReturn(true).when(userRepository).existsByNickname(nickname);
+
+        //when
+        target.checkDuplicatedNickname(request, errorResult);
+
+        //then
+
+        //verify
+        verify(errorResult, times(1)).addError(any(FieldError.class));
+    }
+
+    @Test
+    public void 인증정보로회원찾기실패_회원존재하지않음() throws Exception{
+        //given
+        Auth auth = Auth.builder().id(-1L).build();
+        doReturn(Optional.empty()).when(userRepository).findByAuthId(auth.getId());
+
+        //when
+        UserException result = assertThrows(UserException.class, () -> target.getUserByAuth(auth));
+
+        //then
+        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+    }
+
+    @Test
+    public void 인증정보로회원찾기() throws Exception{
+        //given
+        Auth auth = Auth.builder().id(-1L).build();
+        User user = User.builder().auth(auth).build();
+
+        doReturn(Optional.of(user)).when(userRepository).findByAuthId(auth.getId());
+
+        //when
+        UserResponse result = target.getUserByAuth(auth);
+
+        //then
+        assertThat(result.getAuth().getId()).isEqualTo(auth.getId());
+    }
+
     private User user(){
         return User.builder()
                 .id(-1L)
                 .name(name)
                 .birthDate(birthDate)
                 .gender("M")
+                .phone(phone)
                 .auth(auth())
                 .build();
     }
@@ -204,6 +264,7 @@ public class UserServiceTest {
         return UserUpdateRequest.builder()
                 .name("kim")
                 .nickname("kim12")
+                .phone("01012345678")
                 .build();
     }
 }
