@@ -21,6 +21,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -193,5 +195,32 @@ public class ReservationServiceTest {
         assertNotNull(result);
         assertEquals(reservationId,result.getReservationId());
         verify(reservationRepository, times(1)).findById(reservationId);
+    }
+
+    @Test
+    @DisplayName("d-day 계산기")
+    public void dDayCalculateTest(){
+        //given
+        Long reservationId = 1L;
+
+        LocalDate today = LocalDate.now();
+        LocalDate testStartDay = today.plusDays(2);
+
+        long  mockDay = ChronoUnit.DAYS.between(today, testStartDay);
+
+        String mockDDay = "D-" + mockDay;
+        Reservation reservation = mock(Reservation.class);
+        when(reservation.getReservationStartDate()).thenReturn(testStartDay);
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+        //when
+        String result = reservationService.dDayCalculate(reservationId);
+
+        //then
+        assertNotNull(result);
+        assertEquals(mockDDay,result);
+        verify(reservationRepository, times(1)).findById(reservationId);
+
     }
 }

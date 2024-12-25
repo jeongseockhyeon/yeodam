@@ -20,6 +20,8 @@ import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -89,5 +91,17 @@ public class ReservationService {
         return reservations.stream()
                 .map(ReservationResDto::new)
                 .toList();
+    }
+
+    /*예약일 디데이*/
+    public String dDayCalculate(Long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.RESERVATION_NOT_FOUND));
+        LocalDate toDay = LocalDate.now();
+        long dDay = ChronoUnit.DAYS.between(toDay, reservation.getReservationStartDate());
+        if(dDay > 0){
+            return "D-" + dDay;
+        }
+        return "완료";
     }
 }
