@@ -74,4 +74,14 @@ public class ReservationService {
                 .map(ReservationResDto::new)
                 .toList();
     }
+
+    /*유저별 예약 정보 조회*/
+    public List<ReservationResDto> getReservationsByUser(Auth auth) {
+        User user = userRepository.findByAuthId(auth.getId())
+                .orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+        List<Reservation> reservations = reservationRepository.findReservationByUser(user);
+        return reservations.stream()
+                .map(ReservationResDto::new)
+                .toList();
+    }
 }

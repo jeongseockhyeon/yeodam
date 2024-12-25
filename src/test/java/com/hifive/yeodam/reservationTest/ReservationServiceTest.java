@@ -136,4 +136,26 @@ public class ReservationServiceTest {
         verify(sellerService, times(1)).getSellerByAuth(auth);
         verify(reservationRepository, times(1)).findReservationBySeller(seller);
     }
+
+    @Test
+    @DisplayName("유저별 예약 정보 조회")
+    public void getReservationsByUserTest(){
+        //given
+        Auth auth = mock(Auth.class);
+
+        User user = mock(User.class);
+        when(userRepository.findByAuthId(auth.getId())).thenReturn(Optional.of(user));
+
+        List<Reservation> reservations = new ArrayList<>();
+
+        when(reservationRepository.findReservationByUser(user)).thenReturn(reservations);
+
+        //when
+        List<ReservationResDto> result = reservationService.getReservationsByUser(auth);
+
+        assertNotNull(result);
+        assertEquals(reservations.size(),result.size());
+        verify(userRepository, times(1)).findByAuthId(auth.getId());
+        verify(reservationRepository, times(1)).findReservationByUser(user);
+    }
 }
