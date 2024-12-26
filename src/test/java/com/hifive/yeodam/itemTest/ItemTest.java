@@ -1,22 +1,30 @@
 package com.hifive.yeodam.itemTest;
 
+import com.hifive.yeodam.item.dto.ActiveUpdateDto;
 import com.hifive.yeodam.item.entity.Item;
+import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.item.service.ItemService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest(ItemService.class)
+@ExtendWith(MockitoExtension.class)
 public class ItemTest {
 
-    @MockitoBean
+    @InjectMocks
     private ItemService itemService;
+    @Mock
+    private ItemRepository itemRepository;
 
     @Test
     public void allItemFindTest() {
@@ -35,7 +43,7 @@ public class ItemTest {
 
         //then
         assertEquals(testCount, count);
-        verify(itemService, times(1)).findAll();
+        verify(itemRepository, times(1)).findAll();
     }
 
     @Test
@@ -48,7 +56,7 @@ public class ItemTest {
         when(item.getId()).thenReturn(itemId);
         when(item.getItemName()).thenReturn(itemName);
 
-        when(itemService.findById(itemId)).thenReturn(item);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         //when
         Item testItem = itemService.findById(itemId);
@@ -56,7 +64,7 @@ public class ItemTest {
         //then
         assertEquals(itemId, testItem.getId());
         assertEquals(itemName, testItem.getItemName());
-        verify(itemService, times(1)).findById(itemId);
+        verify(itemRepository, times(1)).findById(itemId);
     }
 
     @Test
@@ -74,7 +82,26 @@ public class ItemTest {
         //then
         assertEquals(testTypes.getFirst(), itemTypes.getFirst());
         assertEquals(testTypes.size(), itemTypes.size());
-        verify(itemService, times(1)).findAllItemType();
+        verify(itemRepository, times(1)).findAllItemType();
+    }
+
+    @Test
+    @DisplayName("상품 활성 상태 변경")
+    public void activeUpdateTest(){
+        //given
+        Long itemId = 1L;
+        ActiveUpdateDto activeUpdateDto = mock(ActiveUpdateDto.class);
+        when(activeUpdateDto.isActive()).thenReturn(true);
+
+        Item item = mock(Item.class);
+        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
+
+        //when
+        itemService.updateActive(itemId,activeUpdateDto);
+
+        //then
+        verify(itemRepository, times(1)).findById(itemId);
+        verify(item, times(1)).updateActive(activeUpdateDto.isActive());
     }
 
 }

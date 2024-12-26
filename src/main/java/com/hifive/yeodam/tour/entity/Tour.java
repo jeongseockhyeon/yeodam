@@ -37,15 +37,16 @@ public class Tour extends Item {
                 int price,
                 boolean reservation,
                 int maximum,
-                int stock
+                int stock,
+                double rate,
+                boolean active
                 )
     {
-        super(seller,itemName,description,price,reservation,stock);
+        super(seller,itemName,description,price,reservation,stock,rate,active);
         this.region = region;
         this.period = period;
         this.maximum = maximum;
     }
-
 
     @Override
     public void updateSubItem(String region, String period, int maximum) {

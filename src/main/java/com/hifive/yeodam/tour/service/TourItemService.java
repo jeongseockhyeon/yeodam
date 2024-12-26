@@ -43,13 +43,15 @@ public class TourItemService {
     private final TourGuideRepository tourGuideRepository;
     private final GuideService guideService;
     private final SellerService sellerService;
-
-    private final static int tourStock = 1;
-    private final static boolean reservation = true;
     private final CategoryRepository categoryRepository;
     private final GuideRepository guideRepository;
     private final ImageService imageService;
     private final ItemImageRepository itemImageRepository;
+
+    private final static int tourStock = 1;
+    private final static boolean reservation = true;
+    private final static double defaultRate = 0.0;
+    private final static boolean defaultActive = true;
 
 
     /*상품_여행 등록*/
@@ -67,7 +69,9 @@ public class TourItemService {
                 .price(Integer.parseInt(tourItemReqDto.getTourPrice()))
                 .maximum(Integer.parseInt(tourItemReqDto.getMaximum()))
                 .stock(tourStock)
+                .rate(defaultRate)
                 .reservation(reservation)
+                .active(defaultActive)
                 .build();
 
         Tour savedTour = tourRepository.save(tourItem);
