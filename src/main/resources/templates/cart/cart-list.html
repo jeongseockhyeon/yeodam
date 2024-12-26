@@ -7,218 +7,264 @@
 <!--    <meta name="_csrf" th:content="${_csrf.token}"/>-->
 <!--    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
     <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- grid 레이아웃을 5개 컬럼으로 수정 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
-        .cart-header, .cart-item {
-            display: grid;
-            /* 체크박스, 상품정보, 수량, 주문금액, 선택 순서로 변경 */
-            grid-template-columns: 40px 2fr 100px 150px 100px; /* 각 열의 너비 지정 */
-            align-items: center;
-            gap: 10px;
-            padding: 15px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        /* 각 영역별 정렬 설정 */
-        .check {
-            text-align: center;
-        }
-
-        .info {
-            text-align: left;
-        }
-
-        .quantity {
-            text-align: center;
-        }
-
-        .price {
-            text-align: center;
-        }
-
-        .select {
-            display: flex;
-            gap: 5px;              /* 버튼 사이 간격 */
-            align-items: center;   /* 세로 중앙 정렬 */
-            text-align: center;
-        }
-
-        /* 기존 아이템 정보 스타일 수정 */
-        .item-info h3 {
-            margin: 0;
-            font-size: 1em;
+        body {
+            background-color: #f5f5f5;
         }
         .cart-container {
             max-width: 1200px;
-            margin: 0 auto;  /* 중앙 정렬 */
-            padding: 20px 60px;  /* 상하 20px, 좌우 200px 여백 */
+            margin: 50px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
         }
-
-        .badge.bg-secondary {
-            background-color: white !important;     /* 흰색 배경 */
-            color: #000 !important;                /* 검정색 글씨 */
-            border: 1px solid #808080 !important;  /* 회색 테두리 */
-            border-radius: 0 !important;           /* 네모 모양 */
-            font-weight: normal !important;        /* 기본 글씨 굵기 */
-            padding: 5px 10px !important;          /* 기존 패딩 유지 */
-            font-size: 14px !important;           /* 글씨 크기 */
+        .cart-left {
+            width: 100%;
         }
-
-        .order-now-btn {
-            background-color: white !important;    /* 흰색 배경 */
-            color: #000 !important;               /* 검정색 글씨 */
-            border: 1px solid #808080 !important; /* 회색 테두리 */
-            border-radius: 0 !important;          /* 네모 모양 */
-            padding: 5px 10px !important;         /* 내부 여백 */
-            font-size: 14px !important;           /* 글자 크기 */
-            min-width: 80px;                      /* 버튼 최소 너비 */
-        }
-
-        .order-now-btn:hover {
-            background-color: #f8f9fa !important; /* 호버시 배경색 살짝 변경 */
-        }
-
-        /* CSS 수정: X 버튼 스타일링 */
-        .delete-btn {
-            width: 30px;              /* 정사각형 모양으로 */
-            height: 30px;             /* 정사각형 모양으로 */
-            background: transparent;   /* 배경 투명하게 */
-            color: #999;              /* 회색으로 */
-            border: none;             /* 테두리 제거 */
-            cursor: pointer;          /* 마우스 오버시 포인터 모양 */
-            font-size: 20px;          /* X 크기 조절 */
-            line-height: 1;           /* 세로 중앙 정렬 */
-            padding: 0;               /* 내부 여백 제거 */
-        }
-
-        .delete-btn:hover {
-            color: #333;              /* 호버시 진한 회색으로 변경 */
-        }
-        /* 총금액 글씨 크기 조정 */
-        .total-price {
-            text-align: right;
-            font-size: 1.1em;  /* 1.5em에서 축소 */
-            font-weight: bold;
-            margin: 10px 0;
-            padding 200 0px;
-        }
-        /* 하단 버튼 간격 조정 */
-        .actions {
+        .cart-header {
             display: flex;
             justify-content: space-between;
-            margin: 10px 0;  /* 상하 여백 추가 */
-            padding: 0;  /* 좌우 여백 추가 */
+            align-items: center;
+            margin-bottom: 15px;
         }
-        .left-buttons {
+        .header-left {
             display: flex;
-            gap: 10px; /* 버튼  사이 간격 */
+            align-items: center;
+            gap: 15px;
         }
-        /* 버튼 스타일 추가 (필요한 경우) */
-        /* 또는 각 버튼 클래스별로 적용 */
-        .btn-primary, .btn-secondary, .btn-outline-danger {
-            border-radius: 0;
-        }
-        /* 선택상품 주문하기 버튼 */
-        .btn-primary {
-            background-color: white !important;    /* 흰색 배경 */
-            color: #000 !important;               /* 검정색 글씨 */
-            border: 1px solid #808080 !important; /* 회색 테두리 */
-            border-radius: 0 !important;          /* 네모 모양 */
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
         }
 
-        /* 쇼핑계속하기 버튼 */
-        .btn-secondary {
-            background-color: #808080 !important; /* 회색 배경 */
-            color: white !important;              /* 흰색 글씨 */
-            border: none !important;              /* 테두리 없음 */
-            border-radius: 0 !important;          /* 네모 모양 */
-        }
-        /* 선택상품 삭제 버튼 */
-        .btn-outline-danger {
-            background-color: #000 !important;    /* 검정색 배경 */
-            color: white !important;              /* 흰색 글씨 */
-            border: none !important;              /* 테두리 없음 */
-            border-radius: 0 !important;          /* 네모 모양 */
-        }
-        /* 버튼 호버 효과 (선택사항) */
-        .btn-primary:hover {
-            background-color: #f8f9fa !important;  /* 살짝 어두운 흰색 */
+        .delete-selected {
+            color: #666;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 14px;
         }
 
-        .btn-secondary:hover {
-            background-color: #6c757d !important;  /* 살짝 어두운 회색 */
+        .delete-selected:hover {
+            color: #333;
         }
 
-        .btn-outline-danger:hover {
-            background-color: #333 !important;     /* 살짝 밝은 검정 */
+        .cart-item-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 10px;
         }
 
-        .cart-footer {
-            width: calc(100% - 400px);  /* 전체 너비에서 좌우 여백을 뺀 크기 */
-            margin: 0 auto;  /* 중앙 정렬 */
+        .cart-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            gap: 20px;
+            align-items: center;
+            padding: 15px 0;
         }
 
+        .cart-item:not(:last-child) {
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-right {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+        .price-summary {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .price-row.total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-weight: bold;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-control button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .cart-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .order-button {
+            width: 100%;
+            background-color: #5fb6d9;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .continue-shopping {
+            width: 100%;
+            background-color: white;
+            color: #333;
+            border: none;
+            padding: 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0 10px;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .item-info h3 {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .item-info .delivery-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .badge-reserved {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .price {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
     </style>
 </head>
+<body>
+    <div class="header-area">
+        <div th:replace="fragments/header :: header"></div>
+    </div>
     <div class="cart-container">
-        <h2 class="mb-4">장바구니</h2>
+        <div class="cart-left">
+            <h2 style="margin-bottom: 15px;">장바구니</h2>
+            <div class="cart-header">
+                <div class="select-all-container">
+                    <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes(this)">
+                    <label for="selectAll">모두 선택</label>
+                </div>
+                <button class="delete-selected" onclick="deleteSelectedItems()">선택삭제</button>
+            </div>
 
-        <!-- 헤더 텍스트 정렬 -->
-        <div class="cart-header">
-            <div class="check"><input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes(this)"></div>
-            <div class="info">상품정보</div>
-            <div class="quantity">수량</div>
-            <div class="price">주문금액</div>
-            <div class="select">선택</div>
-        </div>
-
-        <div id="cartItems">
-            <!-- 서버 장바구니 -->
-            <div th:if="${!anonymous}">
-                <div th:each="cart : ${carts}" class="cart-item">
-                    <div class="check">
-                        <input type="checkbox" class="item-checkbox" th:value="${cart.id}">
-                    </div>
-                    <div class="info">
-                        <h3 th:text="${cart.item.itemName}">상품명</h3>
-                    </div>
-                    <div class="quantity">
-                        <div class="quantity-control" th:if="${!cart.item.reservation}">
-                            <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count - 1} + ')'">-</button>
-                            <span th:text="${cart.count}">수량</span>
-                            <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count + 1} + ')'">+</button>
+            <div class="cart-item-container">
+                <div id="cartItems">
+                    <!-- Server-side cart items -->
+                    <div th:if="${!anonymous}" th:each="cart : ${carts}" class="cart-item">
+                        <div><input type="checkbox" class="item-checkbox" th:value="${cart.id}"></div>
+                        <div class="item-info">
+                            <h3 th:text="${cart.item.itemName}"></h3>
+                            <p class="delivery-info">12/27 (금) 발송 예정</p>
                         </div>
-                        <div th:if="${cart.item.reservation}" class="badge bg-secondary">예약상품</div>
+                        <div>
+                            <div th:if="${!cart.item.reservation}" class="quantity-control">
+                                <button onclick="updateQuantity(this, 'decrease')">-</button>
+                                <span th:text="${cart.count}">1</span>
+                                <button onclick="updateQuantity(this, 'increase')">+</button>
+                            </div>
+                            <div th:if="${cart.item.reservation}" class="badge-reserved">예약상품</div>
+                        </div>
+                        <div class="price" th:text="|₩${#numbers.formatInteger(cart.price, 0, 'COMMA')}|"></div>
+                        <div><button class="delete-btn" th:onclick="'removeCart(' + ${cart.id} + ')'">×</button></div>
                     </div>
-                    <div class="price" th:text="|₩${#numbers.formatInteger(cart.price, 0, 'COMMA')}|">가격</div>
-                    <div class="select">
-                        <button class="btn order-now-btn" th:onclick="'location.href=\'/orders/direct/' + ${cart.id} + '\''">바로결제</button>
-                        <button class="delete-btn" th:onclick="'removeCart(' + ${cart.id} + ')'">×</button>
-                    </div>
+
+                    <!-- Local storage cart items -->
+                    <div th:if="${anonymous}" id="localCartItems"></div>
                 </div>
             </div>
-        </div>
-            <!-- 로컬 스토리지 장바구니 동일한 형식으로 수정 -->
-            <div th:if="${anonymous}" id="localCartItems"></div>
         </div>
 
-        <!-- 총금액과 버튼을 감싸는 컨테이너 추가 -->
-        <div class="cart-footer">
-            <div class="total-price">
-                총 결제 금액 : ₩<span id="totalPrice" th:text="${totalPrice?.totalPrice ?: 0}">0</span>
-            </div>
-            <div class="actions">
-                <div class="left-buttons">
-                    <button class="btn btn-primary" onclick="deleteSelectedItems()">선택상품 삭제</button>
-                    <button class="btn btn-secondary" onclick="location.href='/items'">쇼핑계속하기</button>
+        <div class="cart-right">
+            <div class="price-summary">
+                <div class="price-row">
+                    <span>총 상품금액</span>
+                    <span>₩<span id="subtotal">0</span></span>
                 </div>
-                <button class="btn btn-outline-danger" onclick="proceedToCheckout()">선택상품 주문하기</button>
+                <div class="price-row">
+                    <span>총 배송비</span>
+                    <span>+ ₩<span id="shipping">0</span></span>
+                </div>
+                <div class="price-row">
+                    <span>총 할인금액</span>
+                    <span>- ₩<span id="discount">0</span></span>
+                </div>
+                <div class="price-row total">
+                    <span>결제금액</span>
+                    <span>₩<span id="totalPrice">0</span></span>
+                </div>
+            </div>
+
+            <div class="cart-buttons">
+                <button class="order-button" onclick="proceedToCheckout()">
+                    <span id="selectedCount">0</span>개 상품 구매하기
+                </button>
+                <button class="continue-shopping" onclick="location.href='/items'">
+                    쇼핑 계속하기
+                </button>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Bootstrap Bundle with Popper -->
+    <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
     <script src="/js/localCart.js" defer></script>

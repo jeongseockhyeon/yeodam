@@ -30,7 +30,7 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/join", "/logout", "/order/**", "/api/**", "tours/**").permitAll()
+                        .requestMatchers("/", "/login", "/join", "/logout", "/order/**", "/api/**", "tours/**", "/carts/**").permitAll()
                         .requestMatchers("/users/join", "/users/email-check", "/users/nickname-check", "/users/password-check").permitAll()
                         .requestMatchers("/sellers", "/sellers/join", "/sellers/check-email").permitAll()
                         .anyRequest().authenticated()
