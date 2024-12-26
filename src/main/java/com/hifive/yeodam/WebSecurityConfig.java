@@ -39,7 +39,7 @@ public class WebSecurityConfig {
                         .loginPage("/login") // 커스텀 로그인 페이지
                         .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
-                        .failureUrl("/login?error")
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .rememberMe(rm -> rm
