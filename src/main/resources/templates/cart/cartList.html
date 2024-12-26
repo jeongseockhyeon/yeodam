@@ -8,82 +8,213 @@
 <!--    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- grid 레이아웃을 5개 컬럼으로 수정 -->
     <style>
-        .cart-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        .cart-item img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-        }
-        .quantity-control {
-            flex: 1;
-            display: flex;
+        .cart-header, .cart-item {
+            display: grid;
+            /* 체크박스, 상품정보, 수량, 주문금액, 선택 순서로 변경 */
+            grid-template-columns: 40px 2fr 100px 150px 100px; /* 각 열의 너비 지정 */
             align-items: center;
             gap: 10px;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
         }
-        .quantity-btn {
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            background: #fff;
-            cursor: pointer;
+        /* 각 영역별 정렬 설정 */
+        .check {
+            text-align: center;
         }
+
+        .info {
+            text-align: left;
+        }
+
+        .quantity {
+            text-align: center;
+        }
+
+        .price {
+            text-align: center;
+        }
+
+        .select {
+            display: flex;
+            gap: 5px;              /* 버튼 사이 간격 */
+            align-items: center;   /* 세로 중앙 정렬 */
+            text-align: center;
+        }
+
+        /* 기존 아이템 정보 스타일 수정 */
+        .item-info h3 {
+            margin: 0;
+            font-size: 1em;
+        }
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;  /* 중앙 정렬 */
+            padding: 20px 60px;  /* 상하 20px, 좌우 200px 여백 */
+        }
+
+        .badge.bg-secondary {
+            background-color: white !important;     /* 흰색 배경 */
+            color: #000 !important;                /* 검정색 글씨 */
+            border: 1px solid #808080 !important;  /* 회색 테두리 */
+            border-radius: 0 !important;           /* 네모 모양 */
+            font-weight: normal !important;        /* 기본 글씨 굵기 */
+            padding: 5px 10px !important;          /* 기존 패딩 유지 */
+            font-size: 14px !important;           /* 글씨 크기 */
+        }
+
+        .order-now-btn {
+            background-color: white !important;    /* 흰색 배경 */
+            color: #000 !important;               /* 검정색 글씨 */
+            border: 1px solid #808080 !important; /* 회색 테두리 */
+            border-radius: 0 !important;          /* 네모 모양 */
+            padding: 5px 10px !important;         /* 내부 여백 */
+            font-size: 14px !important;           /* 글자 크기 */
+            min-width: 80px;                      /* 버튼 최소 너비 */
+        }
+
+        .order-now-btn:hover {
+            background-color: #f8f9fa !important; /* 호버시 배경색 살짝 변경 */
+        }
+
+        /* CSS 수정: X 버튼 스타일링 */
+        .delete-btn {
+            width: 30px;              /* 정사각형 모양으로 */
+            height: 30px;             /* 정사각형 모양으로 */
+            background: transparent;   /* 배경 투명하게 */
+            color: #999;              /* 회색으로 */
+            border: none;             /* 테두리 제거 */
+            cursor: pointer;          /* 마우스 오버시 포인터 모양 */
+            font-size: 20px;          /* X 크기 조절 */
+            line-height: 1;           /* 세로 중앙 정렬 */
+            padding: 0;               /* 내부 여백 제거 */
+        }
+
+        .delete-btn:hover {
+            color: #333;              /* 호버시 진한 회색으로 변경 */
+        }
+        /* 총금액 글씨 크기 조정 */
         .total-price {
             text-align: right;
-            padding: 20px;
-            font-size: 1.2em;
+            font-size: 1.1em;  /* 1.5em에서 축소 */
             font-weight: bold;
+            margin: 10px 0;
+            padding 200 0px;
         }
-        .empty-cart {
-            text-align: center;
-            padding: 50px;
-            color: #666;
+        /* 하단 버튼 간격 조정 */
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;  /* 상하 여백 추가 */
+            padding: 0;  /* 좌우 여백 추가 */
         }
-        .item-checkbox {
-            margin-right: 15px;
+        .left-buttons {
+            display: flex;
+            gap: 10px; /* 버튼  사이 간격 */
         }
-    </style>
-</head>
-<body>
-<div class="cart-container">
-    <h1 class="mb-4">장바구니</h1>
+        /* 버튼 스타일 추가 (필요한 경우) */
+        /* 또는 각 버튼 클래스별로 적용 */
+        .btn-primary, .btn-secondary, .btn-outline-danger {
+            border-radius: 0;
+        }
+        /* 선택상품 주문하기 버튼 */
+        .btn-primary {
+            background-color: white !important;    /* 흰색 배경 */
+            color: #000 !important;               /* 검정색 글씨 */
+            border: 1px solid #808080 !important; /* 회색 테두리 */
+            border-radius: 0 !important;          /* 네모 모양 */
+        }
 
-    <!-- 장바구니 목록 -->
-    <div id="cartItems">
-        <!-- 서버 장바구니 -->
-        <div th:if="${!anonymous}">
-            <div th:each="cart : ${carts}" class="cart-item">
-                <input type="checkbox" class="item-checkbox" th:value="${cart.id}">
-                <div class="item-info">
-                    <h3 th:text="${cart.item.itemName}">상품명</h3>
-                    <p th:text="${cart.price}">가격</p>
+        /* 쇼핑계속하기 버튼 */
+        .btn-secondary {
+            background-color: #808080 !important; /* 회색 배경 */
+            color: white !important;              /* 흰색 글씨 */
+            border: none !important;              /* 테두리 없음 */
+            border-radius: 0 !important;          /* 네모 모양 */
+        }
+        /* 선택상품 삭제 버튼 */
+        .btn-outline-danger {
+            background-color: #000 !important;    /* 검정색 배경 */
+            color: white !important;              /* 흰색 글씨 */
+            border: none !important;              /* 테두리 없음 */
+            border-radius: 0 !important;          /* 네모 모양 */
+        }
+        /* 버튼 호버 효과 (선택사항) */
+        .btn-primary:hover {
+            background-color: #f8f9fa !important;  /* 살짝 어두운 흰색 */
+        }
+
+        .btn-secondary:hover {
+            background-color: #6c757d !important;  /* 살짝 어두운 회색 */
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #333 !important;     /* 살짝 밝은 검정 */
+        }
+
+        .cart-footer {
+            width: calc(100% - 400px);  /* 전체 너비에서 좌우 여백을 뺀 크기 */
+            margin: 0 auto;  /* 중앙 정렬 */
+        }
+
+    </style>
+
+    <div class="cart-container">
+        <h2 class="mb-4">장바구니</h2>
+
+        <!-- 헤더 텍스트 정렬 -->
+        <div class="cart-header">
+            <div class="check"><input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes(this)"></div>
+            <div class="info">상품정보</div>
+            <div class="quantity">수량</div>
+            <div class="price">주문금액</div>
+            <div class="select">선택</div>
+        </div>
+
+        <div id="cartItems">
+            <!-- 서버 장바구니 -->
+            <div th:if="${!anonymous}">
+                <div th:each="cart : ${carts}" class="cart-item">
+                    <div class="check">
+                        <input type="checkbox" class="item-checkbox" th:value="${cart.id}">
+                    </div>
+                    <div class="info">
+                        <h3 th:text="${cart.item.itemName}">상품명</h3>
+                    </div>
+                    <div class="quantity">
+                        <div class="quantity-control" th:if="${!cart.item.reservation}">
+                            <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count - 1} + ')'">-</button>
+                            <span th:text="${cart.count}">수량</span>
+                            <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count + 1} + ')'">+</button>
+                        </div>
+                        <div th:if="${cart.item.reservation}" class="badge bg-secondary">예약상품</div>
+                    </div>
+                    <div class="price" th:text="|₩${#numbers.formatInteger(cart.price, 0, 'COMMA')}|">가격</div>
+                    <div class="select">
+                        <button class="btn order-now-btn" th:onclick="'location.href=\'/orders/direct/' + ${cart.id} + '\''">바로결제</button>
+                        <button class="delete-btn" th:onclick="'removeCart(' + ${cart.id} + ')'">×</button>
+                    </div>
                 </div>
-                <div class="quantity-control" th:if="${!cart.reservation}">
-                    <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', -1)'">-</button>
-                    <span th:text="${cart.count}" th:data-cart-id="${cart.id}">수량</span>
-                    <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', 1)'">+</button>
-                </div>
-                <div th:if="${cart.reservation}" th:text="'예약상품'" class="badge bg-secondary"></div>
-                <button class="btn btn-danger btn-sm ms-3" th:onclick="'removeCart(' + ${cart.id} + ')'">삭제</button>
             </div>
         </div>
-        <!-- 로컬 스토리지 장바구니 -->
-        <div th:if="${anonymous}" id="localCartItems"></div>
-    </div>
+            <!-- 로컬 스토리지 장바구니 동일한 형식으로 수정 -->
+            <div th:if="${anonymous}" id="localCartItems"></div>
+        </div>
 
-    <!-- 총 금액 -->
-    <div class="total-price mt-4">
-        총 금액: <span id="totalPrice" th:text="${totalPrice?.totalPrice ?: 0}">0</span>원
+        <!-- 총금액과 버튼을 감싸는 컨테이너 추가 -->
+        <div class="cart-footer">
+            <div class="total-price">
+                총 결제 금액 : ₩<span id="totalPrice" th:text="${totalPrice?.totalPrice ?: 0}">0</span>
+            </div>
+            <div class="actions">
+                <div class="left-buttons">
+                    <button class="btn btn-primary" onclick="deleteSelectedItems()">선택상품 삭제</button>
+                    <button class="btn btn-secondary" onclick="location.href='/items'">쇼핑계속하기</button>
+                </div>
+                <button class="btn btn-outline-danger" onclick="proceedToCheckout()">선택상품 주문하기</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -91,11 +222,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
+<script>
     const isLoggedIn = ![[${anonymous}]];
-<!--    const csrfToken = document.querySelector("meta[name='_csrf']").content; -->
-<!--    const csrfHeader = document.querySelector("meta[name='_csrf_header']").content; -->
 
     // 로컬 스토리지 장바구니 초기화
     function initializeLocalCart() {
@@ -111,54 +239,58 @@
         container.innerHTML = '';
 
         if (items.length === 0) {
-            container.innerHTML = '<div class="empty-cart">장바구니가 비어있습니다.</div>';
+            container.innerHTML = '<div class="text-center p-5">장바구니가 비어있습니다.</div>';
             return;
         }
 
-        let total = 0;
+        let totalPrice = 0;
         items.forEach(item => {
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item';
             itemElement.innerHTML = `
-                        <input type="checkbox" class="item-checkbox" value="${item.itemId}">
-                        <div class="item-info">
-                            <h3>${item.itemName}</h3>
-                            <p>${item.price * item.count}원</p>
-                        </div>
-                        ${!item.reservation ? `
-                        <div class="quantity-control">
-                            <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, -1)">-</button>
-                            <span>${item.count}</span>
-                            <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, 1)">+</button>
-                        </div>
-                        ` : '<div class="badge bg-secondary">예약상품</div>'}
-                        <button class="btn btn-danger btn-sm ms-3" onclick="removeLocalItem(${item.itemId})">삭제</button>
-                    `;
+                <input type="checkbox" class="item-checkbox" value="${item.itemId}">
+                <div class="item-info">
+                    <h3>${item.itemName}</h3>
+                    <p>₩${(item.price * item.count).toLocaleString()}</p>
+                    ${item.reservation ? '<span class="badge bg-primary">예약상품</span>' : ''}
+                </div>
+                ${!item.reservation ? `
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count - 1})">-</button>
+                        <span>${item.count}</span>
+                        <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count + 1})">+</button>
+                    </div>
+                ` : `
+                    <div class="me-3">
+                        <span class="badge bg-secondary">수량: 1</span>
+                    </div>
+                `}
+                <button class="btn btn-danger" onclick="removeLocalItem(${item.itemId})">삭제</button>
+            `;
             container.appendChild(itemElement);
-            total += item.price * item.count;
+            totalPrice += item.price * item.count;
         });
 
-        document.getElementById('totalPrice').textContent = total;
+        document.getElementById('totalPrice').textContent = totalPrice.toLocaleString();
     }
 
     // DB 수량 업데이트
-    async function updateCartCount(cartId, change) {
+    async function updateCartCount(cartId, newCount) {
+        if (newCount < 1) return;
+
         try {
-            const currentCount = document.querySelector(`[data-cart-id="${cartId}"]`).textContent;
-            const newCount = parseInt(currentCount) + change;
-
-            if (newCount < 1) return;
-
             const response = await fetch(`/api/carts/${cartId}/count`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
-                },  // 콤마 추가
-                body: JSON.stringify({ count: newCount })
+                },
+                body: JSON.stringify({
+                    count: newCount,
+                    reservation: false
+                })
             });
 
             if (!response.ok) throw new Error('수량 업데이트 실패');
-
             location.reload();
         } catch (error) {
             console.error('수량 업데이트 실패:', error);
@@ -167,14 +299,13 @@
     }
 
     // 로컬 스토리지 수량 업데이트
-    function updateLocalCount(itemId, change) {
+    function updateLocalCount(itemId, newCount) {
+        if (newCount < 1) return;
+
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         const itemIndex = cartItems.findIndex(item => item.itemId === itemId);
 
-        if (itemIndex !== -1) {
-            const newCount = cartItems[itemIndex].count + change;
-            if (newCount < 1) return;
-
+        if (itemIndex !== -1 && !cartItems[itemIndex].reservation) {
             cartItems[itemIndex].count = newCount;
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
             renderLocalCart(cartItems);
@@ -185,14 +316,10 @@
     async function removeCart(cartId) {
         try {
             const response = await fetch(`/api/carts/${cartId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                method: 'DELETE'
             });
 
             if (!response.ok) throw new Error('삭제 실패');
-
             location.reload();
         } catch (error) {
             console.error('삭제 실패:', error);
@@ -210,46 +337,152 @@
 
     // 로그인 시 로컬 스토리지 장바구니 동기화
     async function syncLocalCartToServer() {
-        if (isLoggedIn) {
-            const localCart = JSON.parse(localStorage.getItem('cartItems')) || [];
-            if (localCart.length > 0) {
-                try {
-                    await fetch('/api/carts/sync', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(localCart)
-                    });
-                    localStorage.removeItem('cartItems');
-                    location.reload();
-                } catch (error) {
-                    console.error('장바구니 동기화 실패:', error);
-                }
+        const localCart = JSON.parse(localStorage.getItem('cartItems')) || [];
+        if (isLoggedIn && localCart.length > 0) {
+            try {
+                const response = await fetch('/api/carts/sync', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(localCart)
+                });
+
+                if (!response.ok) throw new Error('동기화 실패');
+                localStorage.removeItem('cartItems');
+                location.reload();
+            } catch (error) {
+                console.error('장바구니 동기화 실패:', error);
             }
         }
     }
 
-    // 체크된 상품 가격 계산
+    // 전체 선택/해제 토글 함수
+    function toggleAllCheckboxes(checkbox) {
+        const allCheckboxes = document.querySelectorAll('.item-checkbox');
+        allCheckboxes.forEach(item => {
+            item.checked = checkbox.checked;
+        });
+        // 체크박스 변경 시 선택된 상품 금액 계산
+        calculateSelectedPrice();
+    }
+
+    // 선택된 상품 가격 계산
     function calculateSelectedPrice() {
         const checkedItems = document.querySelectorAll('.item-checkbox:checked');
         const cartIds = Array.from(checkedItems).map(item => item.value);
 
         if (cartIds.length > 0) {
             if (isLoggedIn) {
-                fetch('/carts/selected-price?cartIds=' + cartIds.join(','))
+                // GET 요청을 쿼리 파라미터로 변경
+                const queryString = cartIds.map(id => `cartIds=${id}`).join('&');
+                fetch(`/carts/selected-price?${queryString}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('totalPrice').textContent = data.totalPrice;
+                        document.getElementById('totalPrice').textContent =
+                            data.selectedPrice.totalPrice.toLocaleString();
                     });
             } else {
                 const localCart = JSON.parse(localStorage.getItem('cartItems')) || [];
                 const total = localCart
                     .filter(item => cartIds.includes(item.itemId.toString()))
                     .reduce((sum, item) => sum + (item.price * item.count), 0);
-                document.getElementById('totalPrice').textContent = total;
+                document.getElementById('totalPrice').textContent = total.toLocaleString();
             }
+        } else {
+            // 선택된 항목이 없을 경우 0으로 표시
+            document.getElementById('totalPrice').textContent = '0';
         }
+    }
+    // 주문 진행 함수 추가
+    function proceedToCheckout() {
+        const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+        if (checkedItems.length === 0) {
+            alert('선택된 상품이 없습니다.');
+            return;
+        }
+
+        const cartIds = Array.from(checkedItems).map(item => item.value);
+        // 주문 페이지로 리다이렉트 (구현 예정)
+        const queryString = cartIds.map(id => `cartIds=${id}`).join('&');
+        window.location.href = `/orders/new?${queryString}`;
+    }
+
+    // 선택 상품 삭제 함수 추가
+    async function deleteSelectedItems() {
+        const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+        if (checkedItems.length === 0) {
+            alert('선택된 상품이 없습니다.');
+            return;
+        }
+
+        if (!confirm('선택한 상품을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        if (isLoggedIn) {
+            for (const item of checkedItems) {
+                try {
+                    await removeCart(item.value);
+                } catch (error) {
+                    console.error('상품 삭제 실패:', error);
+                }
+            }
+            location.reload();
+        } else {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const selectedIds = Array.from(checkedItems).map(item =>
+                parseInt(item.value));
+            const updatedItems = cartItems.filter(item =>
+                !selectedIds.includes(item.itemId));
+            localStorage.setItem('cartItems', JSON.stringify(updatedItems));
+            renderLocalCart(updatedItems);
+        }
+    }
+
+    // 로컬 스토리지 렌더링 함수 수정
+    function renderLocalCart(items) {
+        const container = document.getElementById('localCartItems');
+        container.innerHTML = '';
+
+        if (items.length === 0) {
+            container.innerHTML = '<div class="text-center p-5">장바구니가 비어있습니다.</div>';
+            return;
+        }
+
+        items.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
+                        <div class="check">
+                            <input type="checkbox" class="item-checkbox" value="${item.itemId}">
+                        </div>
+                        <div class="info">
+                            <h3>${item.itemName}</h3>
+                        </div>
+                        <div class="quantity">
+                            ${!item.reservation ? `
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count - 1})">-</button>
+                                    <span>${item.count}</span>
+                                    <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count + 1})">+</button>
+                                </div>
+                            ` : `
+                                <div class="badge bg-secondary">예약상품</div>
+                            `}
+                        </div>
+                        <div class="price">₩${(item.price * item.count).toLocaleString()}</div>
+                        <div class="select">
+                            <button class="delete-btn" onclick="removeLocalItem(${item.itemId})">×</button>
+                        </div>
+                    `;
+            container.appendChild(itemElement);
+        });
     }
 
     // 페이지 로드 시 초기화
@@ -262,10 +495,16 @@
 
         // 체크박스 이벤트 리스너
         document.querySelectorAll('.item-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', calculateSelectedPrice);
+            checkbox.addEventListener('change', () => {
+                // 모든 상품이 선택되었는지 확인하여 전체 선택 체크박스 상태 변경
+                const allCheckboxes = document.querySelectorAll('.item-checkbox');
+                const selectAllCheckbox = document.getElementById('selectAll');
+                selectAllCheckbox.checked = Array.from(allCheckboxes).every(cb => cb.checked);
+
+                calculateSelectedPrice();
+            });
         });
     });
-    /*]]>*/
 </script>
 </body>
 </html>
