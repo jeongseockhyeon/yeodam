@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.hifive.yeodam.order.domain.OrderStatus.*;
+import static com.hifive.yeodam.order.domain.OrderStatus.PENDING;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
@@ -31,16 +31,14 @@ public class Order {
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = LAZY)
-    private User User;
+    private User user;
 
     @Enumerated(STRING)
     private OrderStatus status;
 
-    private String bookerName;
-    private String bookerPhone;
-    private String message;
-
     private String orderUid; //주문번호
+
+    private int totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = ALL)
     private List<OrderDetail> orderDetails = new ArrayList<>();
@@ -49,20 +47,16 @@ public class Order {
     @OneToOne(mappedBy = "order", fetch = LAZY)
     private Payment payment;
 
-    private Order(User user, String bookerName, String bookerPhone,
-                  String message, List<OrderDetail> orderDetails) {
-        this.User = user;
+    private Order(User user, int totalPrice, List<OrderDetail> orderDetails) {
+        this.user = user;
         this.status = PENDING;
-        this.bookerName = bookerName;
-        this.bookerPhone = bookerPhone;
-        this.message = message;
+        this.totalPrice = totalPrice;
         this.orderUid = createOrderUid();
         setOrderDetails(orderDetails);
     }
 
-    public static Order createOrder(User user, String bookerName, String bookerPhone,
-                                    String message, List<OrderDetail> orderDetails) {
-        return new Order(user, bookerName, bookerPhone, message, orderDetails);
+    public static Order createOrder(User user, int totalPrice, List<OrderDetail> orderDetails) {
+        return new Order(user, totalPrice, orderDetails);
     }
 
     private String createOrderUid() {
@@ -80,13 +74,6 @@ public class Order {
         orderDetail.setOrder(this);
     }
 
-    //== bizLogic ==//
-    public int getTotalPrice() {
-        return orderDetails.stream()
-                .mapToInt(OrderDetail::getTotalPrice)
-                .sum();
-    }
-
     public String getItemSummary() {
 
         StringBuilder sb = new StringBuilder();
@@ -96,7 +83,7 @@ public class Order {
             sb.append(orderDetails.getFirst().getItem().getItemName())
                     .append(" 외 ")
                     .append(size)
-                    .append("건");
+                    .append(" 건");
 
             return sb.toString();
         }
@@ -105,16 +92,8 @@ public class Order {
                 .toString();
     }
 
-
-    public void successOrder() {
-        this.status = COMPLETED;
+    public void chanceOrderStatus(OrderStatus status) {
+        this.status = status;
     }
 
-    public void failOrder() {
-        this.status = FAILED;
-    }
-
-    public void cancelOrder() {
-        this.status = CANCELED;
-    }
 }
