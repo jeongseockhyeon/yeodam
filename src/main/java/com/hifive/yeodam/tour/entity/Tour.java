@@ -38,10 +38,11 @@ public class Tour extends Item {
                 boolean reservation,
                 int maximum,
                 int stock,
-                double rate
+                double rate,
+                boolean active
                 )
     {
-        super(seller,itemName,description,price,reservation,stock,rate);
+        super(seller,itemName,description,price,reservation,stock,rate,active);
         this.region = region;
         this.period = period;
         this.maximum = maximum;

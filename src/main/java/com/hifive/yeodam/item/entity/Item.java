@@ -34,12 +34,21 @@ public abstract class Item {
 
     private double rate;
 
+    private boolean active;
+
     private boolean reservation;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ItemImage> itemImages = new ArrayList<>();
 
-    public Item(Seller seller, String itemName, String description,int price, boolean reservation, int stock , double rate) {
+    public Item(Seller seller,
+                String itemName,
+                String description,
+                int price,
+                boolean reservation,
+                int stock,
+                double rate,
+                boolean active) {
         this.seller = seller;
         this.itemName = itemName;
         this.description = description;
@@ -47,6 +56,7 @@ public abstract class Item {
         this.reservation = reservation;
         this.stock = stock;
         this.rate = rate;
+        this.active = active;
     }
 
     public void updateItem(String itemName,String description,int price) {
@@ -54,6 +64,10 @@ public abstract class Item {
         this.itemName = itemName;
         this.description = description;
         this.price = price;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
     }
 
     public void addStock() {

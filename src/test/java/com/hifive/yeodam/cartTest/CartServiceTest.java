@@ -56,8 +56,8 @@ class CartServiceTest {
 
     private static class TestItem extends Item {
         @Builder
-        public TestItem(String itemName, String description, int price, boolean reservation, int stock) {
-            super(null, itemName, description, price, reservation, stock);
+        public TestItem(String itemName, String description, int price, boolean reservation, int stock, double rate, boolean active) {
+            super(null, itemName, description, price, reservation, stock, rate, active);
         }
 
         @Override
