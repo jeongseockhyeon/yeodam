@@ -26,6 +26,9 @@ public class Auth implements UserDetails {
     @Setter
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
