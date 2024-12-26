@@ -1,17 +1,15 @@
 package com.hifive.yeodam.order.controller;
 
-import com.hifive.yeodam.order.dto.AddOrderRequest;
-import com.hifive.yeodam.order.service.OrderService;
-import lombok.AllArgsConstructor;
+import com.hifive.yeodam.order.dto.request.AddOrderRequest;
+import com.hifive.yeodam.order.dto.request.CancelOrderRequest;
+import com.hifive.yeodam.order.service.OrderCommandService;
+import com.hifive.yeodam.order.service.OrderQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -19,47 +17,50 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("/order")
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderQueryService orderQueryService;
+    private final OrderCommandService orderCommandService;
 
-    @GetMapping
-    public String testOrderForm(Model model) {
+    @GetMapping("/order")
+    public String orderForm(Model model) {
+        AddOrderRequest.orderRequest orderRequests = new AddOrderRequest.orderRequest(1L, "제주도 푸른밤11", 2, 100, "길동이", "1234-1234", null);
+        AddOrderRequest.orderRequest orderRequests2 = new AddOrderRequest.orderRequest(2L, "제주도 푸른밤22", 2, 200, "길동이", "1234-1234", null);
 
-        AddOrderRequest.ItemRequest itemRequest = new AddOrderRequest.ItemRequest();
-        itemRequest.setId(1L);
-        itemRequest.setName("제주도 푸른밤");
-        itemRequest.setPrice(100);
-        itemRequest.setCount(2);
-        List<AddOrderRequest.ItemRequest> items = List.of(itemRequest);
-
-        model.addAttribute("orderRequest",
-                new AddOrderRequest("길동이", "1234-1234", null, items));
+        AddOrderRequest addOrderRequest = new AddOrderRequest(List.of(orderRequests, orderRequests2));
+        model.addAttribute("addOrderRequest", addOrderRequest);
 
         return "order/order-form";
     }
 
-    @ResponseBody
-    @PostMapping
-    public ResponseEntity order(/*Principal principal,*/ AddOrderRequest request) {
+    @GetMapping("/orders")
+    public String orderList(
+            @RequestParam(name = "beforeLimit", defaultValue = "5") int beforeLimit,
+            @RequestParam(name = "afterLimit", defaultValue = "5") int afterLimit,
+            Principal principal, Model model) {
 
-        Principal principal = new TestPrincipal("123@a.com");
-
-        String orderUid = orderService.order(request, principal);
-        return ResponseEntity.ok(Map.of("orderUid", orderUid));
+        model.addAttribute("orderListResponse", orderQueryService.findOrders(beforeLimit, afterLimit, principal));
+        return "order/order-list";
     }
 
-    //TODO 추후 삭제 예정
-    @AllArgsConstructor
-    static class TestPrincipal implements Principal {
+    @GetMapping("/orders/{orderUid}/retry")
+    public String retryOrder(@PathVariable String orderUid, Model model) {
+        AddOrderRequest addOrderRequest = orderQueryService.changeToAddOrderRequest(orderUid);
+        model.addAttribute("addOrderRequest", addOrderRequest);
+        return "order/order-form";
+    }
 
-        private String name;
+    @ResponseBody
+    @PatchMapping("/api/orders/{orderUid}")
+    public ResponseEntity cancelOrder(@RequestBody CancelOrderRequest request) {
+        return ResponseEntity.ok(orderCommandService.cancelOrder(request));
+    }
 
-        @Override
-        public String getName() {
-            return this.name;
-        }
+    @ResponseBody
+    @PostMapping("/api/orders")
+    public ResponseEntity order(Principal principal, @ModelAttribute(name = "addOrderRequests") AddOrderRequest requests) {
+        String orderUid = orderCommandService.order(requests, principal);
+        return ResponseEntity.ok(Map.of("orderUid", orderUid));
     }
 }
