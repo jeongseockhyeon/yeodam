@@ -18,7 +18,7 @@ public class ItemViewController {
     @GetMapping
     /*모든 종류의 상품 목록 페이지*/
     public String item() {
-        return "item-list";
+        return "/item/item-list";
     }
 
     /*업체의 상품 관리 페이지*/
