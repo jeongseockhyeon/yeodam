@@ -1,6 +1,101 @@
 /*모든 화면에 공통적으로 사용되는 css*/
+header{
+    margin: 0 300px;
+    padding: 10px 0;
+    background-color: white;
+}
+
+.header-area {
+    background-color: white;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%); /* 화면 전체 너비로 확장 */
+    margin-right: calc(-50vw + 50%);
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0 70px;
+}
+
+.custom-logo {
+    margin-right: 20px;
+    width: 170px;
+    height: 50px;
+}
+
+.custom-search-box {
+    background-color: #F2F4F5;
+    border-radius: 5px;
+    padding: 5px 15px;
+    max-width: 400px; /* 너비 설정 */
+}
+
+.custom-search-box input {
+    flex: 1; /* 남은 공간을 채움 */
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 16px;
+    padding: 5px;
+}
+
+/* 검색 버튼 스타일 */
+.custom-search-box button {
+    border: none;
+    background: none;
+    font-size: 18px; /* 아이콘 크기 */
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cart-icon {
+    color: #333;
+    font-size: 24px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin-right: 10px;
+}
+
+.cart-icon i {
+    font-size: 24px;
+}
+
+.cart-icon:hover {
+    color: #666;
+}
+
+.custom-logo {
+    margin-right: 20px;
+    width: 170px;
+    height: 50px;
+}
+
+.custom-search-box {
+    background-color: #F2F4F5;
+    border-radius: 5px;
+    padding: 5px 15px;
+    max-width: 400px; /* 너비 설정 */
+}
+
+.custom-search-box input {
+    flex: 1; /* 남은 공간을 채움 */
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 16px;
+    padding: 5px;
+}
+
+/* 검색 버튼 스타일 */
+.custom-search-box button {
+    border: none;
+    background: none;
+    font-size: 18px; /* 아이콘 크기 */
 }

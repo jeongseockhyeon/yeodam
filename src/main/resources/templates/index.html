@@ -11,78 +11,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/style.css">
 
-    <style>
-        header{
-            margin: 0 300px;
-            padding: 10px 0;
-            -moz-columns: 12 8em;
-            -webkit-columns: 12 8em;
-            columns: 12 8em;
-        }
-
-        .custom-logo {
-            margin-right: 20px;
-            width: 170px;
-            height: 50px;
-        }
-
-        .custom-search-box {
-            background-color: #F2F4F5;
-            border-radius: 5px;
-            padding: 5px 15px;
-            max-width: 400px; /* 너비 설정 */
-        }
-
-        .custom-search-box input {
-            flex: 1; /* 남은 공간을 채움 */
-            border: none;
-            outline: none;
-            background-color: transparent;
-            font-size: 16px;
-            padding: 5px;
-        }
-
-        /* 검색 버튼 스타일 */
-        .custom-search-box button {
-            border: none;
-            background: none;
-            font-size: 18px; /* 아이콘 크기 */
-        }
-
-    </style>
 </head>
 <body>
-    <header class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <a th:href="@{/}"><img class="custom-logo" src="/images/logo.png" alt="로고"></a>
-            <form th:action="@{#}" class="d-flex align-items-center custom-search-box">
-                <input type="text" name="" placeholder="어디로 떠나시나요?">
-                <button type="submit" class="btn"><i class="bi bi-search"></i></button>
-            </form>
-        </div>
-        <div>
-            <th:block sec:authorize="isAnonymous()">
-                <!-- 인증 받지 않음 -->
-                <button class="btn" onclick="location.href='/login'">로그인</button>
-                <button class="btn" onclick="location.href='/join'">회원가입</button>
-            </th:block>
-
-            <!-- 판매자일 경우 -->
-            <th:block th:if="${role == 'SELLER'}">
-                <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
-            </th:block>
-
-            <!-- 유저일 경우 -->
-            <th:block th:if="${role == 'USER'}">
-                <button class="btn" onclick="location.href='#'">장바구니</button>
-                <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
-            </th:block>
-
-            <th:block sec:authorize="isAuthenticated()">
-                <!-- 인증 받음 -->
-                <button class="btn" onclick="location.href='/logout'">로그아웃</button>
-            </th:block>
-        </div>
-    </header>
+    <div class="header-area">
+        <div th:replace="~{fragments/header :: header}"></div>
+    </div>
 </body>
 </html>
