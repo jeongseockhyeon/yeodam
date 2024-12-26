@@ -1,0 +1,51 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>header</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header th:fragment="header" class="d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <a th:href="@{/}"><img class="custom-logo" src="/images/logo.png" alt="로고"></a>
+        <form th:action="@{#}" class="d-flex align-items-center custom-search-box">
+            <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+            <input type="text" name="" placeholder="어디로 떠나시나요?">
+        </form>
+    </div>
+    <div class="user-menu">
+        <!-- 장바구니 -->
+        <a href="/carts" class="cart-icon">
+            <i class="bi bi-cart2"></i>
+        </a>
+
+        <th:block sec:authorize="isAnonymous()">
+            <!-- 비로그인 상태 -->
+            <button class="btn login-btn" onclick="location.href='/login'">로그인</button>
+            <button class="btn join-btn" onclick="location.href='/join'">회원가입</button>
+        </th:block>
+
+        <!-- 로그인 상태 -->
+        <th:block sec:authorize="isAuthenticated()">
+            <!-- 판매자일 경우 -->
+            <th:block th:if="${role == 'SELLER'}">
+                <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
+            </th:block>
+
+            <!-- 유저일 경우 -->
+            <th:block th:if="${role == 'USER'}">
+                <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
+            </th:block>
+
+            <button class="btn" onclick="location.href='/logout'">로그아웃</button>
+        </th:block>
+    </div>
+</header>
+</body>
+</html>
