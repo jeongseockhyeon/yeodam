@@ -112,7 +112,7 @@
 </head>
 <body>
 <div class="custom-container">
-    <a href="#" class="back-button">←</a>
+    <a onclick="history.back()" class="back-button">←</a>
     <form th:action="@{/api/orders}" method="post" th:object="${addOrderRequest}" id="order-form">
         <div class="section" th:each="request : ${addOrderRequest.orderRequests}">
 
@@ -162,6 +162,11 @@
 
     async function submitOrder() {
 
+        if (!validateCheckBox()) {
+            alert("약관에 동의해주세요");
+            return;
+        }
+
         const form = document.getElementById('order-form');
         const data = new FormData(form);
 
@@ -170,6 +175,11 @@
                 method: "POST",
                 body: data
             })).json();
+
+            if (responseJson.code === "ITEM_NOT_FOUND") {
+                alert("해당 상품이 존재하지 않습니다.");
+                return;
+            }
 
             sessionStorage.setItem("orderUid", responseJson.orderUid);
 
@@ -191,8 +201,25 @@
             );
 
         } catch (error) {
-
+            console.log('에러발생 : ' + error);
         }
+    }
+
+    function validateCheckBox() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        let allChecked = true;
+
+        checkboxes.forEach((checkbox) => {
+            const label = document.querySelector(`label[for="${checkbox.id}"]`);
+            if (!checkbox.checked) {
+                label.style.color = 'red';
+                allChecked = false;
+            } else {
+                label.style.color = '';
+            }
+        });
+
+        return allChecked;
     }
 
     window.addEventListener("load", () => {
