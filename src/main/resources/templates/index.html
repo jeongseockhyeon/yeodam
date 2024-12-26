@@ -68,12 +68,12 @@
             </th:block>
 
             <!-- 판매자일 경우 -->
-            <th:block th:if="${isSeller}">
+            <th:block th:if="${role == 'SELLER'}">
                 <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
             </th:block>
 
             <!-- 유저일 경우 -->
-            <th:block th:if="${isUser}">
+            <th:block th:if="${role == 'USER'}">
                 <button class="btn" onclick="location.href='#'">장바구니</button>
                 <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
             </th:block>

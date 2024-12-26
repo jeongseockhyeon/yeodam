@@ -98,9 +98,4 @@ public class AuthService {
 
         return optionalAuth.orElseThrow(() -> new AuthException(AuthErrorResult.AUTH_NOT_FOUND));
     }
-
-    public String getRole(Auth auth) {
-        Role role = roleRepository.findByAuth(auth).orElseThrow(() -> new IllegalArgumentException("해당 Auth에 연결된 Role이 없습니다."));
-        return role.getRoleType().name();
-    }
 }
