@@ -39,7 +39,7 @@ public class GuideController {
     public String getGuideUpdatePage(@PathVariable Long id, Model model) {
         Guide guide = guideService.getGuideById(id);
         model.addAttribute("guide", guide);
-        return "seller/guideEdit";
+        return "seller/guide-edit";
     }
 
     // 가이드 정보 수정
@@ -78,12 +78,12 @@ public class GuideController {
         List<Guide> guides = guideService.getGuidesByCompanyId(seller.getCompanyId());
         model.addAttribute("companyId", seller.getCompanyId());
         model.addAttribute("guides", guides);
-        return "seller/guidesList";
+        return "seller/guide-list";
     }
 
     // 가이드 등록 페이지로 이동
     @GetMapping("/join")
     public String getGuideRegisterPage() {
-        return "seller/guideJoin";
+        return "seller/guide-join";
     }
 }

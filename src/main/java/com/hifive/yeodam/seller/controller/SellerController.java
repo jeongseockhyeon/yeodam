@@ -27,7 +27,7 @@ public class SellerController {
     // 가입 페이지 보기
     @GetMapping("/join")
     public String showSellerJoinPage() {
-        return "seller/sellerJoin";
+        return "seller/seller-join";
     }
 
     // 수정 페이지 보기
@@ -35,7 +35,7 @@ public class SellerController {
     public String getSellerUpdatePage (@PathVariable Long id, Model model) {
         Seller seller = sellerService.getSellerById(id);
         model.addAttribute("seller", seller);
-        return "seller/sellerEdit";
+        return "seller/seller-edit";
     }
 
     // 판매자 정보 수정 (api 컨트롤러로 이동 예정)
@@ -54,6 +54,6 @@ public class SellerController {
         Auth auth = (Auth) authentication.getPrincipal();
         Seller seller = sellerService.getSellerByAuth(auth);
         model.addAttribute("seller", seller);
-        return "seller/myPage";
+        return "seller/seller-myPage";
     }
 }
