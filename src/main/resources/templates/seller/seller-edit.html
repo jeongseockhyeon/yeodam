@@ -59,8 +59,9 @@
     </style>
 </head>
 <body>
-<form th:action="@{/sellers/edit/{id}(id=${seller.companyId})}" method="post">
+<form th:action="@{/api/sellers/edit/{id}(id=${seller.companyId})}" method="post" id="sellerEditForm">
     <input type="hidden" name="_method" value="put">
+    <input type="hidden" id="companyId" th:value="${seller.companyId}">
 
     <h2>판매자 정보 수정</h2>
 
@@ -74,6 +75,7 @@
 
     <div class="input-container">
         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호 확인">
+        <span id="passwordValidationResult"></span>
     </div>
 
     <div class="input-container">
@@ -95,24 +97,7 @@
     <button type="submit" id="updateButton">수정하기</button>
 </form>
 
-<script>
-    const passwordInput = document.getElementById("password");
-    const confirmPasswordInput = document.getElementById("confirmPassword");
-    const updateButton = document.getElementById("updateButton");
+<script src="/js/seller/sellerEdit.js"></script>
 
-    function validatePasswords() {
-        const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-
-        if (password && password !== confirmPassword) {
-            confirmPasswordInput.setCustomValidity("비밀번호가 일치하지 않습니다.");
-        } else {
-            confirmPasswordInput.setCustomValidity("");
-        }
-    }
-
-    passwordInput.addEventListener("input", validatePasswords);
-    confirmPasswordInput.addEventListener("input", validatePasswords);
-</script>
 </body>
 </html>

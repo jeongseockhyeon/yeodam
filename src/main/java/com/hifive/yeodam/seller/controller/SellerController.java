@@ -2,19 +2,13 @@ package com.hifive.yeodam.seller.controller;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.service.AuthService;
-import com.hifive.yeodam.seller.dto.SellerJoinRequest;
-import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.service.SellerService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -37,16 +31,6 @@ public class SellerController {
         model.addAttribute("seller", seller);
         return "seller/seller-edit";
     }
-
-    // 판매자 정보 수정 (api 컨트롤러로 이동 예정)
-    @PutMapping("/edit/{id}")
-    public String updateSeller(@PathVariable Long id, @ModelAttribute @Valid SellerUpdateRequest updateRequest) {
-        Seller updatedSeller = sellerService.updateSeller(id, updateRequest);
-        Auth auth = updatedSeller.getAuth();
-        authService.updateAuth(auth.getId(), updateRequest);
-        return "redirect:/sellers/myPage";
-    }
-
 
     // 마이페이지 보기
     @GetMapping("/myPage")

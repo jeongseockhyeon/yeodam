@@ -3,6 +3,7 @@ package com.hifive.yeodam.seller.controller;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
+import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.service.SellerService;
 import jakarta.validation.Valid;
@@ -23,9 +24,7 @@ public class SellerApiController {
     @PostMapping("/join")
     public ResponseEntity<?> createSeller(@RequestBody @Valid SellerJoinRequest joinRequest) {
         Auth auth = authService.addAuth(joinRequest);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(sellerService.createSeller(joinRequest, auth));
+        return ResponseEntity.status(HttpStatus.CREATED).body(sellerService.createSeller(joinRequest, auth));
     }
 
     // 이메일 중복 체크
@@ -34,6 +33,15 @@ public class SellerApiController {
     public ResponseEntity<Boolean> checkEmailDuplicate(@RequestParam String email) {
         boolean isDuplicate = authService.checkEmail(email);
         return ResponseEntity.ok(isDuplicate);
+    }
+
+    // 판매자 정보 수정
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> updateSeller(@PathVariable Long id, @RequestBody @Valid SellerUpdateRequest updateRequest) {
+        Seller updatedSeller = sellerService.updateSeller(id, updateRequest);
+        Auth auth = updatedSeller.getAuth();
+        authService.updateAuth(auth.getId(), updateRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     // 판매자 삭제
