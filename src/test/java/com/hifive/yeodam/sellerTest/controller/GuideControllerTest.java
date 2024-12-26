@@ -1,6 +1,7 @@
 package com.hifive.yeodam.sellerTest.controller;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.seller.controller.GuideController;
 import com.hifive.yeodam.seller.dto.GuideJoinRequest;
 import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
@@ -49,7 +50,7 @@ class GuideControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(1L, "email@email.com", "password");
+        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER);
         seller = new Seller(1L, auth, "Company", "Owner", "Company Bio", "01012345678");
         guide = new Guide(null, seller, "Name", LocalDate.of(2002, 2, 25), "M", "01012345678", "Guide Bio");
 

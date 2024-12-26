@@ -1,10 +1,8 @@
 package com.hifive.yeodam.auth.service;
 
-import com.hifive.yeodam.auth.entity.Role;
 import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
-import com.hifive.yeodam.auth.repository.RoleRepository;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
@@ -41,9 +39,6 @@ public class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private RoleRepository roleRepository;
-
-    @Mock
     private BindingResult errorResult;
 
     private static final String email = "emailName@domain.com";
@@ -76,8 +71,6 @@ public class AuthServiceTest {
                 .email(email)
                 .password("encryptedPwd")
                 .build()).when(authRepository).save(any(Auth.class));
-
-        doReturn(new Role(auth(), RoleType.USER)).when(roleRepository).save(any(Role.class));
 
         //when
         Auth result = target.addAuth(new JoinRequest(email, password, name, nickname, phone, birthDate, "M"));

@@ -1,6 +1,7 @@
 package com.hifive.yeodam.sellerTest.controller;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.seller.controller.SellerController;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
@@ -45,7 +46,7 @@ class SellerControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(null, "email@email.com", "password");
+        auth = new Auth(null, "email@email.com", "password", RoleType.SELLER);
         seller = new Seller(null, auth, "Company", "Owner", "Company Bio", "01012345678");
         sellerId = 1L;
     }
