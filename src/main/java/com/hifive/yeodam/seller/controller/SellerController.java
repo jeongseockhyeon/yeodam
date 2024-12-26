@@ -30,23 +30,7 @@ public class SellerController {
         return "seller/sellerJoin";
     }
 
-    // 판매자 가입
-    @PostMapping
-    public String createSeller(@ModelAttribute @Valid SellerJoinRequest joinRequest) {
-        Auth auth = authService.addAuth(joinRequest);
-        Seller savedSeller = sellerService.createSeller(joinRequest, auth);
-
-        return "redirect:/login";
-    }
-
-    // 이메일 중복 체크
-    @GetMapping("/check-email")
-    @ResponseBody
-    public ResponseEntity<Boolean> checkEmailDuplicate(@RequestParam String email) {
-        boolean isDuplicate = authService.checkEmail(email);
-        return ResponseEntity.ok(isDuplicate);
-    }
-
+    // 수정 페이지 보기
     @GetMapping("/edit/{id}")
     public String getSellerUpdatePage (@PathVariable Long id, Model model) {
         Seller seller = sellerService.getSellerById(id);
@@ -54,7 +38,7 @@ public class SellerController {
         return "seller/sellerEdit";
     }
 
-    // 판매자 정보 수정
+    // 판매자 정보 수정 (api 컨트롤러로 이동 예정)
     @PutMapping("/edit/{id}")
     public String updateSeller(@PathVariable Long id, @ModelAttribute @Valid SellerUpdateRequest updateRequest) {
         Seller updatedSeller = sellerService.updateSeller(id, updateRequest);
@@ -63,28 +47,8 @@ public class SellerController {
         return "redirect:/sellers/myPage";
     }
 
-    // 판매자 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSeller(@PathVariable Long id) {
-        sellerService.deleteSeller(id);
-        return ResponseEntity.noContent().build();
-    }
 
-//    // 판매자 전체 조회 (사용 X)
-//    @GetMapping
-//    public ResponseEntity<List<Seller>> getAllSellers() {
-//        List<Seller> sellers = sellerService.getAllSellers();
-//        return ResponseEntity.ok(sellers);
-//    }
-
-    // 판매자 단일 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Seller> getSellerById(@PathVariable Long id) {
-        Seller seller = sellerService.getSellerById(id);
-        return ResponseEntity.ok(seller);
-    }
-
-    // 판매자 마이페이지
+    // 마이페이지 보기
     @GetMapping("/myPage")
     public String showMyPage(Authentication authentication, Model model) {
         Auth auth = (Auth) authentication.getPrincipal();
