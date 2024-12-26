@@ -5,6 +5,16 @@
     <title>Title</title>
 </head>
 <body>
-<p>실패 페이지 입니다.</p>
+<h2>결제실패</h2>
+<a href="/">홈으로 이동</a>
+<a onclick="retryOrder()">다시 시도</a>
 </body>
+<script>
+    async function retryOrder() {
+
+        let urlParams = new URLSearchParams(window.location.search);
+        let orderUid = urlParams.get('orderUid');
+        window.location.href = '/orders/' + orderUid + '/retry';
+    }
+</script>
 </html>

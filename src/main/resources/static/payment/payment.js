@@ -1,7 +1,7 @@
-const validateUrl = "/api/payment/validate";
-const failApiUrl = "/api/payment/fail?orderUid=";
-const failFormUrl = "/payment/fail?orderUid=";
-const successUrl = "/payment/success?orderUid=";
+const validateUrl = "/api/payments/validate";
+const failApiUrl = "/api/payments/fail?orderUid=";
+const failFormUrl = "/payments/fail?orderUid=";
+const successUrl = "/payments/success?orderUid=";
 
 
 function requestPay(itemName, price, orderUid, username, email, phone) {

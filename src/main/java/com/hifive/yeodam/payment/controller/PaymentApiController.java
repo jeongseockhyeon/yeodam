@@ -1,5 +1,6 @@
 package com.hifive.yeodam.payment.controller;
 
+import com.hifive.yeodam.payment.dto.CancelPaymentRequest;
 import com.hifive.yeodam.payment.dto.PaymentRequestCallBack;
 import com.hifive.yeodam.payment.dto.PaymentResponse;
 import com.hifive.yeodam.payment.service.PaymentService;
@@ -14,7 +15,7 @@ import static com.hifive.yeodam.global.constant.PaymentConst.ORDER_UID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/api/payments")
 @RequiredArgsConstructor
 public class PaymentApiController {
 
@@ -33,6 +34,7 @@ public class PaymentApiController {
         return ResponseEntity.ok(Map.of(ORDER_UID, request.getOrderUid()));
     }
 
+    //브라우저 종료시 결제 상태 확인
     @PostMapping("/check")
     public void checkPaymentStatus(@RequestParam(name = ORDER_UID) String orderUid) {
         paymentService.checkPaymentStatus(orderUid);
@@ -41,12 +43,12 @@ public class PaymentApiController {
     @PostMapping("/validate")
     public ResponseEntity validationPayment(@RequestBody PaymentRequestCallBack request) {
         String orderUid = paymentService.validatePayment(request);
-        return ResponseEntity.ok(Map.of("orderUid", orderUid));
+        return ResponseEntity.ok(Map.of(ORDER_UID, orderUid));
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity cancelPayment(@RequestParam(ORDER_UID) String orderUid) {
-        paymentService.cancel(orderUid);
-        return ResponseEntity.ok(Map.of(ORDER_UID, orderUid));
+    public ResponseEntity cancelPayment(@RequestBody CancelPaymentRequest request) {
+        paymentService.cancel(request);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -11,7 +11,7 @@ import static com.hifive.yeodam.global.constant.PaymentConst.ORDER_UID;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/payment")
+@RequestMapping("/payments")
 public class PaymentController {
 
     @GetMapping("/success")
