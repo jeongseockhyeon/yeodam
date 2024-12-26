@@ -13,9 +13,8 @@ public class ActiveUpdateApiController {
     private final ItemService itemService;
 
     @PatchMapping("/{id}/active")
-    public ResponseEntity<String> updateActive(@PathVariable Long id, @RequestBody ActiveUpdateDto activeUpdateDto) {
-        itemService.updateActive(id,activeUpdateDto);
-        return ResponseEntity.ok("상태가 변경되었습니다.");
+    public ResponseEntity<Boolean> updateActive(@PathVariable Long id, @RequestBody ActiveUpdateDto activeUpdateDto) {
+        return ResponseEntity.ok(itemService.updateActive(id,activeUpdateDto));
     }
 
 }

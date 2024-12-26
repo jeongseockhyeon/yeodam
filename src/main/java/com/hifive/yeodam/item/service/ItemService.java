@@ -37,9 +37,10 @@ public class ItemService {
 
     /*상품 활성화 상태 변경*/
     @Transactional
-    public void updateActive(Long id, ActiveUpdateDto activeUpdateDto){
+    public boolean updateActive(Long id, ActiveUpdateDto activeUpdateDto){
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
         item.updateActive(activeUpdateDto.isActive());
+        return item.isActive();
     }
 }

@@ -28,6 +28,8 @@ public class TourItemResDto {
 
     private final int maximum;
 
+    private final boolean active;
+
     private final List<CategoryResDto> categoryResDtoList = new ArrayList<>();
     private final List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
     private final List<ItemImgResDto> itemImgResDtoList = new ArrayList<>();
@@ -40,6 +42,7 @@ public class TourItemResDto {
         this.tourRegion = tour.getRegion();
         this.tourPrice = tour.getPrice();
         this.maximum = tour.getMaximum();
+        this.active = tour.isActive();
 
         for(TourCategory tourCategory : tour.getTourCategories()){
             CategoryResDto categoryResDto = new CategoryResDto(tourCategory.getCategory());
