@@ -1,10 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     const categoryCheckBox = document.getElementById("categoryCheckBox");
 
-    //DB 내 카테고리
+    // DB 내 카테고리
     fetch("/api/categories")
         .then(response => response.json())
         .then(categories => {
+            // DocumentFragment 생성
+            const fragment = document.createDocumentFragment();
+
             categories.forEach(category => {
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
@@ -20,8 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 div.appendChild(checkbox);
                 div.appendChild(label);
 
-                categoryCheckBox.appendChild(div);
-            })
+                fragment.appendChild(div);
+            });
+            categoryCheckBox.appendChild(fragment);
+
+            // 카테고리 로드 완료 이벤트 트리거
+            document.dispatchEvent(new Event("categoriesLoaded"));
         })
         .catch(error => console.error("카테고리 불러오기 실패:", error));
 });

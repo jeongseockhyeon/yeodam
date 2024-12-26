@@ -1,12 +1,10 @@
 package com.hifive.yeodam.auth.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.entity.Role;
 import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
-import com.hifive.yeodam.auth.repository.RoleRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
@@ -28,7 +26,6 @@ public class AuthService {
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
 
     @Transactional
     public Auth addAuth(JoinRequest request) {
@@ -40,10 +37,8 @@ public class AuthService {
         Auth auth = Auth.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(RoleType.USER)
                 .build();
-
-        Role role = new Role(auth, RoleType.USER);
-        roleRepository.save(role);
 
         return authRepository.save(auth);
     }
@@ -57,6 +52,7 @@ public class AuthService {
         Auth auth = Auth.builder()
                 .email(joinRequest.getEmail())
                 .password(passwordEncoder.encode(joinRequest.getPassword()))
+                .role(RoleType.SELLER)
                 .build();
 
         return authRepository.save(auth);

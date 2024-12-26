@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>여행 상품 등록</title>
-    <link rel="stylesheet" href="/css/tourAdd.css">
+    <link rel="stylesheet" href="/css/tour-add.css">
+    <link rel="stylesheet" href="/css/category-check-box.css">
     <style>
         #previewContainer {
             display: flex;
@@ -19,6 +20,7 @@
             border-radius: 5px;
         }
     </style>
+    <script src="../../static/js/item/getTourDetail.js"></script>
 </head>
 <body>
 <div class="container">
@@ -80,10 +82,10 @@
         </form>
     </div>
 </div>
-
-<script src="/js/getCategory.js"></script>
-<script src="/js/submitTour.js"></script>
-<script src="/js/showTabs.js"></script>
+<script src="/js/item/validationFormData.js"></script>
+<script src="/js/item/getCategory.js"></script>
+<script src="/js/item/submitTour.js"></script>
+<script src="/js/item/showTabs.js"></script>
 <script>
     const tourImagesInput = document.getElementById('tourImages');
     const previewContainer = document.getElementById('previewContainer');

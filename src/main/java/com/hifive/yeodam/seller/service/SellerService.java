@@ -1,12 +1,10 @@
 package com.hifive.yeodam.seller.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.entity.Role;
 import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.repository.AuthRepository;
-import com.hifive.yeodam.auth.repository.RoleRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
@@ -21,7 +19,6 @@ public class SellerService {
 
     private final SellerRepository sellerRepository;
     private final AuthRepository authRepository;
-    private final RoleRepository roleRepository;
 
     // 판매자 등록
     @Transactional(rollbackFor = AuthException.class)
@@ -37,9 +34,6 @@ public class SellerService {
                 .bio(joinRequest.getBio())
                 .phone(joinRequest.getPhone())
                 .build();
-
-        Role role = new Role(auth, RoleType.SELLER);
-        roleRepository.save(role);
 
         return sellerRepository.save(seller);
     }

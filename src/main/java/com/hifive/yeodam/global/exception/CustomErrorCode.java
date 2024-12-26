@@ -39,6 +39,9 @@ public enum CustomErrorCode {
     PAYMENT_FAILED(HttpStatus.NOT_FOUND, "결제에 실패했습니다"),
     PAYMENT_CANCELED(HttpStatus.NOT_FOUND, "결제 취소에 실패했습니다"),
     I_AM_PORT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "아이엠 포트 결제 조회에 실패했습니다"),
+
+    //예약 관련 ERROR
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 내역이 존재하지 않습니다"),
     ;
 
 

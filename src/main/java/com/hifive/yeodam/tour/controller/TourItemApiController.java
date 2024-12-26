@@ -35,7 +35,7 @@ public class TourItemApiController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody TourItemUpdateReqDto tourItemUpdateReqDto) {
+    public ResponseEntity<?> update(@PathVariable Long id, @ModelAttribute TourItemUpdateReqDto tourItemUpdateReqDto) {
         return ResponseEntity.ok(tourItemService.update(id, tourItemUpdateReqDto));
     }
 
