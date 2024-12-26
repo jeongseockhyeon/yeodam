@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.hifive.yeodam.global.constant.PaymentConst.PAYMENT_BEFORE_CARD_NAME;
 import static com.hifive.yeodam.global.constant.PaymentConst.PAYMENT_UID_BEFORE_PAYMENT;
 import static com.hifive.yeodam.payment.domain.PaymentStatus.*;
 import static jakarta.persistence.EnumType.STRING;
@@ -30,6 +31,8 @@ public class Payment {
     //결제 고유 번호
     private String paymentUid;
 
+    private String cardName;
+
     @JoinColumn(name = "order_id")
     @OneToOne(fetch = LAZY)
     private Order order;
@@ -39,6 +42,7 @@ public class Payment {
         this.price = price;
         this.status = PENDING;
         this.paymentUid = PAYMENT_UID_BEFORE_PAYMENT;
+        this.cardName = PAYMENT_BEFORE_CARD_NAME;
         setOrder(order);
     }
 
@@ -51,9 +55,10 @@ public class Payment {
         order.setPayment(this);
     }
 
-    public void successPayment(String paymentUid) {
+    public void successPayment(String paymentUid, String cardName) {
         this.status = COMPLETED;
         this.paymentUid = paymentUid;
+        this.cardName = cardName;
     }
 
     public void paymentFail(String paymentUid) {
@@ -62,6 +67,6 @@ public class Payment {
     }
 
     public void cancel() {
-        this.status = CANCELED;
+        status = CANCELED;
     }
 }

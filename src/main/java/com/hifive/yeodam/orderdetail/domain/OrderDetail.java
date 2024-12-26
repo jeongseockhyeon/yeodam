@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.*;
+import static jakarta.persistence.EnumType.*;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -29,20 +31,35 @@ public class OrderDetail {
     @JoinColumn(name = "item_id")
     @ManyToOne(fetch = LAZY)
     private Item item;
+
     private int count;
     private int price;
+    private String bookerName;
+    private String bookerPhone;
+    private String message;
 
-    public static OrderDetail create(Item item, int count, int price) {
-        return new OrderDetail(item, count, price);
+    @Enumerated(STRING)
+    private OrderDetailsStatus status;
+
+    private OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
+        this.item = item;
+        this.count = count;
+        this.price = price;
+        this.bookerName = bookerName;
+        this.bookerPhone = bookerPhone;
+        this.message = message;
+        this.status = PENDING;
+    }
+
+    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
+        return new OrderDetail(item, count, price, bookerName, bookerPhone, message);
     }
 
     public int getTotalPrice() {
         return getPrice() * getCount();
     }
 
-    private OrderDetail(Item item, int count, int price) {
-        this.item = item;
-        this.count = count;
-        this.price = price;
+    public void changeStatus(OrderDetailsStatus status) {
+        this.status = status;
     }
 }

@@ -2,8 +2,11 @@ package com.hifive.yeodam.payment.service;
 
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.order.domain.Order;
+import com.hifive.yeodam.order.domain.OrderStatus;
 import com.hifive.yeodam.order.repository.OrderRepository;
 import com.hifive.yeodam.payment.domain.Payment;
+import com.hifive.yeodam.payment.domain.PaymentStatus;
+import com.hifive.yeodam.payment.dto.CancelPaymentRequest;
 import com.hifive.yeodam.payment.dto.PaymentRequestCallBack;
 import com.hifive.yeodam.payment.dto.PaymentResponse;
 import com.hifive.yeodam.payment.repository.PaymentRepository;
@@ -14,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
 
 import static com.hifive.yeodam.global.constant.PaymentConst.PAYMENT_UID_BEFORE_PAYMENT;
 import static com.hifive.yeodam.global.exception.CustomErrorCode.*;
-import static com.hifive.yeodam.order.domain.OrderStatus.PENDING;
 
 @Slf4j
 @Service
@@ -55,43 +58,50 @@ public class PaymentService {
 
         if (isPaymentSuccessful(iamportResponse)) {
             if (isPriceValid(order.getTotalPrice(), iamportResponse)) {
-                payment.successPayment(iamportResponse.getResponse().getImpUid());
-                order.successOrder();
+                payment.successPayment(iamportResponse.getResponse().getImpUid(), iamportResponse.getResponse().getCardName());
+                order.chanceOrderStatus(OrderStatus.COMPLETED);
                 return order.getOrderUid();
             }
         }
 
-        handlePaymentFailure(order, payment, iamportResponse.getResponse().getImpUid());
+        payment.paymentFail(iamportResponse.getResponse().getImpUid());
         throw new CustomException(PAYMENT_FAILED);
     }
 
     @Transactional
     public void paymentFail(PaymentRequestCallBack request) {
         Order order = findOrderByUid(request.getOrderUid());
-        handlePaymentFailure(order, order.getPayment(), request.getPaymentUid());
+        order.chanceOrderStatus(OrderStatus.FAILED);
+        order.getOrderDetails().forEach(od -> od.getItem().addStock());
+        order.getPayment().paymentFail(request.getPaymentUid());
     }
 
     @Transactional
-    public void cancel(String orderUid) {
+    public void cancel(CancelPaymentRequest request) {
+        Payment payment = paymentRepository.findByOrderUid(request.getOrderUid())
+                .orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
-        Order order = findOrderByUid(orderUid);
-        Payment payment = order.getPayment();
-
-        if (isExistPaymentUid(payment)) {
-            handlePaymentCancel(order, payment);
-            cancelPayment(payment.getPaymentUid());
-            return;
+        if (request.getTotalPrice() == 0) {
+            throw new CustomException(PAYMENT_CANCELED);
+        }
+        if (payment.getPaymentUid().equals(PAYMENT_UID_BEFORE_PAYMENT)) {
+            throw new CustomException(PAYMENT_CANCELED);
         }
 
-        throw new CustomException(PAYMENT_CANCELED);
+        IamportResponse<com.siot.IamportRestClient.response.Payment> response = iamportClient.cancelPaymentByImpUid(new CancelData(payment.getPaymentUid(), true, new BigDecimal(request.getTotalPrice())));
+
+        if (response.getCode() == -1) {
+            throw new CustomException(I_AM_PORT_ERROR);
+        }
+
+        payment.cancel();
     }
 
     @Transactional
     public void checkPaymentStatus(String orderUid) {
         Order order = findOrderByUid(orderUid);
-
-        if (order.getStatus().equals(PENDING)) {
-            order.failOrder();
+        Payment payment = order.getPayment();
+        if (payment.getStatus().equals(PaymentStatus.PENDING)) {
             order.getPayment().paymentFail(PAYMENT_UID_BEFORE_PAYMENT);
         }
     }
@@ -117,22 +127,8 @@ public class PaymentService {
         return false;
     }
 
-    private void handlePaymentFailure(Order order, Payment payment, String paymentUid) {
-        order.failOrder();
-        payment.paymentFail(paymentUid);
-    }
-
-    private void handlePaymentCancel(Order order, Payment payment) {
-        order.cancelOrder();
-        payment.cancel();
-    }
-
     private void cancelPayment(String paymentUid) {
         iamportClient.cancelPaymentByImpUid(new CancelData(paymentUid, true));
-    }
-
-    private boolean isExistPaymentUid(Payment payment) {
-        return StringUtils.hasText(payment.getPaymentUid());
     }
 
     private Order findOrderByUid(String orderUid) {

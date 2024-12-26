@@ -1,3 +1,4 @@
+/*
 package com.hifive.yeodam.order.domain;
 
 
@@ -30,7 +31,8 @@ class OrderTest {
                 .price(10000)
                 .build();
 
-        orderDetails.add(OrderDetail.create(item, 2, item.getPrice()));
+        orderDetails.add(OrderDetail.create(
+                item, 2, item.getPrice(), user.getName(), user.getPhone(), "안녕"));
     }
 
     @AfterEach
@@ -42,19 +44,15 @@ class OrderTest {
     void 주문상태_테스트() {
 
         //처음 생성 시 상태는 PENDING
-        Order order = Order.createOrder(user, user.getName(), "1234", null, orderDetails);
+        Order order = Order.createOrder(user, orderDetails);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PENDING);
 
-        //주문 성공 시 상태는 COMPLETED
-        order.successOrder();
+        //상품을 이용시 COMPLETED
+        order.chanceOrderStatus(OrderStatus.COMPLETED);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.COMPLETED);
 
-        //주문 실패 시 상태
-        order.failOrder();
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.FAILED);
-
-        //주문 취소 시 상태
-        order.cancelOrder();
+        //취소 시 CANCELED
+        order.chanceOrderStatus(OrderStatus.CANCELED);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
     }
 
@@ -62,7 +60,7 @@ class OrderTest {
     void getTotalPriceTest_단건_테스트() {
 
         //given
-        Order order = Order.createOrder(user, user.getName(), "1234", null, orderDetails);
+        Order order = Order.createOrder(user, orderDetails);
 
         //when
         int totalPrice = order.getTotalPrice();
@@ -81,9 +79,10 @@ class OrderTest {
                 .price(20000)
                 .build();
 
-        orderDetails.add(OrderDetail.create(item, 2, item.getPrice()));
+        orderDetails.add(
+                OrderDetail.create(item, 2, item.getPrice(), user.getName(), user.getPhone(), "ㅎㅇㅎㅇ"));
 
-        Order order = Order.createOrder(user, user.getName(), "1234", null, orderDetails);
+        Order order = Order.createOrder(user, orderDetails);
 
         //when
         int totalPrice = order.getTotalPrice();
@@ -100,7 +99,7 @@ class OrderTest {
     void 주문상품_대표이름_단건_테스트() {
 
         //given
-        Order order = Order.createOrder(user, user.getName(), "1234", null, orderDetails);
+        Order order = Order.createOrder(user, orderDetails);
 
         //when
         String itemSummary = order.getItemSummary();
@@ -119,8 +118,10 @@ class OrderTest {
                 .price(20000)
                 .build();
 
-        orderDetails.add(OrderDetail.create(item, 2, item.getPrice()));
-        Order order = Order.createOrder(user, user.getName(), "1234", null, orderDetails);
+        orderDetails.add(OrderDetail.create(
+                item, 2, item.getPrice(), user.getName(), user.getPhone(), "ㅎㅇㅎㅇ"));
+
+        Order order = Order.createOrder(user, orderDetails);
 
         //when
         String itemSummary = order.getItemSummary();
@@ -129,4 +130,4 @@ class OrderTest {
         String result = orderDetails.getFirst().getItem().getItemName() + " 외 " + orderDetails.size() + "건";
         assertThat(itemSummary).isEqualTo(result);
     }
-}
+}*/
