@@ -434,5 +434,22 @@ public class TourItemTest {
         verify(tourRepository, times(1)).findBySeller(mockSeller);
     }
 
+/*    @Test
+    @DisplayName("상품 활성 상태 변경")
+    public void tourItemUpdateActive(){
+        //given
+        Long tourItemId = 1L;
 
+        Tour tour = mock(Tour.class);
+        when(tourRepository.findById(tourItemId)).thenReturn(Optional.of(tour));
+        when(tour.isActive()).thenReturn(false);
+
+        //when
+        tourItemService.updateActive(tourItemId,false);
+
+        //then
+        assertFalse(tour.isActive());
+        verify(tourRepository, times(1)).findById(tourItemId);
+        verify(tour, times(1)).updateActive(false);
+    }*/
 }
