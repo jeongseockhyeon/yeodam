@@ -66,6 +66,8 @@ function updatePreview() {
 
 // 이미지 미리보기 생성 함수
 function createImagePreview(image, type) {
+    const fragment = document.createDocumentFragment(); // DocumentFragment 생성
+
     const imgContainer = document.createElement("div");
     imgContainer.style.position = "relative";
 
@@ -105,7 +107,9 @@ function createImagePreview(image, type) {
     };
 
     imgContainer.appendChild(deleteButton);
-    previewContainer.appendChild(imgContainer);
+    fragment.appendChild(imgContainer); // Fragment에 추가
+
+    previewContainer.appendChild(fragment); // Fragment를 DOM에 추가
 }
 
 // 파일 입력 이벤트 처리

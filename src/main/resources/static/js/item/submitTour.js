@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateSelectedGuidesText();
     });
 
-// 가이드 텍스트 업데이트 함수
+    // 가이드 텍스트 업데이트 함수
     function updateSelectedGuidesText() {
         selectedGuidesText.innerHTML = ""; // 기존 내용을 초기화
         selectedGuides.forEach((id, index) => {
