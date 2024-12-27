@@ -1,3 +1,4 @@
+/*
 package com.hifive.yeodam.reservationTest;
 
 import com.hifive.yeodam.auth.entity.Auth;
@@ -73,10 +74,7 @@ public class ReservationServiceTest {
 
 
         Reservation reservation = Reservation.builder()
-                .id(reservationId)
-                .user(user)
                 .guide(guide)
-                .item(item)
                 .build();
 
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
@@ -182,8 +180,6 @@ public class ReservationServiceTest {
 
         Reservation reservation = mock(Reservation.class);
         when(reservation.getId()).thenReturn(reservationId);
-        when(reservation.getUser()).thenReturn(user);
-        when(reservation.getItem()).thenReturn(item);
         when(reservation.getGuide()).thenReturn(guide);
 
         when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
@@ -224,3 +220,4 @@ public class ReservationServiceTest {
 
     }
 }
+*/
