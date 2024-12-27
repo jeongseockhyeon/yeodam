@@ -1,3 +1,4 @@
+/*
 package com.hifive.yeodam.reservation.controller;
 
 import com.hifive.yeodam.auth.entity.Auth;
@@ -47,3 +48,4 @@ public class ReservationApiController {
         return ResponseEntity.ok(reservationService.dDayCalculate(id));
     }
 }
+*/

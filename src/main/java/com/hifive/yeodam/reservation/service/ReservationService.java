@@ -1,3 +1,4 @@
+/*
 package com.hifive.yeodam.reservation.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
@@ -30,18 +31,22 @@ public class ReservationService {
     private final ItemRepository itemRepository;
     private final SellerService sellerService;
 
-    /*예약 정보 추가*/
+예약 정보 추가
+
     public Long addReservation(ReservationReqDto reservationReqDto, Auth auth) {
 
-        /*유저 정보*/
+유저 정보
+
         User user = userRepository.findByAuthId(auth.getId())
                 .orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
 
-        /*가이드 정보*/
+가이드 정보
+
         Guide guide = guideRepository.findById(reservationReqDto.getGuideId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
 
-        /*상품 정보*/
+상품 정보
+
         Item item = itemRepository.findById(reservationReqDto.getItemId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
 
@@ -54,21 +59,24 @@ public class ReservationService {
         return reservationRepository.save(reservation).getId();
     }
 
-    /*예약 정보 삭제*/
+예약 정보 삭제
+
     public void deleteReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.RESERVATION_NOT_FOUND));
         reservationRepository.delete(reservation);
     }
 
-    /*예약 정보 단일 조회*/
+예약 정보 단일 조회
+
     public ReservationResDto getReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.RESERVATION_NOT_FOUND));
         return new ReservationResDto(reservation);
     }
 
-    /*업체별 예약 정보 조회*/
+업체별 예약 정보 조회
+
     public List<ReservationResDto> getReservationsBySeller(Auth auth) {
         Seller seller = sellerService.getSellerByAuth(auth);
         List<Reservation> reservations = reservationRepository.findReservationBySeller(seller);
@@ -77,7 +85,8 @@ public class ReservationService {
                 .toList();
     }
 
-    /*유저별 예약 정보 조회*/
+유저별 예약 정보 조회
+
     public List<ReservationResDto> getReservationsByUser(Auth auth) {
         User user = userRepository.findByAuthId(auth.getId())
                 .orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
@@ -87,3 +96,4 @@ public class ReservationService {
                 .toList();
     }
 }
+*/
