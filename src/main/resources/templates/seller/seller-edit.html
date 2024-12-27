@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>파트너 정보 수정</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 35%;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.8rem;
+        }
+
+        .success {
+            color: green;
+            font-size: 0.8rem;
+        }
+    </style>
+
+</head>
+<body class="container mt-5">
+
+<h2>파트너 정보 수정</h2>
+
+<form th:action="@{/api/sellers/edit/{id}(id=${seller.companyId})}" method="post" id="sellerEditForm">
+    <input type="hidden" name="_method" value="put">
+    <input type="hidden" id="companyId" th:value="${seller.companyId}">
+
+    <div class="mb-3">
+        <label for="email" class="form-label">이메일</label>
+        <input type="email" class="form-control" id="email" name="email" th:value="${seller.auth.email}" readonly>
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">비밀번호</label>
+        <input type="password" class="form-control" id="password" name="password" minlength="8">
+    </div>
+
+    <div class="mb-3">
+        <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="비밀번호 확인">
+        <span id="passwordValidationResult"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="companyName" class="form-label">회사명</label>
+        <input type="text" class="form-control" id="companyName" name="companyName" placeholder="회사명" th:value="${seller.companyName}" required maxlength="25">
+    </div>
+
+    <div class="mb-3">
+        <label for="owner" class="form-label">대표자명</label>
+        <input type="text" class="form-control" id="owner" name="owner" placeholder="대표자명" th:value="${seller.owner}" required maxlength="25">
+    </div>
+
+    <div class="mb-3">
+        <label for="phone" class="form-label">전화번호</label>
+        <input type="text" class="form-control" id="phone" name="phone" placeholder="전화번호" th:value="${seller.phone}" required pattern="^\d{9,11}$">
+    </div>
+
+    <div class="mb-3">
+        <label for="bio" class="form-label">회사소개</label>
+        <textarea id="bio" class="form-control" name="bio" placeholder="회사소개를 입력하세요" required th:text="${seller.bio}"></textarea>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <button type="submit" id="updateButton" class="btn btn-primary mx-1" disabled>수정하기</button>
+        <button type="button" class="btn btn-secondary mx-1" onclick="checkCancel()">취소</button>
+    </div>
+</form>
+
+<script src="/js/seller/sellerEdit.js"></script>
+
+</body>
+</html>

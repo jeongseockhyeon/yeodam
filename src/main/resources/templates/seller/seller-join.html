@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>파트너 회원가입</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 35%;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.8rem;
+        }
+
+        .success {
+            color: green;
+            font-size: 0.8rem;
+        }
+
+        #emailValidationResult, #passwordValidationResult {
+            display: block;
+            margin-top: 5px;
+        }
+    </style>
+
+</head>
+<body class="container mt-5">
+
+<h2 class="mb-3 text-center">회원 가입</h2>
+
+<form action="/sellers" method="POST" id="sellerJoinForm">
+
+    <div class="mb-3">
+        <label for="email" class="form-label">이메일</label>
+        <div class="input-group">
+            <input type="email" id="email" name="email" class="form-control mx-1" maxlength="50" required>
+            <button type="button" class="btn btn-secondary mx-1 idCheck" id="checkEmailBtn">중복체크</button>
+        </div>
+        <span id="emailValidationResult"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">비밀번호</label>
+        <input type="password" class="form-control" id="password" name="password" required minlength="8">
+    </div>
+
+    <div class="mb-3">
+        <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+        <span id="passwordValidationResult"></span>
+    </div>
+
+    <div class="mb-3">
+        <label for="companyName" class="form-label">회사명</label>
+        <input type="text" class="form-control" id="companyName" name="companyName" required maxlength="25">
+    </div>
+
+    <div class="mb-3">
+        <label for="owner" class="form-label">대표자명</label>
+        <input type="text" class="form-control" id="owner" name="owner" placeholder="대표자명" required maxlength="25">
+    </div>
+
+    <div class="mb-3">
+        <label for="phone" class="form-label">전화번호</label>
+        <input type="text" class="form-control" id="phone" name="phone" placeholder="전화번호" required pattern="^\d{9,11}$">
+    </div>
+
+    <div class="mb-3">
+        <label for="bio" class="form-label">회사소개</label>
+        <textarea id="bio" class="form-control" name="bio" placeholder="회사소개를 입력하세요" required></textarea>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <button type="submit" id="joinButton" class="btn btn-primary mx-1" disabled>가입하기</button>
+        <button type="button" class="btn btn-secondary mx-1" onclick="checkCancel()">취소</button>
+    </div>
+</form>
+
+<script src="/js/seller/sellerJoin.js"></script>
+
+</body>
+</html>
