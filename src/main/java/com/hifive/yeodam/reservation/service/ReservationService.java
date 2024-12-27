@@ -5,8 +5,6 @@ import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
-import com.hifive.yeodam.reservation.dto.ReservationReqDto;
-import com.hifive.yeodam.reservation.dto.ReservationResDto;
 import com.hifive.yeodam.reservation.entity.Reservation;
 import com.hifive.yeodam.reservation.repository.ReservationRepository;
 import com.hifive.yeodam.seller.entity.Guide;
@@ -20,8 +18,6 @@ import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RequiredArgsConstructor

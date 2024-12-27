@@ -23,11 +23,11 @@ public class OrderFormController {
 
     @GetMapping("/order")
     public String orderForm(Model model) {
-        AddOrderRequest.orderRequest orderRequests = new AddOrderRequest.orderRequest(1L, "제주도 푸른밤11", 2, 100, "길동이", "1234-1234", null);
+//        AddOrderRequest.orderRequest orderRequests = new AddOrderRequest.orderRequest(1L, "제주도 푸른밤11", 2, 100, "길동이", "1234-1234", null);
 //        AddOrderRequest.orderRequest orderRequests2 = new AddOrderRequest.orderRequest(2L, "제주도 푸른밤22", 2, 200, "길동이", "1234-1234", null);
 
-        AddOrderRequest addOrderRequest = new AddOrderRequest(List.of(orderRequests/*, orderRequests2*/));
-        model.addAttribute("addOrderRequest", addOrderRequest);
+//        AddOrderRequest addOrderRequest = new AddOrderRequest(List.of(orderRequests/*, orderRequests2*/));
+//        model.addAttribute("addOrderRequest", addOrderRequest);
 
         return "order/order-form";
     }
