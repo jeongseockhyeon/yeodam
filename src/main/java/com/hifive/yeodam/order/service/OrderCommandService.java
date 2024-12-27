@@ -11,7 +11,6 @@ import com.hifive.yeodam.orderdetail.domain.OrderDetail;
 import com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus;
 import com.hifive.yeodam.orderdetail.service.OrderDetailService;
 import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,12 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.util.List;
 
-import static com.hifive.yeodam.global.exception.CustomErrorCode.ORDER_CAN_NOT_CANCEL;
-import static com.hifive.yeodam.global.exception.CustomErrorCode.ORDER_NOT_FOUND;
+import static com.hifive.yeodam.global.exception.CustomErrorCode.*;
 import static com.hifive.yeodam.order.domain.OrderStatus.CANCELED;
 import static com.hifive.yeodam.order.domain.OrderStatus.FAILED;
 import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.USED;
-import static com.hifive.yeodam.user.exception.UserErrorResult.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +69,7 @@ public class OrderCommandService {
 
     private User getUserByEmail(Principal principal) {
         return userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 
     private void validateDetailStatus(List<OrderDetail> orderDetails) {

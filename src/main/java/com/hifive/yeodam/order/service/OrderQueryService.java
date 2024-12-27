@@ -9,7 +9,6 @@ import com.hifive.yeodam.order.dto.response.OrderListResponse;
 import com.hifive.yeodam.order.repository.OrderRepository;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
 import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +22,9 @@ import java.security.Principal;
 import java.util.List;
 
 import static com.hifive.yeodam.global.exception.CustomErrorCode.ORDER_NOT_FOUND;
+import static com.hifive.yeodam.global.exception.CustomErrorCode.USER_NOT_FOUND;
 import static com.hifive.yeodam.order.domain.OrderStatus.FAILED;
 import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.*;
-import static com.hifive.yeodam.user.exception.UserErrorResult.USER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -39,7 +38,7 @@ public class OrderQueryService {
     public OrderListResponse findOrders(int beforeLimit, int afterLimit, Principal principal) {
 
         User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         Pageable beforePageable = Pageable.ofSize(beforeLimit);
         Pageable afterPageable = Pageable.ofSize(afterLimit);
