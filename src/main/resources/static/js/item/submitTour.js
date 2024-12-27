@@ -8,20 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedGuideNames = [];
     let selectedImages = [];
 
-    // 가이드 데이터 가져오기
-    fetch("/api/sellers/guide-list")
-        .then(response => response.json())
-        .then(guides => {
-            guides.forEach(guide => {
-                const option = document.createElement("option");
-                option.value = guide.id;
-                option.textContent = guide.name;
-                guideSelect.appendChild(option);
-            });
-        })
-        .catch(error => console.error("가이드 데이터를 가져오는 중 오류 발생:", error));
-
-// 가이드 선택 이벤트
+    // 가이드 선택 이벤트
     guideSelect.addEventListener("change", () => {
         const selectedOptions = Array.from(guideSelect.selectedOptions);
         const newGuideIds = selectedOptions.map(option => parseInt(option.value));
