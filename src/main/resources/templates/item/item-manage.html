@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tour List</title>
+    <title>상품 목록</title>
     <link rel="stylesheet" href="/css/item-mange.css">
 </head>
 <body class="manage-body">
@@ -20,11 +20,10 @@
             <th>상품 소개</th>
             <th>선택 가이드</th>
             <th>금액</th>
-            <th>관리</th> <!-- 새로운 관리 열 -->
+            <th>관리</th>
         </tr>
         </thead>
         <tbody>
-        <!-- 여행 상품 목록 -->
         <tr th:each="tour, iterStat : ${tourList}">
             <td th:text="${iterStat.index + 1}"></td>
             <td th:text="${tour.tourName}"></td>
@@ -33,19 +32,55 @@
                 th:text="${tour.guideInTourResDtos.get(0).name}"></td>
             <td th:if="${tour.guideInTourResDtos.isEmpty()}">없음</td>
             <td th:text="${tour.tourPrice} + '원'"></td>
+
             <td>
                 <!-- 수정 버튼 -->
                 <a th:href="@{/tours/{id}/update(id=${tour.id})}">
                     <button class="edit-button">수정</button>
                 </a>
                 <!-- 삭제 버튼 -->
-                <form th:action="@{/tours/delete/{id}(id=${tour.id})}" method="post" style="display:inline;">
-                    <button type="submit" class="delete-button">삭제</button>
-                </form>
+                <button class="delete-button" th:value="${tour.id}">삭제</button>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // 모든 삭제 버튼 가져오기
+        const deleteButtons = document.querySelectorAll(".delete-button");
+
+        // 각 버튼에 클릭 이벤트 추가
+        deleteButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const tourId = button.value; // 버튼의 value 값으로 ID 가져오기
+
+                // 삭제 확인
+                const confirmDelete = confirm("정말로 삭제하시겠습니까?");
+                if (!confirmDelete) return;
+
+                // 삭제 요청 보내기
+                fetch(`/api/tours/${tourId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            alert("삭제가 완료되었습니다.");
+                            window.location.href = "/item/manage"; // 리다이렉트
+                        } else {
+                            alert("삭제 중 문제가 발생했습니다.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error during deletion:", error);
+                        alert("서버와의 통신 중 문제가 발생했습니다.");
+                    });
+            });
+        });
+    });
+</script>
 </body>
 </html>
