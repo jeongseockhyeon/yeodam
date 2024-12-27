@@ -9,13 +9,10 @@ import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -31,7 +28,7 @@ public class GuideController {
         Auth auth = (Auth) authentication.getPrincipal();
         Seller seller = sellerService.getSellerByAuth(auth);
         Guide savedGuide = guideService.createGuide(joinRequest, seller);
-        return "redirect:/guides/list";
+        return "redirect:/sellers/guide-list";
     }
 
     // 가이드 정보 수정
@@ -46,39 +43,14 @@ public class GuideController {
     @PutMapping("edit/{id}")
     public String updateGuide(@PathVariable Long id, @ModelAttribute @Valid GuideUpdateRequest updateRequest) {
         Guide updatedGuide = guideService.updateGuide(id, updateRequest);
-        return "redirect:/guides/list";
+        return "redirect:/sellers/guide-list";
     }
 
     // 가이드 삭제
     @DeleteMapping("delete/{id}")
     public String deleteGuide(@PathVariable Long id) {
         guideService.deleteGuide(id);
-        return "redirect:/guides/list";
-    }
-
-//    // 가이드 전체 조회 (사용 X)
-//    @GetMapping
-//    public ResponseEntity<List<Guide>> getAllGuides() {
-//        List<Guide> guides = guideService.getAllGuides();
-//        return ResponseEntity.ok(guides);
-//    }
-
-    // 가이드 단일 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Guide> getGuideById(@PathVariable Long id) {
-        Guide guide = guideService.getGuideById(id);
-        return ResponseEntity.ok(guide);
-    }
-
-    // 회사 아이디로 가이드 조회
-    @GetMapping("/list")
-    public String getGuidesByCompanyId(Authentication authentication, Model model) {
-        Auth auth = (Auth) authentication.getPrincipal();
-        Seller seller = sellerService.getSellerByAuth(auth);
-        List<Guide> guides = guideService.getGuidesByCompanyId(seller.getCompanyId());
-        model.addAttribute("companyId", seller.getCompanyId());
-        model.addAttribute("guides", guides);
-        return "seller/guide-list";
+        return "redirect:/sellers/guide-list";
     }
 
     // 가이드 등록 페이지로 이동

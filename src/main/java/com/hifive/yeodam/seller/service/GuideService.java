@@ -1,23 +1,24 @@
 package com.hifive.yeodam.seller.service;
 
+import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.seller.dto.GuideJoinRequest;
+import com.hifive.yeodam.seller.dto.GuideResDto;
 import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class GuideService {
 
+    private final SellerService sellerService;
     private final GuideRepository guideRepository;
-
-    public GuideService(GuideRepository guideRepository) {
-        this.guideRepository = guideRepository;
-    }
 
     // 가이드 등록
     @Transactional
@@ -60,7 +61,12 @@ public class GuideService {
     }
 
     // 회사 아이디로 가이드 조회
-    public List<Guide> getGuidesByCompanyId(Long companyId) {
-        return guideRepository.findBySellerCompanyId(companyId);
+    @Transactional(readOnly = true)
+    public List<GuideResDto> getGuideByCompany(Auth auth) {
+        Seller seller = sellerService.getSellerByAuth(auth);
+        List<Guide> guides =  guideRepository.findBySellerCompanyId(seller.getCompanyId());
+        return guides.stream()
+                .map(GuideResDto::new)
+                .toList();
     }
 }

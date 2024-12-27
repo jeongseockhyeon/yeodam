@@ -106,7 +106,7 @@
         const selectedGuidesText = document.getElementById("selectedGuidesText");
 
         // 서버에서 가이드 데이터를 가져옴
-        fetch("/api/sellers/guide-list")
+        fetch("/api/guides/list")
             .then((response) => response.json())
             .then((guides) => {
                 guides.forEach((guide) => {
