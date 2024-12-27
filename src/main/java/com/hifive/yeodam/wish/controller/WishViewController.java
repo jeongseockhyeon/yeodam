@@ -30,6 +30,6 @@ public class WishViewController {
 
         List<WishDto> wishes = wishService.getWish(auth.getId());
         model.addAttribute("wishes", wishes);
-        return "wishList";
+        return "wish/wish-list";
     }
 }
