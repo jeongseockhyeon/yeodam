@@ -2,7 +2,9 @@ package com.hifive.yeodam.orderdetail.domain;
 
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.domain.Order;
+import com.hifive.yeodam.reservation.entity.Reservation;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,7 +43,12 @@ public class OrderDetail {
     @Enumerated(STRING)
     private OrderDetailsStatus status;
 
-    private OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
+    @JoinColumn(name = "reservation_id")
+    @OneToOne(fetch = LAZY)
+    private Reservation reservation;
+
+    @Builder
+    public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
         this.item = item;
         this.count = count;
         this.price = price;
@@ -49,10 +56,11 @@ public class OrderDetail {
         this.bookerPhone = bookerPhone;
         this.message = message;
         this.status = PENDING;
+        this.reservation = reservation;
     }
 
-    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
-        return new OrderDetail(item, count, price, bookerName, bookerPhone, message);
+    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
+        return new OrderDetail(item, count, price, bookerName, bookerPhone, message, reservation);
     }
 
     public int getTotalPrice() {

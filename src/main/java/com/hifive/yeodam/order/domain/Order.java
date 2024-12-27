@@ -40,7 +40,7 @@ public class Order {
 
     private int totalPrice;
 
-    @OneToMany(mappedBy = "order", cascade = ALL)
+    @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @Setter

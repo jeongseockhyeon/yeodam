@@ -142,14 +142,16 @@
 
                 const parentDiv = btn.closest('.info');
                 const orderUid = parentDiv.querySelector('p span').textContent;
+
+                // 분할 취소를 할 수 없어서 필요 없음
                 // const itemId = Number(parentDiv.querySelector('input[type="hidden"]').value);
 
 
                 const cancelOrderDto = {
                     orderUid: orderUid,
                     // itemIds: [itemId],
-
                 }
+
                 // 주문 취소 요청
                 const cancelOrderResponse = await fetch(cancelOrderURL + orderUid, {
                     method: "PATCH",

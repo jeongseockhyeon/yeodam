@@ -1,34 +1,32 @@
 package com.hifive.yeodam.order.controller;
 
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
-import com.hifive.yeodam.order.dto.request.CancelOrderRequest;
 import com.hifive.yeodam.order.service.OrderCommandService;
 import com.hifive.yeodam.order.service.OrderQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderFormController {
 
     private final OrderQueryService orderQueryService;
-    private final OrderCommandService orderCommandService;
 
     @GetMapping("/order")
     public String orderForm(Model model) {
         AddOrderRequest.orderRequest orderRequests = new AddOrderRequest.orderRequest(1L, "제주도 푸른밤11", 2, 100, "길동이", "1234-1234", null);
-        AddOrderRequest.orderRequest orderRequests2 = new AddOrderRequest.orderRequest(2L, "제주도 푸른밤22", 2, 200, "길동이", "1234-1234", null);
+//        AddOrderRequest.orderRequest orderRequests2 = new AddOrderRequest.orderRequest(2L, "제주도 푸른밤22", 2, 200, "길동이", "1234-1234", null);
 
-        AddOrderRequest addOrderRequest = new AddOrderRequest(List.of(orderRequests, orderRequests2));
+        AddOrderRequest addOrderRequest = new AddOrderRequest(List.of(orderRequests/*, orderRequests2*/));
         model.addAttribute("addOrderRequest", addOrderRequest);
 
         return "order/order-form";
@@ -44,23 +42,10 @@ public class OrderController {
         return "order/order-list";
     }
 
-    @GetMapping("/orders/{orderUid}/retry")
+    @GetMapping("/orders/{orderUid}/continue")
     public String retryOrder(@PathVariable String orderUid, Model model) {
         AddOrderRequest addOrderRequest = orderQueryService.changeToAddOrderRequest(orderUid);
         model.addAttribute("addOrderRequest", addOrderRequest);
         return "order/order-form";
-    }
-
-    @ResponseBody
-    @PatchMapping("/api/orders/{orderUid}")
-    public ResponseEntity cancelOrder(@RequestBody CancelOrderRequest request) {
-        return ResponseEntity.ok(orderCommandService.cancelOrder(request));
-    }
-
-    @ResponseBody
-    @PostMapping("/api/orders")
-    public ResponseEntity order(Principal principal, @ModelAttribute(name = "addOrderRequests") AddOrderRequest requests) {
-        String orderUid = orderCommandService.order(requests, principal);
-        return ResponseEntity.ok(Map.of("orderUid", orderUid));
     }
 }

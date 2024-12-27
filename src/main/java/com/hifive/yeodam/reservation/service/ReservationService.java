@@ -50,9 +50,7 @@ public class ReservationService {
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
 
         Reservation reservation = Reservation.builder()
-                .user(user)
                 .guide(guide)
-                .item(item)
                 .reservationStartDate(reservationReqDto.getReservationStartDate())
                 .reservationEndDate(reservationReqDto.getReservationEndDate())
                 .build();
@@ -91,17 +89,5 @@ public class ReservationService {
         return reservations.stream()
                 .map(ReservationResDto::new)
                 .toList();
-    }
-
-    /*예약일 디데이*/
-    public String dDayCalculate(Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new CustomException(CustomErrorCode.RESERVATION_NOT_FOUND));
-        LocalDate toDay = LocalDate.now();
-        long dDay = ChronoUnit.DAYS.between(toDay, reservation.getReservationStartDate());
-        if(dDay > 0){
-            return "D-" + dDay;
-        }
-        return "완료";
     }
 }
