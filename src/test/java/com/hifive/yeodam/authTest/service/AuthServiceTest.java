@@ -1,8 +1,8 @@
-package com.hifive.yeodam.auth.service;
+package com.hifive.yeodam.authTest.service;
 
-import com.hifive.yeodam.auth.entity.RoleType;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
+import com.hifive.yeodam.auth.service.AuthService;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
@@ -54,11 +54,11 @@ public class AuthServiceTest {
         doReturn(true).when(authRepository).existsByEmail(email);
 
         //when
-        AuthException result = assertThrows(AuthException.class,
+        CustomException result = assertThrows(CustomException.class,
                 () -> target.addAuth(new JoinRequest(email, password, name, nickname, phone, birthDate, "M")));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.DUPLICATED_EMAIL_JOIN);
     }
 
     @Test
@@ -115,10 +115,10 @@ public class AuthServiceTest {
         doReturn(Optional.empty()).when(authRepository).findById(-1L);
 
         //when
-        AuthException result = assertThrows(AuthException.class, () -> target.getAuth(-1L));
+        CustomException result = assertThrows(CustomException.class, () -> target.getAuth(-1L));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.AUTH_NOT_FOUND);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.AUTH_NOT_FOUND);
     }
 
     @Test
@@ -142,10 +142,10 @@ public class AuthServiceTest {
         doReturn(Optional.empty()).when(authRepository).findById(-1L);
 
         //when
-        AuthException result = assertThrows(AuthException.class, () -> target.updateAuth(-1L, request));
+        CustomException result = assertThrows(CustomException.class, () -> target.updateAuth(-1L, request));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(AuthErrorResult.AUTH_NOT_FOUND);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.AUTH_NOT_FOUND);
     }
 
     @Test

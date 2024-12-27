@@ -17,6 +17,20 @@ public enum CustomErrorCode {
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품이 존재하지 않습니다"),
     GUIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 가이드가 존재하지 않습니다"),
 
+    /**
+     * 500 INTERNAL_SERVER_ERROR
+     * 서버 내부 오류
+     */
+    UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에 오류가 발생했습니다"),
+
+    // User 관련 ERROR
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
+    DUPLICATED_NICKNAME_JOIN(HttpStatus.BAD_REQUEST, "이미 등록된 닉네임입니다"),
+
+    // Auth 관련 ERROR
+    DUPLICATED_EMAIL_JOIN(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다"),
+    AUTH_NOT_FOUND(HttpStatus.NOT_FOUND, "인증정보를 찾을 수 없습니다"),
+
     // Wish 관련 ERROR
     WISH_NOT_FOUND(HttpStatus.NOT_FOUND, "찜 목록을 찾을 수 없습니다"),
     WISH_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "찜한 상품을 찾을 수 없습니다"),
@@ -24,7 +38,6 @@ public enum CustomErrorCode {
     WISH_ITEM_DELETE_FAILED(HttpStatus.BAD_REQUEST, "찜한 상품 삭제에 실패했습니다"),
 
     // Cart 관련 ERROR
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"),
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다"),
     CART_ITEM_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 장바구니에 존재하는 상품입니다"),

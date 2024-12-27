@@ -1,10 +1,9 @@
 package com.hifive.yeodam.seller.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.entity.RoleType;
-import com.hifive.yeodam.auth.exception.AuthException;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
@@ -21,10 +20,10 @@ public class SellerService {
     private final AuthRepository authRepository;
 
     // 판매자 등록
-    @Transactional(rollbackFor = AuthException.class)
+    @Transactional(rollbackFor = CustomException.class)
     public Seller createSeller(SellerJoinRequest joinRequest, Auth auth) {
         if(!authRepository.existsByEmail(joinRequest.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+            throw new CustomException(CustomErrorCode.DUPLICATED_EMAIL_JOIN);
         }
 
         Seller seller = Seller.builder()

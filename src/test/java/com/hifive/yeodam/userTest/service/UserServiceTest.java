@@ -1,16 +1,14 @@
-package com.hifive.yeodam.user.service;
+package com.hifive.yeodam.userTest.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.auth.repository.AuthRepository;
-import com.hifive.yeodam.user.exception.UserErrorResult;
-import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
+import com.hifive.yeodam.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,11 +53,11 @@ public class UserServiceTest {
         doReturn(true).when(userRepository).existsByNickname(nickname);
 
         //when
-        UserException result = assertThrows(UserException.class,
+        CustomException result = assertThrows(CustomException.class,
                 () -> target.addUser(joinRequest, auth()));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.DUPLICATED_NICKNAME_JOIN);
     }
 
     @Test
@@ -117,10 +115,10 @@ public class UserServiceTest {
         doReturn(Optional.empty()).when(userRepository).findById(-1L);
 
         //when
-        UserException result = assertThrows(UserException.class, () -> target.getUser(-1L));
+        CustomException result = assertThrows(CustomException.class, () -> target.getUser(-1L));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.USER_NOT_FOUND);
     }
 
     @Test
@@ -142,10 +140,10 @@ public class UserServiceTest {
         doReturn(Optional.empty()).when(userRepository).findById(-1L);
 
         //when
-        UserException result = assertThrows(UserException.class, () -> target.updateUser(-1L, new UserUpdateRequest()));
+        CustomException result = assertThrows(CustomException.class, () -> target.updateUser(-1L, new UserUpdateRequest()));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.USER_NOT_FOUND);
     }
     
     @Test
@@ -168,10 +166,10 @@ public class UserServiceTest {
         doReturn(Optional.empty()).when(userRepository).findById(-1L);
 
         //when
-        UserException result = assertThrows(UserException.class, () -> target.deleteUser(-1L));
+        CustomException result = assertThrows(CustomException.class, () -> target.deleteUser(-1L));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.USER_NOT_FOUND);
     }
 
     @Test
@@ -220,10 +218,10 @@ public class UserServiceTest {
         doReturn(Optional.empty()).when(userRepository).findByAuthId(auth.getId());
 
         //when
-        UserException result = assertThrows(UserException.class, () -> target.getUserByAuth(auth));
+        CustomException result = assertThrows(CustomException.class, () -> target.getUserByAuth(auth));
 
         //then
-        assertThat(result.getErrorResult()).isEqualTo(UserErrorResult.USER_NOT_FOUND);
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.USER_NOT_FOUND);
     }
 
     @Test

@@ -14,8 +14,6 @@ import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.user.exception.UserErrorResult;
-import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +37,7 @@ public class ReservationService {
 
         /*유저 정보*/
         User user = userRepository.findByAuthId(auth.getId())
-                .orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         /*가이드 정보*/
         Guide guide = guideRepository.findById(reservationReqDto.getGuideId())
@@ -86,7 +84,7 @@ public class ReservationService {
     /*유저별 예약 정보 조회*/
     public List<ReservationResDto> getReservationsByUser(Auth auth) {
         User user = userRepository.findByAuthId(auth.getId())
-                .orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
         List<Reservation> reservations = reservationRepository.findReservationByUser(user);
         return reservations.stream()
                 .map(ReservationResDto::new)

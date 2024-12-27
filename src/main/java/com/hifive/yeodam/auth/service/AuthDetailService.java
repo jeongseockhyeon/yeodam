@@ -2,6 +2,8 @@ package com.hifive.yeodam.auth.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +23,6 @@ public class AuthDetailService implements UserDetailsService {
 
         Optional<Auth> optionalAuth = authRepository.findByEmail(email);
 
-        return optionalAuth.orElseThrow(() -> new IllegalArgumentException(email + " not found"));
+        return optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
     }
 }
