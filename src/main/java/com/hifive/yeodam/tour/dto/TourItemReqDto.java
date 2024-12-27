@@ -37,7 +37,7 @@ public class TourItemReqDto {
     @NotNull
     private final String categoryIdList;
 
-    private final List<Long> guideIdList;
+    private final String guideIdList;
 
     private final List<MultipartFile> tourImages;
 
@@ -48,7 +48,7 @@ public class TourItemReqDto {
                           String tourPrice,
                           String maximum,
                           String categoryIdList,
-                          List<Long> guideIdList,
+                          String guideIdList,
                           List<MultipartFile> tourImages) {
         this.tourName = tourName;
         this.tourDesc = tourDesc;

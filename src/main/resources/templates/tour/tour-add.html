@@ -5,6 +5,7 @@
     <title>여행 상품 등록</title>
     <link rel="stylesheet" href="/css/tour-add.css">
     <link rel="stylesheet" href="/css/category-check-box.css">
+    <link rel="stylesheet" href="/css/guide-list.css">
     <style>
         #previewContainer {
             display: flex;
@@ -59,6 +60,20 @@
                 <label for="tourPrice">여행 가격</label>
                 <input type="number" id="tourPrice" name="tourPrice" required>
 
+                <!-- 선택된 가이드 표시 영역 -->
+                <div id="selectedGuidesContainer">
+                    <h4>선택된 가이드</h4>
+                    <p id="selectedGuidesText">선택된 가이드가 없습니다.</p>
+                </div>
+
+                <div class="dropdown">
+                    <label for="guideSelect">가이드 선택</label>
+                    <select id="guideSelect" name="guides" multiple>
+                        <!-- 서버에서 동적으로 옵션 추가 -->
+                    </select>
+                </div>
+
+
                 <div id="categoryCheckBox">
                     <h3>카테고리 선택</h3>
                 </div>
@@ -86,6 +101,47 @@
 <script src="/js/item/submitTour.js"></script>
 <script src="/js/item/showTabs.js"></script>
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const guideSelect = document.getElementById("guideSelect");
+        const selectedGuidesText = document.getElementById("selectedGuidesText");
+
+        // 서버에서 가이드 데이터를 가져옴
+        fetch("/api/sellers/guide-list")
+            .then((response) => response.json())
+            .then((guides) => {
+                guides.forEach((guide) => {
+                    const option = document.createElement("option");
+                    option.value = guide.id;
+                    option.textContent = guide.name;
+                    guideSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error("가이드 데이터를 가져오는 중 오류 발생:", error);
+            });
+
+        // 선택된 가이드들을 저장할 배열
+        let selectedGuides = [];
+
+        // 가이드 선택 시 이벤트 처리
+        guideSelect.addEventListener("change", () => {
+            // 선택된 가이드들의 값을 가져옴
+            const selectedOptions = Array.from(guideSelect.selectedOptions);
+
+            // 선택된 가이드 배열 초기화
+            selectedGuides = selectedOptions.map(option => option.textContent);
+
+            // 선택된 가이드 배열이 비어있지 않으면 쉼표로 구분된 문자열로 표시
+            if (selectedGuides.length > 0) {
+                selectedGuidesText.textContent = selectedGuides.join(", ");
+            } else {
+                selectedGuidesText.textContent = "선택된 가이드가 없습니다.";
+            }
+        });
+    });
+
+</script>
+<script>
     const tourImagesInput = document.getElementById('tourImages');
     const previewContainer = document.getElementById('previewContainer');
     let selectedImages = []; // 업로드된 파일 배열
@@ -98,10 +154,8 @@
         selectedImages = [...selectedImages, ...files];
 
         // 중복 제거
-        const uniqueFiles = Array.from(new Set(selectedImages.map(file => file.name)))
+        selectedImages = Array.from(new Set(selectedImages.map(file => file.name)))
             .map(name => selectedImages.find(file => file.name === name));
-
-        selectedImages = uniqueFiles;
 
         // 미리보기 갱신
         updatePreview();
