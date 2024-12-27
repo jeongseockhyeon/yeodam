@@ -1,7 +1,6 @@
 package com.hifive.yeodam.order.controller;
 
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
-import com.hifive.yeodam.order.service.OrderCommandService;
 import com.hifive.yeodam.order.service.OrderQueryService;
 import com.hifive.yeodam.orderdetail.service.OrderDetailQueryService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +27,8 @@ public class OrderFormController {
     public String orderForm(Model model) {
         LocalDate start = LocalDate.of(2024, 12, 31);
         LocalDate end = LocalDate.of(2025, 1, 3);
-        AddOrderRequest.orderRequest orderRequests = new AddOrderRequest.orderRequest(1L, "제주도 푸른밤11", 2, 100, "길동이", "1234-1234", null, 1L,start, end);
-        AddOrderRequest.orderRequest orderRequests2 = new AddOrderRequest.orderRequest(2L, "제주도 푸른밤22", 2, 200, "길동이", "1234-1234", null,2L, start,end);
+        AddOrderRequest.orderRequest orderRequests = new AddOrderRequest.orderRequest(1L, "제주도 푸른밤11", 2, 100, "길동이", "1234-1234", null, 1L, start, end);
+        AddOrderRequest.orderRequest orderRequests2 = new AddOrderRequest.orderRequest(2L, "제주도 푸른밤22", 2, 200, "길동이", "1234-1234", null, 2L, start, end);
         AddOrderRequest addOrderRequest = new AddOrderRequest(List.of(orderRequests/*, orderRequests2*/));
         model.addAttribute("addOrderRequest", addOrderRequest);
 

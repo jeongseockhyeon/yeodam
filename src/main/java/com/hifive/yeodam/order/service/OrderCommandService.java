@@ -8,7 +8,7 @@ import com.hifive.yeodam.order.dto.response.CancelOrderResponse;
 import com.hifive.yeodam.order.dto.response.CreateOrderResponse;
 import com.hifive.yeodam.order.repository.OrderRepository;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
-import com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus;
+import com.hifive.yeodam.orderdetail.domain.OrderDetailStatus;
 import com.hifive.yeodam.orderdetail.service.OrderDetailCommandService;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.repository.UserRepository;
@@ -22,7 +22,7 @@ import java.util.List;
 import static com.hifive.yeodam.global.exception.CustomErrorCode.*;
 import static com.hifive.yeodam.order.domain.OrderStatus.CANCELED;
 import static com.hifive.yeodam.order.domain.OrderStatus.FAILED;
-import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.USED;
+import static com.hifive.yeodam.orderdetail.domain.OrderDetailStatus.USED;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +62,7 @@ public class OrderCommandService {
         validateDetailStatus(orderDetails);
 
         orderDetails.forEach(od -> {
-            od.changeStatus(OrderDetailsStatus.CANCELED);
+            od.changeStatus(OrderDetailStatus.CANCELED);
             od.getItem().addStock();
         });
 

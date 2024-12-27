@@ -48,7 +48,7 @@ public class OrderDetailQueryService {
     }
 
     private <T> SliceImpl<T> getOrderResponses(User user, Pageable pageable, List<OrderDetailStatus> statuses,
-            Function<OrderDetail, T> responseMapper) {
+                                               Function<OrderDetail, T> responseMapper) {
 
         Slice<OrderDetail> page = orderDetailRepository.findOrderByDetailStatus(statuses, FAILED, user, pageable);
 
