@@ -3,6 +3,7 @@ package com.hifive.yeodam.order.controller;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.order.service.OrderCommandService;
 import com.hifive.yeodam.order.service.OrderQueryService;
+import com.hifive.yeodam.orderdetail.service.OrderDetailQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import java.util.List;
 public class OrderFormController {
 
     private final OrderQueryService orderQueryService;
+    private final OrderDetailQueryService orderDetailQueryService;
 
     @GetMapping("/order")
     public String orderForm(Model model) {
@@ -40,7 +42,9 @@ public class OrderFormController {
             @RequestParam(name = "afterLimit", defaultValue = "5") int afterLimit,
             Principal principal, Model model) {
 
-        model.addAttribute("orderListResponse", orderQueryService.findOrders(beforeLimit, afterLimit, principal));
+        model.addAttribute("orderDetailsResponse", orderDetailQueryService
+                .findOrderDetails(beforeLimit, afterLimit, principal));
+
         return "order/order-list";
     }
 

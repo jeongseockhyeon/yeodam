@@ -9,7 +9,7 @@ import com.hifive.yeodam.order.dto.response.CreateOrderResponse;
 import com.hifive.yeodam.order.repository.OrderRepository;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
 import com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus;
-import com.hifive.yeodam.orderdetail.service.OrderDetailService;
+import com.hifive.yeodam.orderdetail.service.OrderDetailCommandService;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +29,14 @@ import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.USED;
 public class OrderCommandService {
 
     private final OrderRepository orderRepository;
-    private final OrderDetailService orderDetailService;
+    private final OrderDetailCommandService orderDetailCommandService;
     private final UserRepository userRepository;
 
     @Transactional
     public CreateOrderResponse order(AddOrderRequest request, Principal principal) {
 
         User user = getUserByEmail(principal);
-        List<OrderDetail> orderDetails = orderDetailService.insertOrderDetails(request);
+        List<OrderDetail> orderDetails = orderDetailCommandService.insertOrderDetails(request);
 
         int totalPrice = orderDetails.stream()
                 .mapToInt(OrderDetail::getTotalPrice)

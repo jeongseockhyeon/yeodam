@@ -23,7 +23,7 @@ import static com.hifive.yeodam.order.dto.request.AddOrderRequest.orderRequest;
 
 @Service
 @RequiredArgsConstructor
-public class OrderDetailService {
+public class OrderDetailCommandService {
 
     private final OrderDetailRepository orderDetailRepository;
     private final ReservationRepository reservationRepository;

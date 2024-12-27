@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class OrderListResponse {
+public class OrderDetailsResponse {
 
-    Slice<OrderListResponse.BeforeOrderResponse> beforeResponse;
-    Slice<OrderListResponse.AfterOrderResponse> afterResponse;
+    Slice<OrderDetailsResponse.BeforeOrderResponse> beforeResponse;
+    Slice<OrderDetailsResponse.AfterOrderResponse> afterResponse;
 
-    public OrderListResponse(Slice<BeforeOrderResponse> beforeResponse, Slice<AfterOrderResponse> afterResponse) {
+    public OrderDetailsResponse(Slice<BeforeOrderResponse> beforeResponse, Slice<AfterOrderResponse> afterResponse) {
         this.beforeResponse = beforeResponse;
         this.afterResponse = afterResponse;
     }
