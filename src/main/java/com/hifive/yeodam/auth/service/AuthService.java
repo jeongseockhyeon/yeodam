@@ -2,16 +2,14 @@ package com.hifive.yeodam.auth.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.entity.RoleType;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
-import com.hifive.yeodam.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,7 @@ public class AuthService {
     public Auth addAuth(JoinRequest request) {
 
         if (authRepository.existsByEmail(request.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+            throw new CustomException(CustomErrorCode.DUPLICATED_EMAIL_JOIN);
         }
 
         Auth auth = Auth.builder()
@@ -46,7 +44,7 @@ public class AuthService {
     @Transactional
     public Auth addAuth(SellerJoinRequest joinRequest) {
         if (authRepository.existsByEmail(joinRequest.getEmail())) {
-            throw new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN);
+            throw new CustomException(CustomErrorCode.DUPLICATED_EMAIL_JOIN);
         }
 
         Auth auth = Auth.builder()
@@ -62,7 +60,7 @@ public class AuthService {
     public Auth updateAuth(Long id, UserUpdateRequest request) {
 
         Optional<Auth> optionalAuth = authRepository.findById(id);
-        Auth auth = optionalAuth.orElseThrow(() -> new AuthException(AuthErrorResult.AUTH_NOT_FOUND));
+        Auth auth = optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
 
         auth.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -73,7 +71,7 @@ public class AuthService {
     public void updateAuth(Long id, SellerUpdateRequest updateRequest) {
 
         Optional<Auth> optionalAuth = authRepository.findById(id);
-        Auth auth = optionalAuth.orElseThrow(() -> new AuthException(AuthErrorResult.AUTH_NOT_FOUND));
+        Auth auth = optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
 
         auth.update(passwordEncoder.encode(updateRequest.getPassword()));
     }
@@ -96,6 +94,6 @@ public class AuthService {
 
         Optional<Auth> optionalAuth = authRepository.findById(id);
 
-        return optionalAuth.orElseThrow(() -> new AuthException(AuthErrorResult.AUTH_NOT_FOUND));
+        return optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
     }
 }

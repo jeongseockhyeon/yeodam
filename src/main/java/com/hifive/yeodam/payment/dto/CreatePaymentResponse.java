@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class PaymentResponse {
+public class CreatePaymentResponse {
     private String orderUid;
     private String username;
     private String phone;
@@ -13,7 +13,7 @@ public class PaymentResponse {
     private int price;
 
     @Builder
-    public PaymentResponse(String orderUid, String username,String phone, String email, String itemName, int price) {
+    public CreatePaymentResponse(String orderUid, String username, String phone, String email, String itemName, int price) {
         this.orderUid = orderUid;
         this.username = username;
         this.phone = phone;

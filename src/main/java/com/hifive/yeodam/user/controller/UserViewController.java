@@ -5,14 +5,12 @@ import com.hifive.yeodam.auth.service.AuthService;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
-import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -35,7 +33,7 @@ public class UserViewController {
 
         model.addAttribute("joinRequest", new JoinRequest());
 
-        return "user/join";
+        return "user-join";
     }
 
     @GetMapping("/logout")
@@ -61,7 +59,7 @@ public class UserViewController {
 
         model.addAttribute("user", userResponse);
 
-        return "user/detail";
+        return "user-detail";
     }
 
     @GetMapping("/edit")
@@ -81,7 +79,7 @@ public class UserViewController {
 
         model.addAttribute("userUpdateRequest", userUpdateRequest);
 
-        return "user/edit";
+        return "user-edit";
     }
 
     @PutMapping
@@ -91,7 +89,7 @@ public class UserViewController {
         userService.checkDuplicatedNickname(request, result);
 
         if(result.hasErrors()) {
-            return "user/edit";
+            return "user-edit";
         }
 
         UserResponse userResponse = userService.getUserByAuth(auth);

@@ -2,9 +2,9 @@ package com.hifive.yeodam.sellerTest.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.entity.RoleType;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
@@ -77,11 +77,11 @@ class SellerServiceTest {
         when(authRepository.existsByEmail("email@email.com")).thenReturn(false);
 
         // when & then
-        AuthException exception = assertThrows(AuthException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             sellerService.createSeller(joinRequest, auth);
         });
 
-        assertEquals(AuthErrorResult.DUPLICATED_EMAIL_JOIN, exception.getErrorResult());
+        assertEquals(CustomErrorCode.DUPLICATED_EMAIL_JOIN, exception.getCustomErrorCode());
         verify(authRepository, times(1)).existsByEmail(anyString());
         verify(sellerRepository, never()).save(any(Seller.class));
     }

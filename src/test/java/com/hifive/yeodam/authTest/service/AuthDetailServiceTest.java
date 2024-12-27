@@ -1,7 +1,8 @@
-package com.hifive.yeodam.auth.service;
+package com.hifive.yeodam.authTest.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.auth.service.AuthDetailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

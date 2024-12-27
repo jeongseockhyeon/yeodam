@@ -4,43 +4,42 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
 public class TourItemReqDto {
 
 
-    @NotBlank
+    @NotBlank(message = "여행 상품명은 입력해주세요")
     @Size(max = 25)
-    private String tourName;
+    private final String tourName;
 
-    @NotBlank
-    private String tourDesc;
 
-    @NotBlank
+    @NotBlank(message = "여행 상품의 설명을 입력해주세요")
+    private final String tourDesc;
+
+    @NotBlank(message = "기간을 입력해주세요")
     @Size(max = 25)
-    private String tourPeriod;
+    private final String tourPeriod;
 
-    @NotBlank
+    @NotBlank(message = "지역을 입력해주세요")
     @Size(max = 25)
-    private String tourRegion;
+    private final String tourRegion;
 
     @NotNull
-    private String tourPrice;
+    private final String tourPrice;
 
     @NotNull
-    private String maximum;
+    private final String maximum;
 
     @NotNull
-    private String categoryIdList;
+    private final String categoryIdList;
 
-    private List<Long> guideIdList;
+    private final String guideIdList;
 
-    private List<MultipartFile> tourImages;
+    private final List<MultipartFile> tourImages;
 
     public TourItemReqDto(String tourName,
                           String tourDesc,
@@ -49,7 +48,7 @@ public class TourItemReqDto {
                           String tourPrice,
                           String maximum,
                           String categoryIdList,
-                          List<Long> guideIdList,
+                          String guideIdList,
                           List<MultipartFile> tourImages) {
         this.tourName = tourName;
         this.tourDesc = tourDesc;

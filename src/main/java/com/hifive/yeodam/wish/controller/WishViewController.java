@@ -1,8 +1,8 @@
 package com.hifive.yeodam.wish.controller;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.wish.dto.WishDto;
 import com.hifive.yeodam.wish.service.WishService;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +25,11 @@ public class WishViewController {
                            @AuthenticationPrincipal Auth auth
     ) {
         if (auth == null) {
-            throw new AuthException(AuthErrorResult.AUTH_NOT_FOUND);
+            throw new CustomException(CustomErrorCode.AUTH_NOT_FOUND);
         }
 
         List<WishDto> wishes = wishService.getWish(auth.getId());
         model.addAttribute("wishes", wishes);
-        return "wishList";
+        return "wish/wish-list";
     }
 }

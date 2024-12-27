@@ -1,8 +1,7 @@
+/*
 package com.hifive.yeodam.reservation.controller;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.reservation.dto.ReservationReqDto;
-import com.hifive.yeodam.reservation.dto.ReservationResDto;
 import com.hifive.yeodam.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,3 +48,4 @@ public class ReservationApiController {
         return ResponseEntity.ok(reservationService.dDayCalculate(id));
     }
 }
+*/

@@ -1,12 +1,12 @@
 package com.hifive.yeodam.user.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.user.exception.UserErrorResult;
-import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class UserService {
     public UserResponse addUser(JoinRequest request, Auth auth) {
 
         if (userRepository.existsByNickname(request.getNickname())) {
-            throw new UserException(UserErrorResult.DUPLICATED_NICKNAME_JOIN);
+            throw new CustomException(CustomErrorCode.DUPLICATED_NICKNAME_JOIN);
         }
 
         User user = User.builder()
@@ -72,7 +72,7 @@ public class UserService {
     public UserResponse getUser(Long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+        User user = optionalUser.orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         return new UserResponse(user);
     }
@@ -81,7 +81,7 @@ public class UserService {
     public UserResponse updateUser(Long id, UserUpdateRequest request) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+        User user = optionalUser.orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         user.update(request.getName(), request.getNickname(), request.getPhone());
 
@@ -91,7 +91,7 @@ public class UserService {
     public void deleteUser(Long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+        User user = optionalUser.orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         userRepository.delete(user);
     }
@@ -100,7 +100,7 @@ public class UserService {
 
         Optional<User> optionalUser = userRepository.findByAuthId(auth.getId());
 
-        User user = optionalUser.orElseThrow(() -> new UserException(UserErrorResult.USER_NOT_FOUND));
+        User user = optionalUser.orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         return new UserResponse(user);
     }
