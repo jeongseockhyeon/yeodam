@@ -193,6 +193,7 @@ public class TourItemService {
 
         //가이드 추가
         List<Long> addGuideIdList = convertToList(tourItemUpdateReqDto.getAddGuideIds());
+        log.info("addGuideIdList: {}", addGuideIdList);
         if(isNotNullCheck(addGuideIdList)){
             for(Long guideId : addGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
@@ -207,11 +208,12 @@ public class TourItemService {
 
         //가이드 삭제
         List<Long> removeGuideIdList = convertToList(tourItemUpdateReqDto.getRemoveGuideIds());
+        log.info("removeGuideIdList: {}", removeGuideIdList);
         if(isNotNullCheck(removeGuideIdList)){
-            for(Long guideId : removeGuideIdList){
-                Guide guide = guideRepository.findById(guideId)
-                        .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
-                tourGuideRepository.deleteByGuide(guide);
+            List<Guide> guides = guideRepository.findAllById(removeGuideIdList);
+            for(Guide guide : guides){
+                log.info("deleting guideName: {}", guide.getName());
+                tourGuideRepository.deleteByTourAndGuide(targetTour,guide);
             }
         }
         //상품 이미지 추가
