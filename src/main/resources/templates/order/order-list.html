@@ -76,7 +76,7 @@
             <div class="card-content">
                 <div class="card-header">
                     <h3>예약 확정</h3>
-                    <p class="d-day">D-12</p>
+                    <p class="d-day" th:text="|D-${before.getDDay()}|">D-12</p>
                 </div>
                 <hr/>
                 <p th:text="${before.itemName}">[제주] 투어 제목 우리 투어는 누구한테 딱!! 누구랑 같이~</p>
@@ -88,7 +88,7 @@
             <p>결제번호: <span th:text="${before.orderUid}">432JDF23T1G</span></p>
             <p>예약자: <span th:text="${before.bookerName}">아무개</span></p>
             <h4>결제 정보</h4>
-            <p>결제 일시: <span>2024.12.12</span></p>
+            <p>결제 일시: <span th:text="${#temporals.format(before.paymentAt, 'yyyy년 MM월 dd일 hh시 mm분')}">2024.12.12</span></p>
             <p>결제 수단: <span th:text="${before.cardName}">카카오페이</span></p>
             <input type="hidden" th:value="${before.itemId}">
             <button class="cancel-btn">예약취소</button>
@@ -140,12 +140,15 @@
         btn.addEventListener('click', async () => {
             try {
 
+                if (!confirm("정말 취소하시겠습니까?")) {
+                    return;
+                }
+
                 const parentDiv = btn.closest('.info');
                 const orderUid = parentDiv.querySelector('p span').textContent;
 
                 // 분할 취소를 할 수 없어서 필요 없음
                 // const itemId = Number(parentDiv.querySelector('input[type="hidden"]').value);
-
 
                 const cancelOrderDto = {
                     orderUid: orderUid,

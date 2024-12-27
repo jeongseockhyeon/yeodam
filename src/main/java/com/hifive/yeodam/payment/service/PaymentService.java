@@ -79,9 +79,7 @@ public class PaymentService {
     public void paymentFail(PaymentRequestCallBack request) {
 
         Order order = findOrderByUid(request.getOrderUid());
-
         order.chanceOrderStatus(OrderStatus.FAILED);
-
         order.getOrderDetails()
                 .forEach(od -> od.getItem().addStock());
 
@@ -101,7 +99,7 @@ public class PaymentService {
             throw new CustomException(PAYMENT_CANCELED);
         }
 
-        cancelPayment(request.getOrderUid(), request.getTotalPrice());
+        cancelPayment(payment.getPaymentUid(), request.getTotalPrice());
         payment.cancel();
     }
 
@@ -135,6 +133,7 @@ public class PaymentService {
         }
 
         cancelPayment(iamportResponse.getResponse().getImpUid(), iamportPrice);
+
         return false;
     }
 

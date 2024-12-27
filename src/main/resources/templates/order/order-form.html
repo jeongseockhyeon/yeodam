@@ -119,10 +119,21 @@
             <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].price}">
             <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].itemId}">
             <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].count}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].guideId}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].startDate}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].endDate}">
 
             <h2 class="text-start item-title" th:text="${request.name}">투어 제목</h2>
+            <div class="text-start mt-3 mb-3">
+                <p>날짜:
+                <span th:text="${#temporals.format(request.startDate, 'yyyy년 MM월 dd일')}">시작일</span> ~
+                <span th:text="${#temporals.format(request.endDate, 'yyyy년 MM월 dd일')}">종료일</span>
+                </p>
+            </div>
             <p class="text-start">인원: <span th:text="${request.count} + '명'">2명</span></p>
-            <p class="text-start">비용: <span th:text="${#numbers.formatInteger(request.price, 3, 'COMMA')} + '원'">100원</span></p>
+            <p class="text-start">비용:
+                <span th:text="${#numbers.formatInteger(request.price * request.count, 3, 'COMMA')} + '원'">100원</span>
+            </p>
 
             <!-- 예약자 정보 -->
             <div class="input-field">
@@ -176,8 +187,8 @@
                 body: data
             })).json();
 
-            if (responseJson.code === "ITEM_NOT_FOUND") {
-                alert("해당 상품이 존재하지 않습니다.");
+            if (responseJson.statusCode === 400 || responseJson.statusCode === 400) {
+                alert(responseJson.message);
                 return;
             }
 
@@ -187,6 +198,10 @@
                 method: "POST",
             })).json();
 
+            if (paymentData.statusCode === 400 || paymentData.statusCode === 404) {
+                alert(paymentData.message);
+                return;
+            }
 
             var IMP = window.IMP;
             IMP.init('imp65451236'); // 아임포트 가맹점 식별코드
