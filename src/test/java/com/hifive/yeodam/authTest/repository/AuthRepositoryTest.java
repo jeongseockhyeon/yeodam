@@ -1,6 +1,7 @@
-package com.hifive.yeodam.auth.repository;
+package com.hifive.yeodam.authTest.repository;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.global.config.QueryDSLConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

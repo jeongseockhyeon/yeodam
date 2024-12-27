@@ -1,8 +1,6 @@
 package com.hifive.yeodam.wish.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
@@ -83,10 +81,10 @@ public class WishService {
     private User getUserByAuthId(Long authId) {
         //Auth 검증
         Auth auth = authRepository.findById(authId)
-                .orElseThrow(() -> new AuthException(AuthErrorResult.AUTH_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
         //User 검증
         return userRepository.findByAuthId(authId)
-                .orElseThrow(() -> new AuthException(AuthErrorResult.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
     }
 
     //Item 조회 Private 메소드

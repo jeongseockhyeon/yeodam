@@ -1,17 +1,16 @@
-package com.hifive.yeodam.user.controller;
+package com.hifive.yeodam.userTest.controller;
 
 import com.google.gson.*;
-import com.hifive.yeodam.advice.GlobalExceptionHandler;
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.service.AuthService;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
+import com.hifive.yeodam.global.exception.CustomExceptionHandler;
+import com.hifive.yeodam.user.controller.UserApiController;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.user.exception.UserErrorResult;
-import com.hifive.yeodam.user.exception.UserException;
 import com.hifive.yeodam.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +65,7 @@ public class UserApiControllerTest {
     @BeforeEach
     public void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(target)
-                .setControllerAdvice(new GlobalExceptionHandler())
+                .setControllerAdvice(new CustomExceptionHandler())
                 .build();
 
         // Gson 이 LocalDate 를 인식할 수 있게 해줌
@@ -197,7 +196,7 @@ public class UserApiControllerTest {
     public void 회원상세조회실패_회원이존재하지않음() throws Exception{
         //given
         String url = "/api/users/-1";
-        doThrow(new UserException(UserErrorResult.USER_NOT_FOUND))
+        doThrow(new CustomException(CustomErrorCode.USER_NOT_FOUND))
                 .when(userService).getUser(-1L);
 
         //when
@@ -231,7 +230,7 @@ public class UserApiControllerTest {
         //given
         String url = "/api/users/-1";
 
-        doThrow(new UserException(UserErrorResult.USER_NOT_FOUND))
+        doThrow(new CustomException(CustomErrorCode.USER_NOT_FOUND))
                 .when(userService).updateUser(any(Long.class), any(UserUpdateRequest.class));
 
         //when
@@ -277,7 +276,7 @@ public class UserApiControllerTest {
         //given
         String url = "/api/users/-1";
 
-        doThrow(new UserException(UserErrorResult.USER_NOT_FOUND))
+        doThrow(new CustomException(CustomErrorCode.USER_NOT_FOUND))
                 .when(userService)
                 .deleteUser(-1L);
 
