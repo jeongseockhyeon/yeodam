@@ -19,12 +19,12 @@
 
     .error-message {
       color: red;
-      font-size: 16px;
+      font-size: 0.8rem;
     }
 
     .success-message {
       color: green;
-      font-size: 16px;
+      font-size: 0.8rem;
     }
   </style>
 </head>
@@ -98,6 +98,8 @@
       </div>
       <input name="gender" type="hidden" th:value="*{gender}"/>
     </div>
+
+    <br>
 
     <div class="d-flex justify-content-center align-items-center">
       <button type="submit" id="submitButton" class="btn btn-primary mx-3" disabled>수정</button>

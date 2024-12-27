@@ -54,8 +54,9 @@
     </style>
 </head>
 <body>
-<form th:action="@{/guides/edit/{id}(id=${guide.guideId})}" method="post">
+<form th:action="@{/api/guides/edit/{id}(id=${guide.guideId})}" method="post" id="guideEditForm">
     <input type="hidden" name="_method" value="put">
+    <input type="hidden" id="guideId" name="guideId" th:value="${guide.guideId}">
 
     <h1>가이드 정보 수정</h1>
     <div class="input-container">
@@ -63,14 +64,14 @@
     </div>
 
     <div class="input-container">
-        <input type="date" id="birth" name="birth" th:value="${guide.birth}" readonly>
+        <input type="date" id="birth" name="birth" th:value="${guide.birth}" disabled>
         <input type="hidden" name="birth" th:value="${guide.birth}">
     </div>
 
     <div class="input-container radio-group">
-        <input type="radio" id="male" name="gender" value="M" th:checked="${guide.gender == 'M'}">
+        <input type="radio" id="male" name="gender" value="M" th:checked="${guide.gender == 'M'}" disabled>
         <label for="male">남자</label>
-        <input type="radio" id="female" name="gender" value="F" th:checked="${guide.gender == 'F'}">
+        <input type="radio" id="female" name="gender" value="F" th:checked="${guide.gender == 'F'}" disabled>
         <label for="female">여자</label>
         <input type="hidden" name="gender" th:value="${guide.gender}">
     </div>
@@ -85,5 +86,8 @@
 
     <button type="submit">수정</button>
 </form>
+
+<script src="/js/seller/guideEdit.js"></script>
+
 </body>
 </html>

@@ -100,6 +100,6 @@ function updateJoinButtonState() {
 
 const checkCancel = () => {
     if (window.confirm("회원가입을 취소하시겠습니까?")) {
-        location.href='/login';
+        location.href='/';
     }
 }
