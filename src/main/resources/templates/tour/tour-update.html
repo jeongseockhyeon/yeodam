@@ -92,12 +92,6 @@
     let selectedImages = []; // 업로드된 파일 배열
     let existingImages = []; // 서버에서 가져온 기존 이미지 배열
 
-    // 기존 이미지를 설정하는 함수
-    function setExistingImages(images) {
-        existingImages = images;
-        updatePreview();
-    }
-
     // 파일 입력 이벤트
     tourImagesInput.addEventListener('change', () => {
         // 새로운 파일 추가
