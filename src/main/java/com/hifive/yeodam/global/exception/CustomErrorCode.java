@@ -46,16 +46,17 @@ public enum CustomErrorCode {
     INVALID_ITEM_COUNT(HttpStatus.BAD_REQUEST, "수량은 1개 이상이어야 합니다"),
 
     //주문 관련 ERROR
-    NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "해당 상품의 재고가 없습니다"),
-    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문이 존재하지 않습니다"),
-    ORDER_CAN_NOT_CANCEL(HttpStatus.BAD_REQUEST, "해당 주문을 취소할 수 없습니다"),
+    NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "해당 상품의 재고가 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문이 존재하지 않습니다."),
+    ORDER_CAN_NOT_CANCEL(HttpStatus.BAD_REQUEST, "해당 주문을 취소할 수 없습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
-    PAYMENT_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다"),
-    PAYMENT_CANCELED(HttpStatus.BAD_REQUEST, "결제 취소에 실패했습니다"),
-    I_AM_PORT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "아이엠 포트 결제 조회에 실패했습니다"),
+    PAYMENT_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다."),
+    PAYMENT_CANCELED(HttpStatus.BAD_REQUEST, "결제 취소에 실패했습니다."),
+    I_AM_PORT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "아이엠 포트 결제 조회에 실패했습니다."),
 
     //예약 관련 ERROR
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 내역이 존재하지 않습니다"),
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 내역이 존재하지 않습니다."),
+    RESERVED_GUIDE(HttpStatus.BAD_REQUEST, "이미 예약되어있는 가이드 입니다.")
     ;
 
 

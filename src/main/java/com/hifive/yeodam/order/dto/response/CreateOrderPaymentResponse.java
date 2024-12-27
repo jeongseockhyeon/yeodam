@@ -1,10 +1,10 @@
-package com.hifive.yeodam.payment.dto;
+package com.hifive.yeodam.order.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class CreatePaymentResponse {
+public class CreateOrderPaymentResponse {
     private String orderUid;
     private String username;
     private String phone;
@@ -13,7 +13,7 @@ public class CreatePaymentResponse {
     private int price;
 
     @Builder
-    public CreatePaymentResponse(String orderUid, String username, String phone, String email, String itemName, int price) {
+    public CreateOrderPaymentResponse(String orderUid, String username, String phone, String email, String itemName, int price) {
         this.orderUid = orderUid;
         this.username = username;
         this.phone = phone;
@@ -22,4 +22,3 @@ public class CreatePaymentResponse {
         this.price = price;
     }
 }
-

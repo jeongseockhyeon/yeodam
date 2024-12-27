@@ -3,28 +3,13 @@ package com.hifive.yeodam.order.service;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
-import com.hifive.yeodam.order.dto.response.AfterOrderResponse;
-import com.hifive.yeodam.order.dto.response.BeforeOrderResponse;
-import com.hifive.yeodam.order.dto.response.OrderListResponse;
 import com.hifive.yeodam.order.repository.OrderRepository;
-import com.hifive.yeodam.orderdetail.domain.OrderDetail;
-import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
-import java.util.List;
-
 import static com.hifive.yeodam.global.exception.CustomErrorCode.ORDER_NOT_FOUND;
-import static com.hifive.yeodam.global.exception.CustomErrorCode.USER_NOT_FOUND;
-import static com.hifive.yeodam.order.domain.OrderStatus.FAILED;
-import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.*;
 
 @Slf4j
 @Service
@@ -32,22 +17,6 @@ import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.*;
 public class OrderQueryService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-
-    @Transactional(readOnly = true)
-    public OrderListResponse findOrders(int beforeLimit, int afterLimit, Principal principal) {
-
-        User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-
-        Pageable beforePageable = Pageable.ofSize(beforeLimit);
-        Pageable afterPageable = Pageable.ofSize(afterLimit);
-
-        SliceImpl<BeforeOrderResponse> beforeOrderResponse = getBeforeOrderResponses(user, beforePageable);
-        SliceImpl<AfterOrderResponse> afterOrderResponse = getAfterOrderResponses(user, afterPageable);
-
-        return new OrderListResponse(beforeOrderResponse, afterOrderResponse);
-    }
 
     //재결제시 사용
     @Transactional(readOnly = true)
@@ -57,30 +26,6 @@ public class OrderQueryService {
                 .orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
         return getAddOrderRequest(order);
-    }
-
-    private SliceImpl<BeforeOrderResponse> getBeforeOrderResponses(User user, Pageable beforePageable) {
-
-        Slice<OrderDetail> beforePage = orderRepository
-                .findOrderByDetailStatus(List.of(PENDING), FAILED, user, beforePageable);
-
-        List<BeforeOrderResponse> beforeOrderResponses = beforePage.stream()
-                .map(BeforeOrderResponse::new)
-                .toList();
-
-        return new SliceImpl<>(beforeOrderResponses, beforePageable, beforePage.hasNext());
-    }
-
-    private SliceImpl<AfterOrderResponse> getAfterOrderResponses(User user, Pageable afterPageable) {
-
-        Slice<OrderDetail> afterPage = orderRepository
-                .findOrderByDetailStatus(List.of(USED, CANCELED), FAILED, user, afterPageable);
-
-        List<AfterOrderResponse> afterOrderResponses = afterPage.stream()
-                .map(AfterOrderResponse::new)
-                .toList();
-
-        return new SliceImpl<>(afterOrderResponses, afterPageable, afterPage.hasNext());
     }
 
     private AddOrderRequest getAddOrderRequest(Order order) {
