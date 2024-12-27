@@ -77,10 +77,8 @@ public class TourItemService {
         Tour savedTour = tourRepository.save(tourItem);
 
         /*여행_카테고리 저장*/
-        if(tourItemReqDto.getCategoryIdList() != null ) {
-            List<Long> categoryIdList = Arrays.stream(tourItemReqDto.getCategoryIdList().replaceAll("[\\[\\]\\s]", "").split(","))
-                    .map(Long::valueOf)
-                    .toList();
+        List<Long> categoryIdList = convertToList(tourItemReqDto.getCategoryIdList());
+        if(isNotNullCheck(categoryIdList)) {
             for(Long categoryId : categoryIdList){
                 Category category = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
@@ -92,8 +90,9 @@ public class TourItemService {
             }
         }
         /*여행_가이드 저장*/
-        if(tourItemReqDto.getGuideIdList() != null ) {
-            for(Long guideId : tourItemReqDto.getGuideIdList()){
+        List<Long> guideIdList = convertToList(tourItemReqDto.getGuideIdList());
+        if(isNotNullCheck(guideIdList)) {
+            for(Long guideId : guideIdList){
                 Guide guide = guideService.getGuideById(guideId);
                 TourGuide tourGuide = TourGuide.builder()
                         .tour(tourItem)

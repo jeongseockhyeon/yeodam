@@ -1,28 +1,72 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const id = getTourItemIdFromUrl(); // URL에서 상품 ID를 추출
+    const id = getTourItemIdFromUrl(); // URL에서 상품 ID 추출
+    const activeBtn = document.getElementById('activeBtn');
 
-    // 카테고리 로드 후 populateForm 실행
-    document.addEventListener("categoriesLoaded", () => {
-        fetch(`/api/tours/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("상품 데이터를 불러오지 못했습니다.");
-                }
-                return response.json();
-            })
-            .then(data => populateForm(data))
-            .catch(error => {
-                console.error("Error fetching product data:", error);
-                alert("상품 정보를 불러오는 데 문제가 발생했습니다.");
+    // 상품 데이터 로드 및 폼 초기화
+    fetch(`/api/tours/${id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("상품 데이터를 불러오지 못했습니다.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            populateForm(data);
+            updateButton(data.active); // 초기 버튼 상태 설정
+        })
+        .catch(error => {
+            console.error("Error fetching product data:", error);
+            alert("상품 정보를 불러오는 데 문제가 발생했습니다.");
+        });
+
+// 버튼 상태 업데이트 함수
+    function updateButton(isActive) {
+        if (isActive) {
+            activeBtn.textContent = '비활성화'; // 활성화 상태 -> 비활성화로 변경 가능
+            activeBtn.classList.add('inactive');
+            activeBtn.classList.remove('active');
+        } else {
+            activeBtn.textContent = '활성화'; // 비활성화 상태 -> 활성화로 변경 가능
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('inactive');
+        }
+    }
+
+// 활성화 상태 변경 요청
+    async function toggleActiveStatus() {
+        try {
+            const currentActive = activeBtn.textContent === '비활성화'; // 현재 상태 확인
+            const response = await fetch(`/api/items/${id}/active`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ active: !currentActive }), // 반대 상태로 변경 요청
             });
-    });
+
+            if (!response.ok) throw new Error('Failed to update active status');
+
+            const updatedActive = await response.json(); // 서버에서 반환된 boolean 값
+            updateButton(updatedActive); // 버튼 상태 업데이트
+            alert(`상품 상태가 ${updatedActive ? '활성화' : '비활성화'}되었습니다.`);
+        } catch (error) {
+            console.error(error);
+            alert('상태 변경에 실패했습니다.');
+        }
+    }
+
+// 초기 로딩 및 이벤트 리스너
+    activeBtn.addEventListener('click', toggleActiveStatus);
 });
 
+
+// URL에서 상품 ID 추출
 function getTourItemIdFromUrl() {
     const pathSegments = window.location.pathname.split('/');
     return pathSegments[2];
 }
 
+// 폼 채우기
 function populateForm(data) {
     document.getElementById("tourName").value = data.tourName || "";
     document.getElementById("tourDesc").value = data.tourDesc || "";
@@ -39,10 +83,17 @@ function populateForm(data) {
         });
     }
 
-    // 이미지 미리보기
+    // 이미지 미리보기 처리
+    populateImagePreview(data.itemImgResDtoList);
+}
+
+// 이미지 미리보기 처리
+function populateImagePreview(images) {
     const previewContainer = document.getElementById("previewContainer");
-    if (data.itemImgResDtoList) {
-        data.itemImgResDtoList.forEach((image) => {
+    previewContainer.innerHTML = ""; // 초기화
+
+    if (images) {
+        images.forEach((image) => {
             const imgContainer = document.createElement("div");
             imgContainer.style.position = "relative";
 
@@ -65,13 +116,14 @@ function populateForm(data) {
             deleteButton.onclick = () => {
                 const imageId = deleteButton.getAttribute("data-image-id"); // 이미지 ID 가져오기
 
-                // 서버 이미지 삭제 목록에서 제거
-                data.itemImgResDtoList = data.itemImgResDtoList.filter((img) => img.id !== Number(imageId));
-                imgContainer.remove(); // 화면에서 삭제
+                // 화면에서 삭제
+                imgContainer.remove();
             };
-            imgContainer.appendChild(deleteButton);
 
+            imgContainer.appendChild(deleteButton);
             previewContainer.appendChild(imgContainer);
         });
     }
 }
+
+

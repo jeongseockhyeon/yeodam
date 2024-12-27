@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll('input[name="categories"]:checked')
         ).map(checkbox => parseInt(checkbox.value));
 
+        const selectedGuides = Array.from(
+            document.querySelectorAll('#guideSelect option:checked')
+        ).map((option) => parseInt(option.value));
+
         // FormData 객체 생성
         const formData = new FormData();
 
@@ -18,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("maximum", parseInt(document.getElementById("maximum").value))
         formData.append("tourPrice", parseInt(document.getElementById("tourPrice").value));
         formData.append("categoryIdList", JSON.stringify(selectedCategories));
+        formData.append("guideIdList", JSON.stringify(selectedGuides));
 
         // 이미지 파일 추가
         const imageFiles = document.getElementById("tourImages").files;
