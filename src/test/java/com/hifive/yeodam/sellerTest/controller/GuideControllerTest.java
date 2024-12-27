@@ -158,7 +158,7 @@ class GuideControllerTest {
         String viewName = guideController.getGuidesByCompanyId(authentication, model);
 
         // then
-        assertEquals("seller/guidesList", viewName);
+        assertEquals("seller/guide-list", viewName);
         verify(model, times(1)).addAttribute("companyId", seller.getCompanyId());
         verify(model, times(1)).addAttribute("guides", guides);
     }
@@ -170,6 +170,6 @@ class GuideControllerTest {
         String viewName = guideController.getGuideRegisterPage();
 
         // then
-        assertEquals("seller/guideJoin", viewName);
+        assertEquals("seller/guide-join", viewName);
     }
 }
