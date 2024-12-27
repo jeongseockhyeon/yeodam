@@ -65,3 +65,9 @@ document.querySelector("#sellerEditForm").addEventListener("submit", function (e
 function updateUpdateButtonState() {
     updateButton.disabled = !isPasswordValid;
 }
+
+const checkCancel = () => {
+    if (window.confirm("파트너 정보 수정을 취소하시겠습니까?")) {
+        location.href='/sellers/myPage';
+    }
+}

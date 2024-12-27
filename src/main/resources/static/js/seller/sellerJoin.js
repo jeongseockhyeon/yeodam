@@ -97,3 +97,9 @@ document.getElementById("sellerJoinForm").addEventListener("submit", function (e
 function updateJoinButtonState() {
     joinButton.disabled = !(isEmailValid && isPasswordValid);
 }
+
+const checkCancel = () => {
+    if (window.confirm("회원가입을 취소하시겠습니까?")) {
+        location.href='/login';
+    }
+}

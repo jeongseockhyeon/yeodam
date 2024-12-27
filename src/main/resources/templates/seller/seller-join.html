@@ -2,55 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Seller Registration</title>
+    <title>파트너 회원가입</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
             font-family: Arial, sans-serif;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        input, textarea, button {
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        #checkEmailBtn {
-            position: absolute;
-            right: 0px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: auto;
-        }
-
-        .input-container {
-            position: relative;
-            width: 100%;
-        }
-
-        #email {
-            max-width: calc(100% - 95px);
+        .container {
+            width: 35%;
         }
 
         .error {
@@ -68,41 +30,58 @@
             margin-top: 5px;
         }
     </style>
+
 </head>
-<body>
+<body class="container mt-5">
+
+<h2 class="mb-3 text-center">회원 가입</h2>
+
 <form action="/sellers" method="POST" id="sellerJoinForm">
-    <h2>판매자 가입</h2>
-    <div class="input-container">
-        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
-         <button type="button" id="checkEmailBtn">중복체크</button>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">이메일</label>
+        <div class="input-group">
+            <input type="email" id="email" name="email" class="form-control mx-1" maxlength="50" required>
+            <button type="button" class="btn btn-secondary mx-1 idCheck" id="checkEmailBtn">중복체크</button>
+        </div>
         <span id="emailValidationResult"></span>
     </div>
-    <div class="input-container">
-        <input type="password" id="password" name="password" placeholder="비밀번호 (8자 이상)" required minlength="8">
+
+    <div class="mb-3">
+        <label for="password" class="form-label">비밀번호</label>
+        <input type="password" class="form-control" id="password" name="password" required minlength="8">
     </div>
 
-    <div class="input-container">
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호 확인" required>
+    <div class="mb-3">
+        <label for="confirmPassword" class="form-label">비밀번호 확인</label>
+        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
         <span id="passwordValidationResult"></span>
     </div>
 
-    <div class="input-container">
-        <input type="text" id="phone" name="phone" placeholder="전화번호" required pattern="^\d{9,11}$">
+    <div class="mb-3">
+        <label for="companyName" class="form-label">회사명</label>
+        <input type="text" class="form-control" id="companyName" name="companyName" required maxlength="25">
     </div>
 
-    <div class="input-container">
-        <input type="text" id="companyName" name="companyName" placeholder="회사명" required maxlength="25">
+    <div class="mb-3">
+        <label for="owner" class="form-label">대표자명</label>
+        <input type="text" class="form-control" id="owner" name="owner" placeholder="대표자명" required maxlength="25">
     </div>
 
-    <div class="input-container">
-        <input type="text" id="owner" name="owner" placeholder="대표자명" required maxlength="25">
+    <div class="mb-3">
+        <label for="phone" class="form-label">전화번호</label>
+        <input type="text" class="form-control" id="phone" name="phone" placeholder="전화번호" required pattern="^\d{9,11}$">
     </div>
 
-    <div class="input-container">
-        <textarea id="bio" name="bio" placeholder="회사소개를 입력하세요" required></textarea>
+    <div class="mb-3">
+        <label for="bio" class="form-label">회사소개</label>
+        <textarea id="bio" class="form-control" name="bio" placeholder="회사소개를 입력하세요" required></textarea>
     </div>
 
-    <button type="submit" id="joinButton" disabled>가입하기</button>
+    <div class="d-flex justify-content-center">
+        <button type="submit" id="joinButton" class="btn btn-primary mx-1" disabled>가입하기</button>
+        <button type="button" class="btn btn-secondary mx-1" onclick="checkCancel()">취소</button>
+    </div>
 </form>
 
 <script src="/js/seller/sellerJoin.js"></script>
