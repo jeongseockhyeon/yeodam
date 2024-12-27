@@ -1,3 +1,4 @@
+/*
 package com.hifive.yeodam.reservation.repository;
 
 import com.hifive.yeodam.reservation.entity.QReservation;
@@ -44,3 +45,4 @@ public class ReservationRepositoryCustomImpl implements ReservationRepositoryCus
 
 
 }
+*/
