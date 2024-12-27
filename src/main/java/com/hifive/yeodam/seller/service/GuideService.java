@@ -36,12 +36,9 @@ public class GuideService {
 
     // 가이드 정보 수정
     @Transactional
-    public Guide updateGuide(Long id, GuideUpdateRequest updateRequest) {
+    public void updateGuide(Long id, GuideUpdateRequest updateRequest) {
         Guide existingGuide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
-
         existingGuide.update(updateRequest.getName(), updateRequest.getPhone(), updateRequest.getBio());
-
-        return existingGuide;
     }
 
     // 가이드 삭제

@@ -49,7 +49,7 @@
     </style>
 </head>
 <body>
-<form method="post" action="/guides">
+<form method="post" action="/api/guides/join" id="guideForm">
     <h1>New Guide</h1>
     <div class="input-container">
         <input type="text" id="name" name="name" placeholder="이름" required><br>
@@ -75,5 +75,8 @@
     </div>
     <button type="submit">등록</button>
 </form>
+
+<script src="/js/seller/guideJoin.js"></script>
+
 </body>
 </html>
