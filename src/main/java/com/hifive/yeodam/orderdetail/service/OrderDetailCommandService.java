@@ -31,7 +31,7 @@ public class OrderDetailCommandService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public List<OrderDetail> insertOrderDetails(AddOrderRequest request) {
+    public List<OrderDetail> createDetails(AddOrderRequest request) {
 
         List<orderRequest> orderRequests = request.getOrderRequests();
 
@@ -90,7 +90,7 @@ public class OrderDetailCommandService {
     }
 
     private void checkGuideAvailability(orderRequest request, Guide guide) {
-        if (reservationRepository.isGuideAvailable(guide.getGuideId(), request.getStartDate(), request.getEndDate())) {
+        if (orderDetailRepository.isGuideAvailable(guide.getGuideId(), request.getStartDate(), request.getEndDate())) {
             throw new CustomException(RESERVED_GUIDE);
         }
     }

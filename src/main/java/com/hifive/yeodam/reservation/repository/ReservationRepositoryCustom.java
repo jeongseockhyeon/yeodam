@@ -7,6 +7,7 @@ import com.hifive.yeodam.user.entity.User;
 import java.util.List;
 
 public interface ReservationRepositoryCustom {
+
     List<Reservation> findReservationBySeller(Seller seller);
     List<Reservation> findReservationByUser(User user);
 }

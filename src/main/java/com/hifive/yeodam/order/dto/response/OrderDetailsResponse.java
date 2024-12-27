@@ -1,13 +1,13 @@
 package com.hifive.yeodam.order.dto.response;
 
-import com.hifive.yeodam.order.domain.OrderStatus;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
-import com.hifive.yeodam.payment.domain.PaymentStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
+
+import static com.hifive.yeodam.orderdetail.domain.OrderDetailStatus.USED;
 
 @Data
 @NoArgsConstructor
@@ -63,19 +63,11 @@ public class OrderDetailsResponse {
         }
 
         private String getOrderStatus(OrderDetail orderDetail) {
-            if (isOrderStatusCompleted(orderDetail) && isPaymentStatusCompleted(orderDetail)) {
+
+            if (orderDetail.getStatus().equals(USED)) {
                 return "이용완료";
-            } else {
-                return "취소";
             }
-        }
-
-        private boolean isPaymentStatusCompleted(OrderDetail orderDetail) {
-            return orderDetail.getOrder().getPayment().getStatus().equals(PaymentStatus.COMPLETED);
-        }
-
-        private boolean isOrderStatusCompleted(OrderDetail orderDetail) {
-            return orderDetail.getOrder().getStatus().equals(OrderStatus.COMPLETED);
+            return "취소";
         }
     }
 }

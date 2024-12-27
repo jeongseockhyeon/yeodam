@@ -9,6 +9,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
@@ -21,4 +22,12 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "and o.status != :status " +
             "and o.user = :user ")
     Slice<OrderDetail> findOrderByDetailStatus(List<OrderDetailStatus> detailsStatus, OrderStatus status, User user, Pageable pageable);
+
+    @Query("select case when count(o) > 0 then true else false end " +
+            "from OrderDetail o " +
+            "join o.reservation r " +
+            "where r.guide.guideId = :guideId " +
+            "and (r.startDate between :startDate and :endDate " +
+            "or r.endDate between :startDate and :endDate)")
+    boolean isGuideAvailable(Long guideId, LocalDate startDate, LocalDate endDate);
 }

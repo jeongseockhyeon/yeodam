@@ -1,13 +1,10 @@
 package com.hifive.yeodam.payment.controller;
 
-import com.hifive.yeodam.payment.dto.CancelPaymentRequest;
-import com.hifive.yeodam.payment.dto.CreatePaymentResponse;
 import com.hifive.yeodam.payment.dto.PaymentOrderUidResponse;
 import com.hifive.yeodam.payment.dto.PaymentRequestCallBack;
 import com.hifive.yeodam.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.hifive.yeodam.global.constant.PaymentConst.ORDER_UID;
@@ -19,12 +16,6 @@ import static com.hifive.yeodam.global.constant.PaymentConst.ORDER_UID;
 public class PaymentApiController {
 
     private final PaymentService paymentService;
-
-    @PostMapping
-    public CreatePaymentResponse createPayment(@RequestParam(ORDER_UID) String orderUid) {
-        Long paymentId = paymentService.createPayment(orderUid);
-        return paymentService.findRequestPayment(paymentId);
-    }
 
     @PostMapping("/fail")
     public PaymentOrderUidResponse failPayment(@RequestBody PaymentRequestCallBack request) {
@@ -43,11 +34,5 @@ public class PaymentApiController {
     @PostMapping("/validate")
     public PaymentOrderUidResponse validationPayment(@RequestBody PaymentRequestCallBack request) {
         return paymentService.validatePayment(request);
-    }
-
-    @PostMapping("/cancel")
-    public ResponseEntity cancelPayment(@RequestBody CancelPaymentRequest request) {
-        paymentService.cancel(request);
-        return ResponseEntity.noContent().build();
     }
 }
