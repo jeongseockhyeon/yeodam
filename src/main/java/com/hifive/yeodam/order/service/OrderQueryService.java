@@ -3,8 +3,6 @@ package com.hifive.yeodam.order.service;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
-import com.hifive.yeodam.order.dto.response.AfterOrderResponse;
-import com.hifive.yeodam.order.dto.response.BeforeOrderResponse;
 import com.hifive.yeodam.order.dto.response.OrderListResponse;
 import com.hifive.yeodam.order.repository.OrderRepository;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
@@ -24,6 +22,7 @@ import java.util.List;
 import static com.hifive.yeodam.global.exception.CustomErrorCode.ORDER_NOT_FOUND;
 import static com.hifive.yeodam.global.exception.CustomErrorCode.USER_NOT_FOUND;
 import static com.hifive.yeodam.order.domain.OrderStatus.FAILED;
+import static com.hifive.yeodam.order.dto.response.OrderListResponse.*;
 import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.*;
 
 @Slf4j

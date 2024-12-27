@@ -61,7 +61,11 @@ public class OrderCommandService {
         validateOrderStatus(order);
         validateDetailStatus(orderDetails);
 
-        orderDetails.forEach(od -> od.changeStatus(OrderDetailsStatus.CANCELED));
+        orderDetails.forEach(od -> {
+            od.changeStatus(OrderDetailsStatus.CANCELED);
+            od.getItem().addStock();
+        });
+
         order.chanceOrderStatus(CANCELED);
 
         return getCancelOrderResponse(order, getCancelPrice(orderDetails));
