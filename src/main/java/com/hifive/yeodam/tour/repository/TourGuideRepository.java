@@ -4,7 +4,11 @@ import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.tour.entity.TourGuide;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 public interface TourGuideRepository extends JpaRepository<TourGuide, Long> {
+    @Modifying
+    @Query("DELETE FROM TourGuide tg WHERE tg.tour = :tour AND tg.guide = :guide")
     void deleteByTourAndGuide(Tour tour, Guide guide);
 }

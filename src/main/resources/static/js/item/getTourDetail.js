@@ -210,14 +210,14 @@ function createGuideElement(guide, type) {
 guideSelect.addEventListener("change", () => {
     const selectedOptions = Array.from(guideSelect.selectedOptions);
     selectedOptions.forEach(option => {
-        const guideId = option.value;
-        const guideName = option.text;
+        const guideId = parseInt(option.value); // 선택된 가이드 ID
+        const guideName = option.text; // 선택된 가이드 이름
 
-        // 중복 추가 방지
-        if (!selectedGuides.includes(guideId) && !existingGuides.some(guide => guide.id === guideId)) {
+        // 기존 가이드나 이미 선택된 가이드에 포함되어 있지 않으면 추가
+        if (!existingGuides.some(guide => guide.id === guideId) && !selectedGuides.includes(guideId)) {
             selectedGuides.push(guideId);
             selectedGuideNames.push(guideName);
-            addGuideList.add(parseInt(guideId)); // 새로 추가된 가이드를 addGuideList에 추가
+            addGuideList.add(guideId); // 새로 추가된 가이드를 addGuideList에 추가
         }
     });
 
