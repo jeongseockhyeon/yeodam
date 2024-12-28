@@ -225,12 +225,20 @@
                         <div><input type="checkbox" class="item-checkbox" th:value="${cart.id}"></div>
                         <div class="item-info">
                             <h3 th:text="${cart.item.itemName}"></h3>
+                            <div th:if="${cart.item.reservation}" class="tour-info">
+                                <p th:text="|지역: ${cart.item.region}|"></p>
+                                <p th:text="|기간: ${cart.item.period}|"></p>
+                                <p th:text="|가이드: ${cart.guide != null ? cart.guide.name : '선택된 가이드 없음'}|"></p>
+                                <p th:if="${cart.startDate != null and cart.endDate != null}"
+                                   th:text="|예약일: ${#temporals.format(cart.startDate, 'yyyy-MM-dd')} - ${#temporals.format(cart.endDate, 'yyyy-MM-dd')}|">
+                                </p>
+                            </div>
                         </div>
                         <div>
                             <div th:if="${!cart.item.reservation}" class="quantity-control">
-                                <button onclick="updateQuantity(this, 'decrease')">-</button>
+                                <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count - 1} + ')'">-</button>
                                 <span th:text="${cart.count}">1</span>
-                                <button onclick="updateQuantity(this, 'increase')">+</button>
+                                <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count + 1} + ')'">+</button>
                             </div>
                             <div th:if="${cart.item.reservation}" class="badge-reserved">예약상품</div>
                         </div>
@@ -248,11 +256,11 @@
             <div class="price-summary">
                 <div class="price-row">
                     <span>총 상품금액</span>
-                    <span>₩<span id="subtotal">0</span></span>
+                    <span>₩<span id="subtotal" th:text="${#numbers.formatInteger(0, 0, 'COMMA')}">0</span></span>
                 </div>
                 <div class="price-row">
                     <span>총 할인금액</span>
-                    <span>- ₩<span id="discount">0</span></span>
+                    <span>- ₩<span id="discount" th:text="${#numbers.formatInteger(0, 0, 'COMMA')}">0</span></span>
                 </div>
                 <div class="price-row total">
                     <span>결제금액</span>
@@ -264,7 +272,7 @@
                 <button class="order-button" onclick="proceedToCheckout()">
                     <span id="selectedCount">0</span>개 상품 구매하기
                 </button>
-                <button class="continue-shopping" onclick="location.href='/items'">
+                <button class="continue-shopping" onclick="continueShopping()">
                     쇼핑 계속하기
                 </button>
             </div>

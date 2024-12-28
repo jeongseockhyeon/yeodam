@@ -1,9 +1,18 @@
 const isLoggedIn = ![[${anonymous}]];
 
+function getLocalCartItems() {
+    try {
+        return JSON.parse(localStorage.getItem('cartItems')) || [];
+    } catch (error) {
+        console.error('장바구니 데이터 파싱 실패:', error);
+        return [];
+    }
+}
+
 // 로컬 스토리지 장바구니 초기화
 function initializeLocalCart() {
     if (!isLoggedIn) {
-        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const cartItems = getLocalCartItems();
         renderLocalCart(cartItems);
     }
 }
@@ -27,6 +36,14 @@ function renderLocalCart(items) {
             </div>
             <div class="info">
                 <h3>${item.itemName}</h3>
+                ${item.reservation ? `
+                    <div class="tour-info">
+                        <p>지역: ${item.region || ''}</p>
+                        <p>기간: ${item.period || ''}</p>
+                        <p>가이드: ${item.guideName || '선택된 가이드 없음'}</p>
+                        <p>예약일: ${item.startDate || ''} - ${item.endDate || ''}</p>
+                    </div>
+                ` : ''}
             </div>
             <div class="quantity">
                 ${!item.reservation ? `
@@ -46,6 +63,8 @@ function renderLocalCart(items) {
         `;
         container.appendChild(itemElement);
     });
+
+    addCheckboxEventListeners();
 }
 
 // DB 수량 업데이트
@@ -76,7 +95,7 @@ async function updateCartCount(cartId, newCount) {
 function updateLocalCount(itemId, newCount) {
     if (newCount < 1) return;
 
-    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const cartItems = getLocalCartItems();
     const itemIndex = cartItems.findIndex(item => item.itemId === itemId);
 
     if (itemIndex !== -1 && !cartItems[itemIndex].reservation) {
@@ -84,7 +103,7 @@ function updateLocalCount(itemId, newCount) {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
         renderLocalCart(cartItems);
         calculateSelectedPrice();
-        upadateSelectedCount();
+        updateSelectedCount();
     }
 }
 
@@ -105,7 +124,7 @@ async function removeCart(cartId) {
 
 // 로컬 스토리지 상품 삭제
 function removeLocalItem(itemId) {
-    const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const cartItems = getLocalCartItems();
     const updatedItems = cartItems.filter(item => item.itemId !== itemId);
     localStorage.setItem('cartItems', JSON.stringify(updatedItems));
     renderLocalCart(updatedItems);
@@ -115,15 +134,24 @@ function removeLocalItem(itemId) {
 
 // 로그인 시 로컬 스토리지 장바구니 동기화
 async function syncLocalCartToServer() {
-    const localCart = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const cartItems = getLocalCartItems();
     if (isLoggedIn && localCart.length > 0) {
+        const cartData = localCart.map(item => ({
+            itemId: item.itemId,
+            count: item.count,
+            reservation: item.reservation,
+            guideId: item.guideId,
+            startDate: item.startDate,
+            endDate: item.endDate
+        }));
+
         try {
             const response = await fetch('/api/carts/sync', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(localCart)
+                body: JSON.stringify(cartData)
             });
 
             if (!response.ok) throw new Error('동기화 실패');
@@ -196,7 +224,7 @@ function calculateSelectedPrice() {
                         data.totalPrice.toLocaleString();
                 });
         } else {
-            const localCart = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const cartItems = getLocalCartItems();
             const total = localCart
                 .filter(item => cartIds.includes(item.itemId.toString()))
                 .reduce((sum, item) => sum + (item.price * item.count), 0);
@@ -227,6 +255,22 @@ function proceedToCheckout() {
         window.location.href = '/login';
         return;
     }
+
+    // form submit으로 선택된 cartIds 전송
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/order';
+
+    checkedItems.forEach(item => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'cartIds';
+        input.value = item.value;
+        form.appendChild(input);
+    })
+
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // 선택 상품 삭제 함수 추가
@@ -251,7 +295,7 @@ async function deleteSelectedItems() {
         }
         location.reload();
     } else {
-        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const cartItems = getLocalCartItems();
         const selectedIds = Array.from(checkedItems).map(item =>
             parseInt(item.value));
         const updatedItems = cartItems.filter(item =>
@@ -282,6 +326,14 @@ function renderLocalCart(items) {
                         </div>
                         <div class="info">
                             <h3>${item.itemName}</h3>
+                            ${item.reservation ? `
+                                <div class="tour-info">
+                                    <p>지역: ${item.region}</p>
+                                    <p>기간: ${item.period}</p>
+                                    <p>가이드: ${item.guideName}</p>
+                                    <p>예약일: ${item.startDate} - ${item.endDate}</p>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="quantity">
                             ${!item.reservation ? `
