@@ -1,4 +1,4 @@
-//const isLoggedIn = ![[${anonymous}]];
+const isLoggedIn = ![[${anonymous}]];
 
 // 로컬 스토리지 장바구니 초기화
 function initializeLocalCart() {
@@ -18,17 +18,17 @@ function renderLocalCart(items) {
         return;
     }
 
-    let totalPrice = 0;
     items.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.className = 'cart-item';
         itemElement.innerHTML = `
+            <div class="check">
                 <input type="checkbox" class="item-checkbox" value="${item.itemId}">
-                <div class="item-info">
-                    <h3>${item.itemName}</h3>
-                    <p>₩${(item.price * item.count).toLocaleString()}</p>
-                    ${item.reservation ? '<span class="badge bg-primary">예약상품</span>' : ''}
-                </div>
+            </div>
+            <div class="info">
+                <h3>${item.itemName}</h3>
+            </div>
+            <div class="quantity">
                 ${!item.reservation ? `
                     <div class="quantity-control">
                         <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count - 1})">-</button>
@@ -36,17 +36,16 @@ function renderLocalCart(items) {
                         <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count + 1})">+</button>
                     </div>
                 ` : `
-                    <div class="me-3">
-                        <span class="badge bg-secondary">수량: 1</span>
-                    </div>
+                    <div class="badge bg-secondary">예약상품</div>
                 `}
-                <button class="btn btn-danger" onclick="removeLocalItem(${item.itemId})">삭제</button>
-            `;
+            </div>
+            <div class="price">₩${(item.price * item.count).toLocaleString()}</div>
+            <div class="select">
+                <button class="delete-btn" onclick="removeLocalItem(${item.itemId})">×</button>
+            </div>
+        `;
         container.appendChild(itemElement);
-        totalPrice += item.price * item.count;
     });
-
-    document.getElementById('totalPrice').textContent = totalPrice.toLocaleString();
 }
 
 // DB 수량 업데이트
@@ -84,6 +83,8 @@ function updateLocalCount(itemId, newCount) {
         cartItems[itemIndex].count = newCount;
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
         renderLocalCart(cartItems);
+        calculateSelectedPrice();
+        upadateSelectedCount();
     }
 }
 
@@ -108,6 +109,8 @@ function removeLocalItem(itemId) {
     const updatedItems = cartItems.filter(item => item.itemId !== itemId);
     localStorage.setItem('cartItems', JSON.stringify(updatedItems));
     renderLocalCart(updatedItems);
+    calculateSelectedPrice();
+    updateSelectedCount();
 }
 
 // 로그인 시 로컬 스토리지 장바구니 동기화
@@ -132,6 +135,21 @@ async function syncLocalCartToServer() {
     }
 }
 
+// 쇼핑 계속하기 함수
+function continueShopping() {
+    // 이전 페이지의 URL 가져오기
+    const previousPage = document.referrer;
+
+    // 이전 페이지가 존재하고 같은 도메인인지 확인
+    if (previousPage && new URL(previousPage).hostname === window.location.hostname) {
+        history.back();
+    } else {
+        // 같은 도메인이 아니거나 이전 페이지가 없는 경우 상품 목록으로 이동
+        window.location.href = '/tours';
+    }
+}
+
+
 // 전체 선택/해제 토글 함수
 function toggleAllCheckboxes(checkbox) {
     const allCheckboxes = document.querySelectorAll('.item-checkbox');
@@ -140,6 +158,21 @@ function toggleAllCheckboxes(checkbox) {
     });
     // 체크박스 변경 시 선택된 상품 금액 계산
     calculateSelectedPrice();
+    updateSelectedCount();
+}
+
+// 체크박스 이벤트 리스너 추가 함수
+function addCheckboxEventListeners() {
+    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const allCheckboxes = document.querySelectorAll('.item-checkbox');
+            const selectAllCheckbox = document.getElementById('selectAll');
+            selectAllCheckbox.checked = Array.from(allCheckboxes).every(cb => cb.checked);
+
+            calculateSelectedPrice();
+            updateSelectedCount();
+        });
+    });
 }
 
 // 선택된 상품 가격 계산
@@ -160,7 +193,7 @@ function calculateSelectedPrice() {
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('totalPrice').textContent =
-                        data.selectedPrice.totalPrice.toLocaleString();
+                        data.totalPrice.toLocaleString();
                 });
         } else {
             const localCart = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -174,7 +207,14 @@ function calculateSelectedPrice() {
         document.getElementById('totalPrice').textContent = '0';
     }
 }
-// 주문 진행 함수 추가
+
+// 선택된 상품 개수 업데이트
+function updateSelectedCount() {
+    const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+    document.getElementById('selectedCount').textContent = checkedItems.length;
+}
+
+// 주문 진행 함수
 function proceedToCheckout() {
     const checkedItems = document.querySelectorAll('.item-checkbox:checked');
     if (checkedItems.length === 0) {
@@ -182,10 +222,11 @@ function proceedToCheckout() {
         return;
     }
 
-    const cartIds = Array.from(checkedItems).map(item => item.value);
-    // 주문 페이지로 리다이렉트 (구현 예정)
-    const queryString = cartIds.map(id => `cartIds=${id}`).join('&');
-    window.location.href = `/orders/new?${queryString}`;
+    //비로그인 시 로그인 페이지로 이동
+    if (!isLoggedIn) {
+        window.location.href = '/login';
+        return;
+    }
 }
 
 // 선택 상품 삭제 함수 추가
@@ -217,6 +258,8 @@ async function deleteSelectedItems() {
             !selectedIds.includes(item.itemId));
         localStorage.setItem('cartItems', JSON.stringify(updatedItems));
         renderLocalCart(updatedItems);
+        calculateSelectedPrice();
+        updateSelectedCount();
     }
 }
 
@@ -268,15 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
         syncLocalCartToServer();
     }
 
-    // 체크박스 이벤트 리스너
-    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            // 모든 상품이 선택되었는지 확인하여 전체 선택 체크박스 상태 변경
-            const allCheckboxes = document.querySelectorAll('.item-checkbox');
-            const selectAllCheckbox = document.getElementById('selectAll');
-            selectAllCheckbox.checked = Array.from(allCheckboxes).every(cb => cb.checked);
-
-            calculateSelectedPrice();
-        });
-    });
+    // 초기 선택된 상품 개수 업데이트
+    updateSelectedCount();
 });
