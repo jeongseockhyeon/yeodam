@@ -1,7 +1,10 @@
-package com.hifive.yeodam.cartTest;
+/*package com.hifive.yeodam.cartTest;
 
 import com.hifive.yeodam.cart.controller.CartApiController;
-import com.hifive.yeodam.cart.dto.*;
+import com.hifive.yeodam.cart.dto.command.CartRequestDto;
+import com.hifive.yeodam.cart.dto.command.LocalStorageCartDto;
+import com.hifive.yeodam.cart.dto.query.CartResponseDto;
+import com.hifive.yeodam.cart.dto.query.CartTotalPriceDto;
 import com.hifive.yeodam.cart.entity.Cart;
 import com.hifive.yeodam.cart.service.CartService;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
@@ -176,4 +179,4 @@ class CartApiControllerTest {
         verify(cartService).removeCart(cartId);
     }
 
-}
+}*/

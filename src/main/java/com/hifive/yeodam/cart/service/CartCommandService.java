@@ -1,12 +1,16 @@
 package com.hifive.yeodam.cart.service;
 
-import com.hifive.yeodam.cart.dto.*;
+import com.hifive.yeodam.cart.dto.command.CartRequestDto;
+import com.hifive.yeodam.cart.dto.command.CartUpdateCountDto;
+import com.hifive.yeodam.cart.dto.command.LocalStorageCartDto;
+import com.hifive.yeodam.cart.dto.query.CartResponseDto;
 import com.hifive.yeodam.cart.entity.Cart;
 import com.hifive.yeodam.cart.repository.CartRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,25 +21,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
-public class CartService {
+@RequiredArgsConstructor
+@Transactional
+public class CartCommandService {
+    private static final int MAX_CART_SLOTS = 20; //장바구니 상품 종류 최대 개수
 
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
     private User getCurrentUser() {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        //비로그인
         if(authentication == null || authentication instanceof AnonymousAuthenticationToken){
             return null;
         }
@@ -44,58 +46,85 @@ public class CartService {
         String email = authentication.getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
-            //AuthException으로 처리 예정
     }
 
-    public List<Cart> getCartList() {
-        User user = getCurrentUser();
-        if (user == null) {
-            return new ArrayList<>(); //비로그인 시 빈 리스트 반환
-        }
-
-        return cartRepository.findByUser(user);
+    //장바구니 최대 상품 종류 개수 반환
+    public static int getMaxCartItems() {
+        return MAX_CART_SLOTS;
     }
 
-    @Transactional
     public void syncCartWithLocal(List<LocalStorageCartDto> localStorageCart) {
         User user = getCurrentUser();
         if (user == null) {
             throw new CustomException(CustomErrorCode.LOGIN_REQUIRED);
         }
 
-        for (LocalStorageCartDto localItem : localStorageCart) {
-            try {
-                if (localItem.isReservation()) {
-                    Item item = itemRepository.findById(localItem.getItemId())
-                            .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
+        int currentCart = cartRepository.countByUser(user);
+        int remainingCart = MAX_CART_SLOTS - currentCart;
 
+        if (remainingCart <= 0) {
+            throw new CustomException(CustomErrorCode.CART_FULL);
+        }
+
+        //추가 가능 개수만큼만 처리
+        List<LocalStorageCartDto> itemsToAdd = localStorageCart.size() > remainingCart
+                ? localStorageCart.subList(0, remainingCart)
+                : localStorageCart;
+
+        for (LocalStorageCartDto localItem : itemsToAdd) {
+            try {
+                Item item = itemRepository.findById(localItem.getItemId())
+                        .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
+
+                if (localItem.isReservation()) {
                     boolean exists = cartRepository.findByUserAndItem(user, item).isPresent();
                     if (exists) {
                         log.warn("장바구니에 이미 존재하는 상품입니다. itemId: " + localItem.getItemId());
                         continue;
                     }
                 }
-                CartRequestDto requestDto = CartRequestDto.builder()
-                        .itemId(localItem.getItemId())
-                        .count(localItem.getCount())
-                        .reservation(localItem.isReservation())
-                        .build();
+
+                CartRequestDto requestDto;
+                if (!localItem.isReservation()) {
+                    requestDto = new CartRequestDto(
+                            localItem.getItemId(),
+                            item.getItemName(),
+                            item.getPrice(),
+                            localItem.getCount()
+                    );
+                } else {
+                    Tour tour = (Tour) item;
+                    requestDto = CartRequestDto.builder()
+                            .itemId(localItem.getItemId())
+                            .itemName(tour.getItemName())
+                            .description(tour.getDescription())
+                            .period(tour.getPeriod())
+                            .region(tour.getRegion())
+                            .price(tour.getPrice())
+                            .build();
+                }
 
                 addCart(requestDto);
             } catch (Exception e) {
                 log.warn("장바구니 연동 중 오류 발생: " + e.getMessage());
             }
         }
+
+        if (localStorageCart.size() > remainingCart) {
+            log.warn("장바구니 개수 제한으로 " + remainingCart + "개의 상품만 추가되었습니다.");
+        }
     }
 
-
-    @Transactional
     public CartResponseDto addCart(CartRequestDto requestDto) {
-        // 현재 사용자 확인
         User user = getCurrentUser();
         if (user == null) {
-            //비로그인 상태는 로컬 스토리지 저장 - 예외 발생
             throw new CustomException(CustomErrorCode.LOGIN_REQUIRED);
+        }
+
+        //징바구니 개수 제한 검증 절차
+        int currentCart = cartRepository.countByUser(user);
+        if (currentCart >= MAX_CART_SLOTS) {
+            throw new CustomException(CustomErrorCode.CART_FULL);
         }
 
         Item item = itemRepository.findById(requestDto.getItemId())
@@ -134,7 +163,6 @@ public class CartService {
                 .build();
     }
 
-    @Transactional
     public CartResponseDto updateCartCount(Long cartId, CartUpdateCountDto updateDto) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.CART_NOT_FOUND));
@@ -153,50 +181,10 @@ public class CartService {
                 .build();
     }
 
-    public CartTotalPriceDto getTotalPrice() {
-        User user = getCurrentUser();
-        if (user == null) {
-            //로컬 스토리지 이용
-            return CartTotalPriceDto.builder()
-                    .totalPrice(0)
-                    .build();
-        }
-
-        int totalPrice = cartRepository.findByUser(user).stream()
-                .mapToInt(Cart::getPrice)
-                .sum();
-        return CartTotalPriceDto.builder()
-                .totalPrice(totalPrice)
-                .build();
-    }
-
-    public CartTotalPriceDto getSelectedPrice(List<Long> cartIds) {
-        User user = getCurrentUser();
-        if (user == null) {
-            //로컬 스토리지 이용
-            return CartTotalPriceDto.builder()
-                    .totalPrice(0)
-                    .build();
-        }
-
-        int selectedPrice = cartRepository.findByUser(user).stream()
-                .filter(cart -> cartIds.contains(cart.getId()))
-                .mapToInt(Cart::getPrice)
-                .sum();
-
-        return CartTotalPriceDto.builder()
-                .totalPrice(selectedPrice)
-                .build();
-    }
-
-
-    @Transactional
     public void removeCart(Long cartId) {
         Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new CustomException(CustomErrorCode.CART_NOT_FOUND));
 
         cartRepository.delete(cart);
     }
-
-
 }
