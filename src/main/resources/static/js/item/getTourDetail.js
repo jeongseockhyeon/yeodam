@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
     const id = getTourItemIdFromUrl(); // URL에서 상품 ID 추출
-    const activeBtn = document.getElementById('activeBtn');
 
     // 상품 데이터 로드 및 폼 초기화
     fetch(`/api/tours/${id}`)

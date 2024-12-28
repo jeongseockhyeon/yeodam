@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updatePreview() {
         previewContainer.innerHTML = ""; // 기존 미리보기 초기화
-        selectedImages.forEach((file, index) => {
+        selectedImages.forEach((file) => {
             const imgContainer = document.createElement("div");
             imgContainer.style.position = "relative";
             imgContainer.style.display = "inline-block";
