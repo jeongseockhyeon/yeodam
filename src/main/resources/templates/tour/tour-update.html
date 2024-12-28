@@ -5,6 +5,7 @@
     <title>여행 상품 수정</title>
     <link rel="stylesheet" href="/css/tour-add.css">
     <link rel="stylesheet" href="/css/category-check-box.css">
+    <link rel="stylesheet" href="/css/guide-list.css">
     <style>
         #previewContainer {
             display: flex;
@@ -59,6 +60,19 @@
                 <label for="tourPrice">여행 가격</label>
                 <input type="number" id="tourPrice" name="tourPrice" required>
 
+                <!-- 선택된 가이드 표시 영역 -->
+                <div id="selectedGuidesContainer">
+                    <h4>선택된 가이드</h4>
+                    <p id="selectedGuidesText">선택된 가이드가 없습니다.</p>
+                </div>
+
+                <div class="dropdown">
+                    <label for="guideSelect">가이드 선택</label>
+                    <select id="guideSelect" name="guides" multiple>
+                        <!-- 서버에서 동적으로 옵션 추가 -->
+                    </select>
+                </div>
+
                 <div id="categoryCheckBox">
                     <h3>카테고리 선택</h3>
                 </div>
@@ -82,6 +96,7 @@
     </div>
 </div>
 <script src="/js/item/getCategory.js"></script>
+<script src="/js/item/getGuideByCompany.js"></script>
 <script src="/js/item/getTourDetail.js"></script>
 <script src="/js/item/validationFormData.js"></script>
 <script src="/js/item/showTabs.js"></script>

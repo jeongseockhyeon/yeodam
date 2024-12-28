@@ -46,6 +46,14 @@ function populateForm(data) {
 
     // 이미지 미리보기 처리
     populateImagePreview(data.itemImgResDtoList);
+
+    // 기존 가이드 업데이트
+    if (data.guideInTourResDtos && data.guideInTourResDtos.length > 0) {
+        existingGuides = data.guideInTourResDtos;
+    }
+
+    updateSelectedGuidesText();
+
 }
 
 // 이미지 미리보기 처리
@@ -56,8 +64,6 @@ let existingImages = []; // 서버에서 가져온 기존 이미지 배열
 
 // 미리보기 업데이트 함수
 function updatePreview() {
-    previewContainer.innerHTML = ""; // 기존 미리보기 초기화
-
     // 기존 이미지와 새로 업로드된 파일 모두 처리
     [...existingImages, ...selectedImages].forEach((item) => {
         createImagePreview(item, item.id ? "existing" : "new");
@@ -66,7 +72,7 @@ function updatePreview() {
 
 // 이미지 미리보기 생성 함수
 function createImagePreview(image, type) {
-    const fragment = document.createDocumentFragment(); // DocumentFragment 생성
+    const imgFragment = document.createDocumentFragment(); // DocumentFragment 생성
 
     const imgContainer = document.createElement("div");
     imgContainer.style.position = "relative";
@@ -107,9 +113,9 @@ function createImagePreview(image, type) {
     };
 
     imgContainer.appendChild(deleteButton);
-    fragment.appendChild(imgContainer); // Fragment에 추가
+    imgFragment.appendChild(imgContainer);
 
-    previewContainer.appendChild(fragment); // Fragment를 DOM에 추가
+    previewContainer.appendChild(imgFragment);
 }
 
 // 파일 입력 이벤트 처리
@@ -132,3 +138,89 @@ function populateImagePreview(images) {
     updatePreview();
 }
 
+// 기존 코드에서 가이드 선택과 제거 처리
+let existingGuides = []; // 기존 가이드 배열
+let selectedGuides = []; // 새로 추가된 가이드 배열
+let selectedGuideNames = []; // 새로 추가된 가이드 이름 배열
+
+const selectedGuidesText = document.getElementById("selectedGuidesText");
+const guideSelect = document.getElementById("guideSelect");
+
+const addGuideList = new Set(); // 새로 추가된 가이드 목록
+const removeGuideList = new Set(); // 제거된 가이드 목록
+
+// 가이드 텍스트 업데이트 함수
+function updateSelectedGuidesText() {
+    selectedGuidesText.innerHTML = ""; // 기존 내용을 초기화
+
+    // 기존 가이드 추가
+    existingGuides.forEach((guide) => {
+        const guideElement = createGuideElement(guide, "existing");
+        selectedGuidesText.appendChild(guideElement);
+    });
+
+    // 새로 추가된 가이드 추가
+    selectedGuides.forEach((guide, index) => {
+        const guideElement = createGuideElement({ id: guide, name: selectedGuideNames[index] }, "new");
+        selectedGuidesText.appendChild(guideElement);
+    });
+
+    // 선택된 가이드가 없으면 기본 메시지 표시
+    if (existingGuides.length === 0 && selectedGuides.length === 0) {
+        selectedGuidesText.textContent = "선택된 가이드가 없습니다.";
+    }
+}
+
+// 가이드 텍스트 생성 함수
+function createGuideElement(guide, type) {
+    const guideSpan = document.createElement("span");
+    guideSpan.style.marginRight = "10px";
+
+    const guideName = document.createElement("span");
+    guideName.textContent = guide.name;
+
+    const removeButton = document.createElement("button");
+    removeButton.textContent = "X";
+    removeButton.style.marginLeft = "5px";
+    removeButton.style.cursor = "pointer";
+
+    // 제거 버튼 클릭 이벤트
+    removeButton.addEventListener("click", () => {
+        if (type === "existing") {
+            // 기존 가이드에서 삭제 처리
+            existingGuides = existingGuides.filter((existing) => existing.id !== guide.id);
+            removeGuideList.add(guide.id); // 제거된 가이드 목록에 추가
+        } else {
+            const index = selectedGuides.indexOf(guide.id);
+            if (index > -1) {
+                selectedGuides.splice(index, 1);
+                selectedGuideNames.splice(index, 1);
+            }
+        }
+        updateSelectedGuidesText();
+    });
+
+    guideSpan.appendChild(guideName);
+    guideSpan.appendChild(removeButton);
+
+    return guideSpan;
+}
+
+// 새로운 가이드 추가 함수
+guideSelect.addEventListener("change", () => {
+    const selectedOptions = Array.from(guideSelect.selectedOptions);
+    selectedOptions.forEach(option => {
+        const guideId = option.value;
+        const guideName = option.text;
+
+        // 중복 추가 방지
+        if (!selectedGuides.includes(guideId) && !existingGuides.some(guide => guide.id === guideId)) {
+            selectedGuides.push(guideId);
+            selectedGuideNames.push(guideName);
+            addGuideList.add(parseInt(guideId)); // 새로 추가된 가이드를 addGuideList에 추가
+        }
+    });
+
+    guideSelect.selectedIndex = -1; // 드롭다운 초기화
+    updateSelectedGuidesText();
+});
