@@ -19,9 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch((error) => console.error("상품 데이터 불러오기 실패:", error));
     }
 
-    // 상품 렌더링 함수
+// 상품 렌더링 함수
     function renderTours(tours) {
         tourList.innerHTML = ""; // 초기화
+        const fragment = document.createDocumentFragment(); // DocumentFragment 생성
+
         tours.forEach((tour) => {
             const tourCard = document.createElement("div");
             tourCard.className = "tour-card";
@@ -32,62 +34,40 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             tourCard.innerHTML = `
-                <div class="content">
-                    <h4>${tour.tourName}</h4>
-                    <p>${tour.tourDesc}</p>
-                    <div>
-                        <span>기간: ${tour.tourPeriod}</span>
-                        <span> | 지역: ${tour.tourRegion}</span>
-                    </div>
-                    <div>
-                        <span>가이드: ${
+            <div class="content">
+                <h4>${tour.tourName}</h4>
+                <p>${tour.tourDesc}</p>
+                <div>
+                    <span>기간: ${tour.tourPeriod}</span>
+                    <span> | 지역: ${tour.tourRegion}</span>
+                </div>
+                <div>
+                    <span>가이드: ${
                 primaryGuide ? primaryGuide.guideName : "정보 없음"
             }</span>
-                        <span> | 평점: ${
+                    <span> | 평점: ${
                 primaryGuide ? primaryGuide.rating : "N/A"
             }⭐</span>
-                        <span> (${primaryGuide ? primaryGuide.reviews : 0}명)</span>
-                    </div>
-                    <div class="price">${tour.tourPrice.toLocaleString()}원 ~</div>
-                    <div>최대 인원: ${tour.maximum}명</div>
-                    <div>
-                        카테고리: ${tour.categoryResDtoList
+                    <span> (${primaryGuide ? primaryGuide.reviews : 0}명)</span>
+                </div>
+                <div class="price">${tour.tourPrice.toLocaleString()}원 ~</div>
+                <div>최대 인원: ${tour.maximum}명</div>
+                <div>
+                    카테고리: ${tour.categoryResDtoList
                 .map((category) => category.categoryName)
                 .join(", ")}
-                    </div>
                 </div>
-            `;
+            </div>
+        `;
 
-            tourList.appendChild(tourCard);
+            fragment.appendChild(tourCard); // Fragment에 추가
         });
+
+        tourList.appendChild(fragment); // Fragment를 DOM에 추가
     }
 
     // 초기 데이터 로드
     fetchTours();
-
-    // 카테고리 데이터 로드 함수
-    fetch("/api/categories")
-        .then((response) => response.json())
-        .then((categories) => {
-            categories.forEach((category) => {
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.value = category.name;
-                checkbox.id = `category-${category.id}`;
-                checkbox.name = "categories";
-
-                const label = document.createElement("label");
-                label.htmlFor = `category-${category.id}`;
-                label.textContent = category.name;
-
-                const div = document.createElement("div");
-                div.appendChild(checkbox);
-                div.appendChild(label);
-
-                categoryCheckBox.appendChild(div);
-            });
-        })
-        .catch((error) => console.error("카테고리 불러오기 실패:", error));
 
     // 공통 필터링 로직
     function applyFilters() {

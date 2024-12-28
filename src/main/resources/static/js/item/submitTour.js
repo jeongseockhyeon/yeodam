@@ -8,20 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let selectedGuideNames = [];
     let selectedImages = [];
 
-    // 가이드 데이터 가져오기
-    fetch("/api/sellers/guide-list")
-        .then(response => response.json())
-        .then(guides => {
-            guides.forEach(guide => {
-                const option = document.createElement("option");
-                option.value = guide.id;
-                option.textContent = guide.name;
-                guideSelect.appendChild(option);
-            });
-        })
-        .catch(error => console.error("가이드 데이터를 가져오는 중 오류 발생:", error));
-
-// 가이드 선택 이벤트
+    // 가이드 선택 이벤트
     guideSelect.addEventListener("change", () => {
         const selectedOptions = Array.from(guideSelect.selectedOptions);
         const newGuideIds = selectedOptions.map(option => parseInt(option.value));
@@ -37,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateSelectedGuidesText();
     });
 
-// 가이드 텍스트 업데이트 함수
+    // 가이드 텍스트 업데이트 함수
     function updateSelectedGuidesText() {
         selectedGuidesText.innerHTML = ""; // 기존 내용을 초기화
         selectedGuides.forEach((id, index) => {
@@ -81,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updatePreview() {
         previewContainer.innerHTML = ""; // 기존 미리보기 초기화
-        selectedImages.forEach((file, index) => {
+        selectedImages.forEach((file) => {
             const imgContainer = document.createElement("div");
             imgContainer.style.position = "relative";
             imgContainer.style.display = "inline-block";
