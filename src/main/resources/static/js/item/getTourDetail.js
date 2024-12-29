@@ -92,9 +92,6 @@ function createImagePreview(image, type) {
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "삭제";
     deleteButton.className = "remove-image";
-    deleteButton.style.position = "absolute";
-    deleteButton.style.top = "5px";
-    deleteButton.style.right = "5px";
 
     if (type === "existing") {
         deleteButton.setAttribute("data-image-id", image.id); // 기존 이미지의 ID 설정
