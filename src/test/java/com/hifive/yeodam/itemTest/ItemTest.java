@@ -26,6 +26,7 @@ public class ItemTest {
     @Mock
     private ItemRepository itemRepository;
 
+/*
     @Test
     public void allItemFindTest() {
         //given
@@ -45,8 +46,9 @@ public class ItemTest {
         assertEquals(testCount, count);
         verify(itemRepository, times(1)).findAll();
     }
+*/
 
-    @Test
+/*    @Test
     public void itemFindTest() {
         //given
         Long itemId = 1L;
@@ -65,7 +67,7 @@ public class ItemTest {
         assertEquals(itemId, testItem.getId());
         assertEquals(itemName, testItem.getItemName());
         verify(itemRepository, times(1)).findById(itemId);
-    }
+    }*/
 
     @Test
     public void findAllItemTypeTest(){

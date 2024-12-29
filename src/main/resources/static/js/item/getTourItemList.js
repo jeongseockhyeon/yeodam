@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`/api/tours?${params.toString()}`)
             .then((response) => response.json())
             .then((data) => {
-                renderTours(data);
+                renderTours(data.content);
             })
             .catch((error) => console.error("상품 데이터 불러오기 실패:", error));
     }
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 <div>
                     <span>가이드: ${
-                primaryGuide ? primaryGuide.guideName : "정보 없음"
+                primaryGuide ? primaryGuide.name : "정보 없음"
             }</span>
                     <span> | 평점: ${
                 primaryGuide ? primaryGuide.rating : "N/A"

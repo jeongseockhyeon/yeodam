@@ -7,9 +7,10 @@ import com.hifive.yeodam.tour.entity.QTourCategory;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Tour> searchByFilter(SearchFilterDto searchFilterDto) {
+    public Slice<Tour> searchByFilterAndActive(Long cursorId, int pageSize, SearchFilterDto searchFilterDto) {
 
         QTour tour = QTour.tour;
         QTourCategory tourCategory = QTourCategory.tourCategory;
@@ -41,12 +42,23 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (hasText(searchFilterDto.getPeriod())){
             builder.and(tour.period.eq(searchFilterDto.getPeriod()));
         }
-        return jpaQueryFactory.select(tour)
+
+        List<Tour> results = jpaQueryFactory.select(tour)
                 .from(tour)
                 .leftJoin(tour.tourCategories, tourCategory)
                 .leftJoin(tourCategory.category, category)
-                .where(builder)
+                .where(tour.active.isTrue()
+                        .and(builder)
+                        .and(cursorId != null ? tour.id.lt(cursorId) : null))
+                .orderBy(tour.id.desc())
+                .limit(pageSize + 1)
                 .distinct()
                 .fetch();
+
+        boolean hasNext = results.size() > pageSize; //이후 데이터 여부 확인
+        if(hasNext){
+            results.removeLast();
+        }
+        return new SliceImpl<>(results, PageRequest.of(0, pageSize), hasNext);
     }
 }
