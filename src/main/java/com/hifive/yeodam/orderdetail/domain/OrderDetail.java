@@ -2,11 +2,15 @@ package com.hifive.yeodam.orderdetail.domain;
 
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.domain.Order;
+import com.hifive.yeodam.reservation.entity.Reservation;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static com.hifive.yeodam.orderdetail.domain.OrderDetailStatus.PENDING;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -29,20 +33,41 @@ public class OrderDetail {
     @JoinColumn(name = "item_id")
     @ManyToOne(fetch = LAZY)
     private Item item;
+
     private int count;
     private int price;
+    private String bookerName;
+    private String bookerPhone;
+    private String message;
 
-    public static OrderDetail create(Item item, int count, int price) {
-        return new OrderDetail(item, count, price);
+    @Enumerated(STRING)
+    private OrderDetailStatus status;
+
+    @JoinColumn(name = "reservation_id")
+    @OneToOne(fetch = LAZY)
+    private Reservation reservation;
+
+    @Builder
+    public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
+        this.item = item;
+        this.count = count;
+        this.price = price;
+        this.bookerName = bookerName;
+        this.bookerPhone = bookerPhone;
+        this.message = message;
+        this.status = PENDING;
+        this.reservation = reservation;
+    }
+
+    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
+        return new OrderDetail(item, count, price, bookerName, bookerPhone, message, reservation);
     }
 
     public int getTotalPrice() {
         return getPrice() * getCount();
     }
 
-    private OrderDetail(Item item, int count, int price) {
-        this.item = item;
-        this.count = count;
-        this.price = price;
+    public void changeStatus(OrderDetailStatus status) {
+        this.status = status;
     }
 }

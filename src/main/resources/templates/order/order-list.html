@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card-content {
+            flex: 1;
+            padding: 15px;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .d-day {
+            font-size: 14px;
+            color: #007bff;
+        }
+
+        .info {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            height: auto; /* 초기 높이 자동 조절 */
+            transition: all 2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-close {
+            opacity: 0;
+            transition: all 0s;
+            height: 0;
+            padding: 15px;
+        }
+
+    </style>
+    <title></title>
+</head>
+<body>
+<div class="container">
+    <h2>이용 전</h2>
+    <th:block th:each="before : ${orderDetailsResponse.getBeforeResponse().content}">
+        <div class="card">
+            <img src="image-path" alt="Item Image" class="card-img">
+            <div class="card-content">
+                <div class="card-header">
+                    <h3>예약 확정</h3>
+                    <p class="d-day" th:text="|D-${before.getDDay()}|">D-12</p>
+                </div>
+                <hr/>
+                <p th:text="${before.itemName}">[제주] 투어 제목 우리 투어는 누구한테 딱!! 누구랑 같이~</p>
+                <button class="toggle-btn">버튼</button>
+            </div>
+        </div>
+        <div class="info info-close">
+            <h4>예약 정보</h4>
+            <p>결제번호: <span th:text="${before.orderUid}">432JDF23T1G</span></p>
+            <p>예약자: <span th:text="${before.bookerName}">아무개</span></p>
+            <h4>결제 정보</h4>
+            <p>결제 일시: <span th:text="${#temporals.format(before.paymentAt, 'yyyy년 MM월 dd일 hh시 mm분')}">2024.12.12</span>
+            </p>
+            <p>결제 수단: <span th:text="${before.cardName}">카카오페이</span></p>
+            <input type="hidden" th:value="${before.itemId}">
+            <button class="cancel-btn">예약취소</button>
+        </div>
+    </th:block>
+    <a th:if="${orderDetailsResponse.beforeResponse.hasNext()}"
+       th:href="@{/orders(
+       beforeLimit=${orderDetailsResponse.beforeResponse.getPageable().getPageSize() + 5},
+       afterLimit=${orderDetailsResponse.afterResponse.getPageable().getPageSize()}
+       )}"
+       class="btn btn-primary">다음</a>
+
+    <h2>이용완료 및 취소</h2>
+    <th:block th:each="after : ${orderDetailsResponse.getAfterResponse().content}">
+        <div class="card">
+            <img src="your-image-path.jpg" alt="Item Image" class="card-img">
+            <div class="card-content">
+                <h3 th:text="${after.orderStatus}">이용완료</h3>
+                <hr/>
+                <p th:text="${after.itemName}" class="card-title">[제주] 투어 제목 우리 투어는 누구한테 딱!! 누구랑 같이~</p>
+                <button th:if="${after.orderStatus.equals('이용완료')}">후기 작성</button>
+            </div>
+        </div>
+    </th:block>
+    <a th:if="${orderDetailsResponse.afterResponse.hasNext()}"
+       th:href="@{/orders(beforeLimit=${
+       orderDetailsResponse.beforeResponse.getPageable().getPageSize() },
+       afterLimit=${orderDetailsResponse.afterResponse.getPageable().getPageSize() + 5}
+       )}"
+       class="btn btn-primary">다음</a>
+
+</div>
+</body>
+<script>
+
+    const cancelOrderURL = "/api/orders/";
+
+    document.querySelectorAll('.toggle-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            let info = btn.closest('.card').nextElementSibling;
+            if (info && info.classList.contains('info')) {
+                info.classList.toggle('info-close');
+            }
+        });
+    });
+
+    document.querySelectorAll('.cancel-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+            try {
+
+                if (!confirm("정말 취소하시겠습니까?")) {
+                    return;
+                }
+
+                const parentDiv = btn.closest('.info');
+                const orderUid = parentDiv.querySelector('p span').textContent;
+
+                // 분할 취소를 할 수 없어서 필요 없음
+                // const itemId = Number(parentDiv.querySelector('input[type="hidden"]').value);
+
+                const cancelOrderDto = {
+                    orderUid: orderUid,
+                    // itemIds: [itemId],
+                }
+
+                // 주문 취소 요청
+                const cancelOrderPaymentResponse = await fetch(cancelOrderURL + orderUid, {
+                    method: "PATCH",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(cancelOrderDto)
+                });
+
+                if (!cancelOrderPaymentResponse.ok) {
+                    alert("주문 취소 요청 실패");
+                    return;
+                }
+                window.location.href = "/orders";
+            } catch (error) {
+                console.error("에러 ", error);
+            }
+        });
+    });
+
+</script>
+</html>

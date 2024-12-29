@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>장바구니</title>
+<!--    <meta name="_csrf" th:content="${_csrf.token}"/>-->
+<!--    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .cart-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
+        }
+        .cart-left {
+            width: 100%;
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .select-all-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+        }
+
+        .delete-selected {
+            color: #666;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .delete-selected:hover {
+            color: #333;
+        }
+
+        .cart-item-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            gap: 20px;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .cart-item:not(:last-child) {
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-right {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+        .price-summary {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .price-row.total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-weight: bold;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-control button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .cart-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .order-button {
+            width: 100%;
+            background-color: rgba(37, 195, 216, 1); /* #25c3d8 기준 */
+            opacity: 0.8;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .order-button:hover {
+            opacity: 1;
+        }
+
+        .continue-shopping {
+            width: 100%;
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 16px;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .continue-shopping:hover {
+            background-color: #f5f5f5;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0 10px;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .item-info h3 {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .item-info .delivery-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .badge-reserved {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .price {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-area">
+        <div th:replace="fragments/header :: header"></div>
+    </div>
+    <div class="cart-container">
+        <div class="cart-left">
+            <h2 style="margin-bottom: 15px;">장바구니</h2>
+            <div class="cart-header">
+                <div class="select-all-container">
+                    <input type="checkbox" id="selectAll" onchange="toggleAllCheckboxes(this)">
+                    <label for="selectAll">모두 선택</label>
+                </div>
+                <button class="delete-selected" onclick="deleteSelectedItems()">선택삭제</button>
+            </div>
+
+            <div class="cart-item-container">
+                <div id="cartItems">
+                    <!-- Server-side cart items -->
+                    <div th:if="${!anonymous}" th:each="cart : ${carts}" class="cart-item">
+                        <div><input type="checkbox" class="item-checkbox" th:value="${cart.id}"></div>
+                        <div class="item-info">
+                            <h3 th:text="${cart.item.itemName}"></h3>
+                        </div>
+                        <div>
+                            <div th:if="${!cart.item.reservation}" class="quantity-control">
+                                <button onclick="updateQuantity(this, 'decrease')">-</button>
+                                <span th:text="${cart.count}">1</span>
+                                <button onclick="updateQuantity(this, 'increase')">+</button>
+                            </div>
+                            <div th:if="${cart.item.reservation}" class="badge-reserved">예약상품</div>
+                        </div>
+                        <div class="price" th:text="|₩${#numbers.formatInteger(cart.price, 0, 'COMMA')}|"></div>
+                        <div><button class="delete-btn" th:onclick="'removeCart(' + ${cart.id} + ')'">×</button></div>
+                    </div>
+
+                    <!-- Local storage cart items -->
+                    <div th:if="${anonymous}" id="localCartItems"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-right">
+            <div class="price-summary">
+                <div class="price-row">
+                    <span>총 상품금액</span>
+                    <span>₩<span id="subtotal">0</span></span>
+                </div>
+                <div class="price-row">
+                    <span>총 할인금액</span>
+                    <span>- ₩<span id="discount">0</span></span>
+                </div>
+                <div class="price-row total">
+                    <span>결제금액</span>
+                    <span>₩<span id="totalPrice">0</span></span>
+                </div>
+            </div>
+
+            <div class="cart-buttons">
+                <button class="order-button" onclick="proceedToCheckout()">
+                    <span id="selectedCount">0</span>개 상품 구매하기
+                </button>
+                <button class="continue-shopping" onclick="location.href='/items'">
+                    쇼핑 계속하기
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="/js/cart/localCart.js" defer></script>
+</body>
+</html>

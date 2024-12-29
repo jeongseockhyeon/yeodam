@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+import static com.hifive.yeodam.global.constant.PaymentConst.PAYMENT_BEFORE_CARD_NAME;
 import static com.hifive.yeodam.global.constant.PaymentConst.PAYMENT_UID_BEFORE_PAYMENT;
 import static com.hifive.yeodam.payment.domain.PaymentStatus.*;
 import static jakarta.persistence.EnumType.STRING;
@@ -30,15 +33,23 @@ public class Payment {
     //결제 고유 번호
     private String paymentUid;
 
+    private String cardName;
+
     @JoinColumn(name = "order_id")
     @OneToOne(fetch = LAZY)
     private Order order;
+
+    private LocalDateTime paymentAt;
+    private LocalDateTime cancellationAt;
 
 
     private Payment(int price, Order order) {
         this.price = price;
         this.status = PENDING;
         this.paymentUid = PAYMENT_UID_BEFORE_PAYMENT;
+        this.cardName = PAYMENT_BEFORE_CARD_NAME;
+        this.paymentAt = LocalDateTime.of(2000, 1, 1, 00, 00);
+        this.cancellationAt = LocalDateTime.of(2000, 1, 1, 00, 00);
         setOrder(order);
     }
 
@@ -51,17 +62,20 @@ public class Payment {
         order.setPayment(this);
     }
 
-    public void successPayment(String paymentUid) {
+    public void successPayment(String paymentUid, String cardName) {
         this.status = COMPLETED;
         this.paymentUid = paymentUid;
+        this.cardName = cardName;
+        this.paymentAt = LocalDateTime.now();
     }
 
     public void paymentFail(String paymentUid) {
         this.status = FAILED;
         this.paymentUid = paymentUid;
+        this.cancellationAt = LocalDateTime.now();
     }
 
     public void cancel() {
-        this.status = CANCELED;
+        status = CANCELED;
     }
 }

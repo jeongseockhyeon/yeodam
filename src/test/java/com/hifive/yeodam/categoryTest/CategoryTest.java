@@ -3,81 +3,95 @@ package com.hifive.yeodam.categoryTest;
 import com.hifive.yeodam.category.dto.CategoryReqDto;
 import com.hifive.yeodam.category.dto.CategoryResDto;
 import com.hifive.yeodam.category.entity.Category;
+import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.category.service.CategoryService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
+@ExtendWith(MockitoExtension.class)
 public class CategoryTest {
     private final static  String categoryName = "액티비티";
     private final static String subCategoryName = "레저";
 
 
-    @Mock
+    @InjectMocks
     private CategoryService categoryService;
 
-
-    @BeforeEach
-    public void setUp(){
-        MockitoAnnotations.initMocks(this);
-    }
+    @Mock
+    private CategoryRepository categoryRepository;
 
     @Test
     @DisplayName("카테고리 생성 테스트")
     public void saveCategoryTest(){
-        //given
-        CategoryReqDto categoryReqDto = mock(CategoryReqDto.class);
-        when(categoryReqDto.getCategoryName()).thenReturn(categoryName);
+        // given
+        CategoryReqDto categoryReqDto = new CategoryReqDto();
+        categoryReqDto.setCategoryName(categoryName);
+        categoryReqDto.setParentCategoryId(null);
 
-        CategoryResDto categoryResDto = mock(CategoryResDto.class);
-        when(categoryResDto.getName()).thenReturn(categoryName);
+        Category savedCategory = Category.builder()
+                .id(1L)
+                .name(categoryName)
+                .parent(null)
+                .build();
 
-        when(categoryService.saveCategory(categoryReqDto)).thenReturn(categoryResDto);
+        when(categoryRepository.save(any(Category.class))).thenReturn(savedCategory);
 
-        //when
-        String result = categoryService.saveCategory(categoryReqDto).getName();
+        // when
+        CategoryResDto result = categoryService.saveCategory(categoryReqDto);
 
-        //then
-        assertEquals(categoryName, result);
-        verify(categoryService, times(1)).saveCategory(categoryReqDto);
+        // then
+        assertEquals(categoryName, result.getName());
+        assertNull(result.getParentId());
+        verify(categoryRepository, times(1)).save(any(Category.class));
     }
     @Test
     @DisplayName("하위 카테고리 생성 테스트")
     public void saveSubCategoryTest() {
-        //given
-        Long parentId = 1L;
-        Category category = mock(Category.class);
-        when(category.getId()).thenReturn(parentId);
+        // given
 
-        CategoryReqDto categoryReqDto = mock(CategoryReqDto.class);
-        when(categoryReqDto.getCategoryName()).thenReturn(subCategoryName);
-        when(categoryReqDto.getParentCategoryId()).thenReturn(parentId);
+        Long parentCategoryId = 1L;
 
-        CategoryResDto subCategoryResDto = mock(CategoryResDto.class);
-        when(subCategoryResDto.getName()).thenReturn(subCategoryName);
-        when(subCategoryResDto.getParentId()).thenReturn(parentId);
+        Category parentCategory = Category.builder()
+                .id(parentCategoryId)
+                .name(categoryName)
+                .build();
 
-        when(categoryService.saveCategory(categoryReqDto)).thenReturn(subCategoryResDto);
+        CategoryReqDto categoryReqDto = new CategoryReqDto();
+        categoryReqDto.setCategoryName(subCategoryName);
+        categoryReqDto.setParentCategoryId(parentCategoryId);
 
-        //when
+        Category savedCategory = Category.builder()
+                .id(2L)
+                .name(subCategoryName)
+                .parent(parentCategory)
+                .build();
+
+        when(categoryRepository.findById(parentCategoryId)).thenReturn(Optional.of(parentCategory));
+        when(categoryRepository.save(any(Category.class))).thenReturn(savedCategory);
+
+        // when
         CategoryResDto result = categoryService.saveCategory(categoryReqDto);
 
-        //then
+        // then
         assertEquals(subCategoryName, result.getName());
-        assertEquals(1L, result.getParentId());
-        verify(categoryService, times(1)).saveCategory(any(CategoryReqDto.class));
+        assertNotNull(result.getParentId());
+        assertEquals(parentCategoryId, result.getParentId());
+        verify(categoryRepository, times(1)).findById(parentCategoryId);
+        verify(categoryRepository, times(1)).save(any(Category.class));
 
     }
 
@@ -87,23 +101,20 @@ public class CategoryTest {
         //given
         int testCount = 3;
 
-        List<CategoryResDto> mockCategoryList = new ArrayList<>();
+        List<Category> categoryList = new ArrayList<>();
+
         for (int i = 0; i < testCount; i++) {
             Category category = mock(Category.class);
-            Long categoryId = i + 1L;
-            when(category.getId()).thenReturn(categoryId);
-            when(category.getParent()).thenReturn(null);
-            CategoryResDto categoryResDto = new CategoryResDto(category);
-            mockCategoryList.add(categoryResDto);
+            categoryList.add(category);
         }
-        when(categoryService.findAllCategory()).thenReturn(mockCategoryList);
+        when(categoryRepository.findAll()).thenReturn(categoryList);
 
         //when
         List<CategoryResDto> result = categoryService.findAllCategory();
 
         //then
         assertEquals(testCount, result.size());
-        verify(categoryService, times(1)).findAllCategory();
+        verify(categoryRepository, times(1)).findAll();
     }
 
     @Test
@@ -111,12 +122,10 @@ public class CategoryTest {
     public void findCategoryTest(){
         //given
         Long categoryId = 1L;
-
-        CategoryResDto mockCategoryResDto = mock(CategoryResDto.class);
-        when(mockCategoryResDto.getId()).thenReturn(categoryId);
-        when(mockCategoryResDto.getName()).thenReturn(categoryName);
-
-        when(categoryService.findCategoryById(categoryId)).thenReturn(mockCategoryResDto);
+        Category category = mock(Category.class);
+        when(category.getId()).thenReturn(categoryId);
+        when(category.getName()).thenReturn(categoryName);
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
 
         //when
         CategoryResDto result = categoryService.findCategoryById(categoryId);
@@ -124,7 +133,7 @@ public class CategoryTest {
         //then
         assertEquals(categoryId, result.getId());
         assertEquals(categoryName, result.getName());
-        verify(categoryService, times(1)).findCategoryById(categoryId);
+        verify(categoryRepository, times(1)).findById(categoryId);
     }
 
     @Test
@@ -132,22 +141,26 @@ public class CategoryTest {
     public void updateCategoryTest() {
         //given
         Long categoryId = 1L;
-        CategoryReqDto updateCategoryReqDto = mock(CategoryReqDto.class);
-        when(updateCategoryReqDto.getCategoryName()).thenReturn("공연/전시/체험");
+        String updateCategoryName = "공연/전시/체험";
+        Category category = mock(Category.class);
 
-        CategoryResDto updatedCategory = mock(CategoryResDto.class);
+        Category updatedCategory = mock(Category.class);
         when(updatedCategory.getId()).thenReturn(categoryId);
-        when(updatedCategory.getName()).thenReturn("공연/전시/체험");
+        when(updatedCategory.getName()).thenReturn(updateCategoryName);
 
-        when(categoryService.updateCategory(categoryId, updateCategoryReqDto)).thenReturn(updatedCategory);
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+        when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
+
+        CategoryReqDto updatedCategoryReqDto = mock(CategoryReqDto.class);
+        when(updatedCategoryReqDto.getCategoryName()).thenReturn("공연/전시/체험");
 
         //when
-        CategoryResDto result = categoryService.updateCategory(categoryId, updateCategoryReqDto);
+        CategoryResDto result = categoryService.updateCategory(categoryId, updatedCategoryReqDto);
 
         //then
         assertEquals(categoryId, result.getId());
-        assertEquals("공연/전시/체험", result.getName());
-        verify(categoryService, times(1)).updateCategory(categoryId, updateCategoryReqDto);
+        assertEquals(updateCategoryName, result.getName());
+        verify(categoryRepository, times(1)).save(category);
 
     }
 
@@ -157,11 +170,14 @@ public class CategoryTest {
         //given
         Long categoryId = 1L;
 
+        Category category = mock(Category.class);
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+
         //when
         categoryService.deleteCategory(categoryId);
 
         //then
-        verify(categoryService,times(1)).deleteCategory(categoryId);
+        verify(categoryRepository,times(1)).delete(category);
 
     }
 

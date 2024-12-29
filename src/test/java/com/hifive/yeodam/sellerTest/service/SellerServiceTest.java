@@ -1,12 +1,10 @@
 package com.hifive.yeodam.sellerTest.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.entity.Role;
 import com.hifive.yeodam.auth.entity.RoleType;
-import com.hifive.yeodam.auth.exception.AuthErrorResult;
-import com.hifive.yeodam.auth.exception.AuthException;
 import com.hifive.yeodam.auth.repository.AuthRepository;
-import com.hifive.yeodam.auth.repository.RoleRepository;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
 import com.hifive.yeodam.seller.entity.Seller;
@@ -33,21 +31,16 @@ class SellerServiceTest {
     @Mock
     private AuthRepository authRepository;
 
-    @Mock
-    private RoleRepository roleRepository;
-
     @InjectMocks
     private SellerService sellerService;
 
     private Seller seller;
     private Auth auth;
-    private Role role;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(1L, "email@email.com", "password");
-        role = new Role(auth, RoleType.SELLER);
+        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER);
         seller = new Seller(null, auth, "Company", "Owner", "Company Bio", "01012345678");
     }
 
@@ -61,7 +54,6 @@ class SellerServiceTest {
         when(joinRequest.getOwner()).thenReturn("Owner");
 
         when(authRepository.existsByEmail(anyString())).thenReturn(true);
-        when(roleRepository.save(any(Role.class))).thenReturn(role);
         when(sellerRepository.save(any(Seller.class))).thenReturn(seller);
 
         // when
@@ -85,11 +77,11 @@ class SellerServiceTest {
         when(authRepository.existsByEmail("email@email.com")).thenReturn(false);
 
         // when & then
-        AuthException exception = assertThrows(AuthException.class, () -> {
+        CustomException exception = assertThrows(CustomException.class, () -> {
             sellerService.createSeller(joinRequest, auth);
         });
 
-        assertEquals(AuthErrorResult.DUPLICATED_EMAIL_JOIN, exception.getErrorResult());
+        assertEquals(CustomErrorCode.DUPLICATED_EMAIL_JOIN, exception.getCustomErrorCode());
         verify(authRepository, times(1)).existsByEmail(anyString());
         verify(sellerRepository, never()).save(any(Seller.class));
     }
@@ -98,7 +90,7 @@ class SellerServiceTest {
     @Test
     void updateSellerTest() {
         // given
-        SellerUpdateRequest updateRequest = new SellerUpdateRequest("Updated Company", "Updated Owner", "Updated Bio", "01087654321");
+        SellerUpdateRequest updateRequest = new SellerUpdateRequest("password", "Updated Company", "Updated Owner", "Updated Bio", "01087654321");
 
         when(sellerRepository.findById(anyLong())).thenReturn(Optional.of(seller));
         when(sellerRepository.save(seller)).thenReturn(seller);
@@ -113,7 +105,6 @@ class SellerServiceTest {
         assertEquals("Updated Bio", updatedSeller.getBio());
         assertEquals("01087654321", updatedSeller.getPhone());
         verify(sellerRepository, times(1)).findById(1L);
-        verify(sellerRepository, times(1)).save(any(Seller.class));
     }
 
     // 판매자 정보 수정 실패

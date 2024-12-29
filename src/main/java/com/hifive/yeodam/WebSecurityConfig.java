@@ -30,7 +30,7 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/join", "/logout", "/order/**", "/api/**", "tours/**").permitAll()
+                        .requestMatchers("/", "/login", "/join", "/logout", "/order/**", "/api/**", "tours/**", "/carts/**").permitAll()
                         .requestMatchers("/users/join", "/users/email-check", "/users/nickname-check", "/users/password-check").permitAll()
                         .requestMatchers("/sellers", "/sellers/join", "/sellers/check-email").permitAll()
                         .anyRequest().authenticated()
@@ -39,7 +39,7 @@ public class WebSecurityConfig {
                         .loginPage("/login") // 커스텀 로그인 페이지
                         .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
-                        .failureUrl("/login?error")
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .rememberMe(rm -> rm

@@ -112,37 +112,48 @@
 </head>
 <body>
 <div class="custom-container">
-    <a href="#" class="back-button">←</a>
-    <form action="/order" method="post" th:object="${orderRequest}" id="order-form">
+    <a onclick="history.back()" class="back-button">←</a>
+    <form th:action="@{/api/orders}" method="post" th:object="${addOrderRequest}" id="order-form">
+        <div class="section" th:each="request : ${addOrderRequest.orderRequests}">
 
-        <!-- 상품 정보 -->
-        <div class="section" th:each="item : ${orderRequest.items}">
-            <input class="input" type="hidden" th:field="*{items[__${itemStat.index}__].id}">
-            <input type="hidden" th:field="*{items[__${itemStat.index}__].price}">
-            <input type="hidden" th:field="*{items[__${itemStat.index}__].count}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].price}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].itemId}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].count}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].guideId}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].startDate}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].endDate}">
 
-            <h2 class="text-start item-title" id="itemName" th:text="${item.name}">투어 제목</h2>
-            <!--    <p><strong>날짜:</strong> <span th:text="${#temporals.format(item.period, 'yyyy년 MM월 dd일')}"></span></p>-->
-            <p class="text-start">인원: <span th:text="${item.count} + '명'"></span></p>
-            <p class="text-start">비용: <span th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'"></span>
+            <h2 class="text-start item-title" th:text="${request.name}">투어 제목</h2>
+            <div class="text-start mt-3 mb-3">
+                <p>날짜:
+                    <span th:text="${#temporals.format(request.startDate, 'yyyy년 MM월 dd일')}">시작일</span> ~
+                    <span th:text="${#temporals.format(request.endDate, 'yyyy년 MM월 dd일')}">종료일</span>
+                </p>
+            </div>
+            <p class="text-start">인원: <span th:text="${request.count} + '명'">2명</span></p>
+            <p class="text-start">비용:
+                <span th:text="${#numbers.formatInteger(request.price * request.count, 3, 'COMMA')} + '원'">100원</span>
             </p>
 
             <!-- 예약자 정보 -->
-            <h2 class="text-start">예약자 정보</h2>
             <div class="input-field">
-                <label for="name">이름</label>
-                <input type="text" id="name" th:field="*{bookerName}" placeholder="투어를 하실 분의 성함을 적어주세요." required/>
+                <label th:for="${#ids.next('item')}">이름</label>
+                <input type="text" th:field="*{orderRequests[__${requestStat.index}__].bookerName}"
+                       placeholder="이름을 입력해주세요" required/>
             </div>
             <div class="input-field">
-                <label for="contact">연락처</label>
-                <input type="text" id="contact" th:field="*{phoneNumber}" placeholder="투어를 하실 분의 연락처를 적어주세요." required/>
+                <label th:for="${#ids.next('phoneNumber')}">연락처</label>
+                <input type="text" th:field="*{orderRequests[__${requestStat.index}__].phoneNumber}"
+                       placeholder="연락처를 입력해주세요" required/>
             </div>
             <div class="input-field">
-                <label for="message">예약 메시지</label>
-                <textarea maxlength="255" id="message" th:field="*{orderMessage}"
+                <label th:for="${#ids.next('orderMessage')}">예약 메시지</label>
+                <textarea th:field="*{orderRequests[__${requestStat.index}__].orderMessage}"
                           placeholder="특이사항이나 요구사항을 적어주세요."></textarea>
             </div>
         </div>
+
+        <!-- 약관 동의 -->
         <div id="policy">
             <h5>약관동의</h5>
             <input type="checkbox" id="check1"/>
@@ -151,51 +162,74 @@
             <label for="check2">여담 개인정보 처리 방침에 동의합니다.</label>
         </div>
     </form>
+
     <button id="submit-btn" onclick="submitOrder()">결제하기</button>
 </div>
 </body>
 <script th:inline="javascript">
 
-    const createPaymentURL = "/api/payment?orderUid=";
-    const paymentStatusCheckUrl = "/api/payment/check?orderUid=";
+    const paymentStatusCheckUrl = "/api/payments/check?orderUid=";
 
     async function submitOrder() {
 
+        if (!validateCheckBox()) {
+            alert("약관에 동의해주세요");
+            return;
+        }
+
         const form = document.getElementById('order-form');
         const data = new FormData(form);
+
         try {
-            let responseJson = await (await fetch(form.action, {
+            let response = await (await fetch(form.action, {
                 method: "POST",
                 body: data
             })).json();
 
-            sessionStorage.setItem("orderUid", responseJson.orderUid);
+            if (response.statusCode === 400 || response.statusCode === 404) {
+                alert(response.message);
+                return;
+            }
 
-
-            const paymentData = await (await fetch(createPaymentURL + responseJson.orderUid, {
-                method: "POST",
-            })).json();
+            sessionStorage.setItem("orderUid", response.orderUid);
 
 
             var IMP = window.IMP;
             IMP.init('imp65451236'); // 아임포트 가맹점 식별코드
 
             requestPay(
-                paymentData.itemName,
-                paymentData.price,
-                paymentData.orderUid,
-                paymentData.username,
-                paymentData.email,
-                paymentData.phone
+                response.itemName,
+                response.price,
+                response.orderUid,
+                response.username,
+                response.email,
+                response.phone
             );
 
         } catch (error) {
-
+            console.log('에러발생 : ' + error);
         }
     }
 
+    function validateCheckBox() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        let allChecked = true;
+
+        checkboxes.forEach((checkbox) => {
+            const label = document.querySelector(`label[for="${checkbox.id}"]`);
+            if (!checkbox.checked) {
+                label.style.color = 'red';
+                allChecked = false;
+            } else {
+                label.style.color = '';
+            }
+        });
+
+        return allChecked;
+    }
+
     window.addEventListener("load", () => {
-        sessionStorage.clear();
+        sessionStorage.removeItem('orderUid');
     });
 
     window.addEventListener("beforeunload", () => {

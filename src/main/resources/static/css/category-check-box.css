@@ -1,0 +1,21 @@
+/* 카테고리 컨테이너 */
+#categoryCheckBox {
+    display: flex;
+    flex-wrap: nowrap; /* 줄 바꿈 금지 */
+    gap: 10px; /* 항목 간 간격 */
+    overflow-x: auto; /* 컨테이너를 넘어가는 경우 가로 스크롤 허용 */
+}
+
+/* 각 항목(체크박스 + 라벨) 정렬 */
+#categoryCheckBox div {
+    display: flex; /* 체크박스와 라벨 가로 정렬 */
+    align-items: center; /* 세로 정렬 중앙 배치 */
+    flex-shrink: 0; /* 항목 크기를 줄이지 않도록 설정 */
+}
+
+/* 체크박스와 라벨 간격 최소화 */
+#categoryCheckBox label {
+    margin-left: 3px; /* 체크박스와 라벨 간 간격 설정 */
+    white-space: nowrap; /* 라벨이 줄 바꿈되지 않도록 설정 */
+}
+

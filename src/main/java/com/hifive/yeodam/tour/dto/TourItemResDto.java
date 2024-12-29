@@ -1,6 +1,8 @@
 package com.hifive.yeodam.tour.dto;
 
 import com.hifive.yeodam.category.dto.CategoryResDto;
+import com.hifive.yeodam.item.dto.ItemImgResDto;
+import com.hifive.yeodam.item.entity.ItemImage;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.tour.entity.TourCategory;
 import com.hifive.yeodam.tour.entity.TourGuide;
@@ -26,8 +28,11 @@ public class TourItemResDto {
 
     private final int maximum;
 
+    private final boolean active;
+
     private final List<CategoryResDto> categoryResDtoList = new ArrayList<>();
     private final List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
+    private final List<ItemImgResDto> itemImgResDtoList = new ArrayList<>();
 
     public TourItemResDto(Tour tour) {
         this.id = tour.getId();
@@ -37,6 +42,7 @@ public class TourItemResDto {
         this.tourRegion = tour.getRegion();
         this.tourPrice = tour.getPrice();
         this.maximum = tour.getMaximum();
+        this.active = tour.isActive();
 
         for(TourCategory tourCategory : tour.getTourCategories()){
             CategoryResDto categoryResDto = new CategoryResDto(tourCategory.getCategory());
@@ -47,5 +53,10 @@ public class TourItemResDto {
             GuideInTourResDto guideInTourResDto = new GuideInTourResDto(tourGuide.getGuide());
             this.guideInTourResDtos.add(guideInTourResDto);
         }
+
+        for(ItemImage itemImage : tour.getItemImages()){
+            this.itemImgResDtoList.add(new ItemImgResDto(itemImage));
+        }
+
     }
 }

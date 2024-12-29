@@ -17,8 +17,27 @@ public enum CustomErrorCode {
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품이 존재하지 않습니다"),
     GUIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 가이드가 존재하지 않습니다"),
 
-    // Cart 관련 ERROR
+    /**
+     * 500 INTERNAL_SERVER_ERROR
+     * 서버 내부 오류
+     */
+    UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에 오류가 발생했습니다"),
+
+    // User 관련 ERROR
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
+    DUPLICATED_NICKNAME_JOIN(HttpStatus.BAD_REQUEST, "이미 등록된 닉네임입니다"),
+
+    // Auth 관련 ERROR
+    DUPLICATED_EMAIL_JOIN(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다"),
+    AUTH_NOT_FOUND(HttpStatus.NOT_FOUND, "인증정보를 찾을 수 없습니다"),
+
+    // Wish 관련 ERROR
+    WISH_NOT_FOUND(HttpStatus.NOT_FOUND, "찜 목록을 찾을 수 없습니다"),
+    WISH_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "찜한 상품을 찾을 수 없습니다"),
+    WISH_ITEM_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 찜한 상품입니다"),
+    WISH_ITEM_DELETE_FAILED(HttpStatus.BAD_REQUEST, "찜한 상품 삭제에 실패했습니다"),
+
+    // Cart 관련 ERROR
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"),
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다"),
     CART_ITEM_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 장바구니에 존재하는 상품입니다"),
@@ -27,12 +46,17 @@ public enum CustomErrorCode {
     INVALID_ITEM_COUNT(HttpStatus.BAD_REQUEST, "수량은 1개 이상이어야 합니다"),
 
     //주문 관련 ERROR
-    NOT_ENOUGH_STOCK(HttpStatus.NOT_FOUND, "해당 상품의 재고가 없습니다"),
-    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문이 존재하지 않습니다"),
+    NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "해당 상품의 재고가 없습니다."),
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문이 존재하지 않습니다."),
+    ORDER_CAN_NOT_CANCEL(HttpStatus.BAD_REQUEST, "해당 주문을 취소할 수 없습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
-    PAYMENT_FAILED(HttpStatus.NOT_FOUND, "결제에 실패했습니다"),
-    PAYMENT_CANCELED(HttpStatus.NOT_FOUND, "결제 취소에 실패했습니다"),
-    I_AM_PORT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "아이엠 포트 결제 조회에 실패했습니다"),
+    PAYMENT_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다."),
+    PAYMENT_CANCELED(HttpStatus.BAD_REQUEST, "결제 취소에 실패했습니다."),
+    I_AM_PORT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "아이엠 포트 결제 조회에 실패했습니다."),
+
+    //예약 관련 ERROR
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 내역이 존재하지 않습니다."),
+    RESERVED_GUIDE(HttpStatus.BAD_REQUEST, "이미 예약되어있는 가이드 입니다.")
     ;
 
 

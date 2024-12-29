@@ -69,9 +69,12 @@ public class CategoryService {
     }
     /*카테고리 삭제*/
     public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
+
         //하위 카테고리가 존재하는 상위 카테고리 삭제 요청 시 발생하는 오류 추후 예외 처리
         // -> 하위 카테고리가 존재할 경우 상위 카테고리는 삭제되서는 안됨
-        categoryRepository.deleteById(id);
+        categoryRepository.delete(category);
     }
 
 }

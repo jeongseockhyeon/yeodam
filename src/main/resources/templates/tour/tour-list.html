@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>여행 상품 목록</title>
+    <link rel="stylesheet" href="/css/tour-list.css">
+    <link rel="stylesheet" href="/css/category-check-box.css">
+</head>
+<body>
+<div class="container">
+    <aside class="sidebar">
+        <!-- 정렬 -->
+        <div class="dropdown">
+            <button class="dropdown-btn">정렬</button>
+            <div class="dropdown-content">
+                <button value="rating">평점순</button>
+                <button value="price">가격순</button>
+                <button value="reviews">후기 많은 순</button>
+            </div>
+        </div>
+
+        <!-- 카테고리 -->
+        <div class="dropdown">
+            <button class="dropdown-btn">테마</button>
+            <div class="dropdown-content" id="categoryCheckBox">
+                <!--카테고리 체크박스 렌더링-->
+            </div>
+        </div>
+
+        <!-- 가이드 유형 -->
+        <div class="dropdown">
+            <button class="dropdown-btn">가이드 유형</button>
+            <div class="dropdown-content">
+                <button value="personal">개인</button>
+                <button value="company">업체</button>
+            </div>
+        </div>
+
+        <!-- 기간 -->
+        <div class="dropdown">
+            <button class="dropdown-btn">기간</button>
+            <div class="dropdown-content">
+                <button value="1일">1일</button>
+                <button value="7일 이상">7일 이상</button>
+            </div>
+        </div>
+
+        <!-- 가격 -->
+        <div class="dropdown">
+            <button class="dropdown-btn">가격</button>
+            <div class="dropdown-content">
+                <div>
+                    <input type="number" id="minPrice" placeholder="최소금액"> ~
+                    <input type="number" id="maxPrice" placeholder="최대금액">
+                </div>
+            </div>
+        </div>
+
+        <!-- 지역 -->
+        <div class="dropdown">
+            <button class="dropdown-btn">지역</button>
+            <div class="dropdown-content">
+                <input type="text" id = "region">
+            </div>
+        </div>
+        <!-- 필터 적용 -->
+        <div class="apply-filters">
+            <button id="applyFiltersBtn">검색</button>
+        </div>
+    </aside>
+    <section class="tour-list" id="tourList">
+        <!-- 여행 상품 카드 -->
+    </section>
+</div>
+<script src="/js/item/getCategory.js"></script>
+<script src="/js/item/getTourItem.js"></script>
+<script src="/js/item/activeDropdown.js"></script>
+</body>
+</html>

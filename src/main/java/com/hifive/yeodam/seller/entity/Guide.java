@@ -1,17 +1,14 @@
 package com.hifive.yeodam.seller.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.cglib.core.Local;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Guide {
@@ -20,6 +17,7 @@ public class Guide {
     private Long guideId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "company_id")
     private Seller seller;
 
@@ -28,4 +26,10 @@ public class Guide {
     private String gender;
     private String phone;
     private String bio;
+
+    public void update(String name, String phone, String bio) {
+        this.name = name;
+        this.phone = phone;
+        this.bio = bio;
+    }
 }

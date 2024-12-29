@@ -10,4 +10,5 @@ public class CustomExceptionHandler {
     protected ResponseEntity<CustomErrorResponseDto> handleCustomException(CustomException e) {
         return CustomErrorResponseDto.toResponseEntity(e.getCustomErrorCode());
     }
+
 }
