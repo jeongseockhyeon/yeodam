@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class Auth implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
+
+    private LocalDate expirationDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -61,5 +64,10 @@ public class Auth implements UserDetails {
 
     public void update(String password) {
         this.password = password;
+    }
+
+    public void
+    update(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
     }
 }

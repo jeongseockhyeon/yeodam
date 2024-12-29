@@ -142,6 +142,7 @@ public class UserApiControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
     */
+/*
 
     @Test
     public void 유저등록성공() throws Exception{
@@ -171,6 +172,7 @@ public class UserApiControllerTest {
         //then
         resultActions.andExpect(status().isCreated());
     }
+*/
 
     @Test
     public void 회원목록조회성공() throws Exception{

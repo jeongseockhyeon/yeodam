@@ -33,7 +33,7 @@ public class UserViewController {
 
         model.addAttribute("joinRequest", new JoinRequest());
 
-        return "user-join";
+        return "user/user-join";
     }
 
     @GetMapping("/logout")
@@ -59,7 +59,7 @@ public class UserViewController {
 
         model.addAttribute("user", userResponse);
 
-        return "user-detail";
+        return "user/user-detail";
     }
 
     @GetMapping("/edit")
@@ -79,7 +79,7 @@ public class UserViewController {
 
         model.addAttribute("userUpdateRequest", userUpdateRequest);
 
-        return "user-edit";
+        return "user/user-edit";
     }
 
     @PutMapping
@@ -89,7 +89,7 @@ public class UserViewController {
         userService.checkDuplicatedNickname(request, result);
 
         if(result.hasErrors()) {
-            return "user-edit";
+            return "user/user-edit";
         }
 
         UserResponse userResponse = userService.getUserByAuth(auth);

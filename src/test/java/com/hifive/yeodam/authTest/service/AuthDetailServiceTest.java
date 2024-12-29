@@ -3,6 +3,8 @@ package com.hifive.yeodam.authTest.service;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.auth.service.AuthDetailService;
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,10 +36,10 @@ class AuthDetailServiceTest {
         doReturn(Optional.empty()).when(authRepository).findByEmail(email);
 
         //when
-        IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () -> target.loadUserByUsername(email));
+        CustomException result = assertThrows(CustomException.class, () -> target.loadUserByUsername(email));
 
         //then
-        assertThat(result.getMessage()).isEqualTo(email + " not found");
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.AUTH_NOT_FOUND);
     }
 
     @Test

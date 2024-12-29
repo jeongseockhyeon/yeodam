@@ -38,7 +38,7 @@ class SellerApiControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER);
+        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER, null);
         seller = new Seller(null, auth, "Company", "Owner", "Company Bio", "01012345678");
         sellerId = 1L;
     }

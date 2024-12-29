@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
@@ -52,6 +55,28 @@ class AuthRepositoryTest {
         
         //then
         assertThat(result).isTrue();
+    }
+
+    @Test
+    public void 만료날짜인인증잘가져오는지() throws Exception{
+        //given
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate tomorrow = today.plusDays(1);
+
+        Auth auth1 = Auth.builder().expirationDate(today).build();
+        Auth auth2 = Auth.builder().expirationDate(yesterday).build();
+        Auth auth3 = Auth.builder().expirationDate(tomorrow).build();
+
+        authRepository.save(auth1);
+        authRepository.save(auth2);
+        authRepository.save(auth3);
+
+        //when
+        List<Auth> result = authRepository.findByExpirationDate(today);
+
+        //then
+        assertThat(result.size()).isEqualTo(1);
     }
 
 }
