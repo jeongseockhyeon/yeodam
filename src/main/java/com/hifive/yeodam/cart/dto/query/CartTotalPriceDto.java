@@ -1,4 +1,4 @@
-package com.hifive.yeodam.cart.dto;
+package com.hifive.yeodam.cart.dto.query;
 
 import lombok.AccessLevel;
 import lombok.Builder;
