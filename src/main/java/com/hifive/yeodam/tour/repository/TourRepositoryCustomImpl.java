@@ -1,6 +1,7 @@
 package com.hifive.yeodam.tour.repository;
 
 import com.hifive.yeodam.category.entity.QCategory;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.entity.QTour;
 import com.hifive.yeodam.tour.entity.QTourCategory;
@@ -60,5 +61,25 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
             results.removeLast();
         }
         return new SliceImpl<>(results, PageRequest.of(0, pageSize), hasNext);
+    }
+
+    @Override
+    public Slice<Tour> findBySeller(Long cursorId, int pageSize, Seller targetSeller) {
+        QTour tour = QTour.tour;
+        BooleanBuilder builder = new BooleanBuilder();
+        if (targetSeller != null) {
+            builder.and(tour.seller.eq(targetSeller));
+        }
+        List<Tour> result = jpaQueryFactory.select(tour)
+                .from(tour)
+                .where(builder)
+                .orderBy(tour.id.desc())
+                .limit(pageSize + 1)
+                .fetch();
+        boolean hasNext = result.size() > pageSize;
+        if(hasNext){
+            result.removeLast();
+        }
+        return new SliceImpl<>(result, PageRequest.of(0, pageSize), hasNext);
     }
 }
