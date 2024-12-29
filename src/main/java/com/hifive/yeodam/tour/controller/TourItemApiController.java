@@ -27,7 +27,9 @@ public class TourItemApiController {
     }
 
     @GetMapping
-    public ResponseEntity<Slice<TourItemResDto>> findAll(@RequestParam(required = false) Long cursorId, @RequestParam(defaultValue = "2") int pageSize, @ModelAttribute SearchFilterDto searchFilterDto) {
+    public ResponseEntity<Slice<TourItemResDto>> findAll(@RequestParam(required = false) Long cursorId,
+                                                         @RequestParam(defaultValue = "2") int pageSize,
+                                                         @ModelAttribute SearchFilterDto searchFilterDto) {
         return ResponseEntity.ok(tourItemService.getSearchFilterTour(cursorId, pageSize, searchFilterDto));
     }
 
