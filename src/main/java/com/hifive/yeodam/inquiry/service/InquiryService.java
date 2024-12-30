@@ -22,14 +22,6 @@ public class InquiryService {
 
     @Transactional
     public Inquiry createInquiry(AddInquiryRequest request, Auth auth) {
-        Inquiry parentInquiry;
-        if(request.getParentId() != null) {
-            parentInquiry = inquiryRepository.findById(request.getParentId())
-                    .orElseThrow(() -> new RuntimeException("해당 문의를 찾을 수 없습니다."));
-            parentInquiry.update();
-        } else {
-            parentInquiry = null;
-        }
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() -> new RuntimeException("해당 상품을 찾을 수 없습니다."));
         Inquiry inquiry = Inquiry.builder()
@@ -38,7 +30,7 @@ public class InquiryService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .isAnswered("N")
-                .parentInquiry(parentInquiry)
+                .parentInquiry(null)
                 .build();
 
         return inquiryRepository.save(inquiry);
@@ -57,10 +49,42 @@ public class InquiryService {
         Inquiry inquiry = inquiryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 문의를 찾을 수 없습니다."));
 
-        if (!inquiry.getAuth().getId().equals(auth.getId())) {
-            throw new RuntimeException("삭제 권한이 없습니다.");
+        if(inquiry.getIsAnswered().equals("Y")) {
+            Inquiry answer = inquiryRepository.findByParentInquiryId(id);
+            inquiryRepository.deleteById(answer.getId());
         }
 
         inquiryRepository.delete(inquiry);
+    }
+
+    @Transactional
+    public List<InquiryResponse> getInquiriesByItemIds(List<Long> itemIds) {
+        List<Inquiry> inquiries = inquiryRepository.findByItemIdIn(itemIds);
+        return inquiries.stream()
+                .map(InquiryResponse::new)
+                .toList();
+    }
+
+    @Transactional
+    public void answerInquiry(Long id, AddInquiryRequest request, Auth auth) {
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 문의를 찾을 수 없습니다."));
+
+        if (inquiry.getIsAnswered().equals("Y")) {
+            throw new RuntimeException("이미 답변이 완료된 문의입니다.");
+        }
+
+        inquiry.update();
+
+        Inquiry answer = Inquiry.builder()
+                .auth(auth)
+                .item(inquiry.getItem())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .isAnswered("Y")
+                .parentInquiry(inquiry)
+                .build();
+
+        inquiryRepository.save(answer);
     }
 }

@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/inquiries")
 public class InquiryViewController {
     @GetMapping("/user")
-    public String showInquiryList() {
+    public String showUserInquiryList() {
         return "inquiry/user-inquiry";
+    }
+    @GetMapping("/seller")
+    public String showSellerInquiryList() {
+        return "inquiry/seller-inquiry";
     }
 }

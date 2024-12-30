@@ -23,7 +23,7 @@ async function submitInquiry() {
     const payload = { itemId: id, title, content, parentId: null };
 
     try {
-        const response = await fetch('/inquires/add', {
+        const response = await fetch('/inquiries/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

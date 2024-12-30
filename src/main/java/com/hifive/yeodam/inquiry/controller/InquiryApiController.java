@@ -2,9 +2,11 @@ package com.hifive.yeodam.inquiry.controller;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.inquiry.dto.AddInquiryRequest;
+import com.hifive.yeodam.inquiry.dto.InquiryResponse;
 import com.hifive.yeodam.inquiry.service.InquiryService;
+import com.hifive.yeodam.item.service.ItemService;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.service.SellerService;
-import com.hifive.yeodam.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -20,8 +24,8 @@ import org.springframework.web.bind.annotation.*;
 public class InquiryApiController {
 
     private final InquiryService inquiryService;
-    private final UserService userService;
     private final SellerService sellerService;
+    private final ItemService itemService;
 
     @PostMapping("/add")
     public ResponseEntity<?> createInquiry (@RequestBody @Valid AddInquiryRequest request, Authentication authentication) {
@@ -42,9 +46,19 @@ public class InquiryApiController {
         return ResponseEntity.noContent().build();
     }
 
-//    @GetMapping("/seller")
-//    public ResponseEntity<?> getInquiryListBySeller(Authentication authentication) {
-//        Auth auth = (Auth) authentication.getPrincipal();
-//        return ResponseEntity.ok(inquiryService.getInquiryByAuth(auth));
-//    }
+    @GetMapping("/seller/data")
+    public ResponseEntity<?> getInquiryListBySeller(Authentication authentication) {
+        Auth auth = (Auth) authentication.getPrincipal();
+        Seller seller = sellerService.getSellerByAuth(auth);
+        List<Long> itemIds = itemService.getItemsBySeller(seller.getCompanyId());
+        List<InquiryResponse> inquiries = inquiryService.getInquiriesByItemIds(itemIds);
+        return ResponseEntity.ok(inquiries);
+    }
+
+    @PostMapping("/{id}/answer")
+    public ResponseEntity<?> answerInquiry(@PathVariable Long id, @RequestBody AddInquiryRequest request, Authentication authentication) {
+        Auth auth = (Auth) authentication.getPrincipal();
+        inquiryService.answerInquiry(id, request, auth);
+        return ResponseEntity.ok().build();
+    }
 }
