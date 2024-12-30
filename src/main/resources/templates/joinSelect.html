@@ -6,6 +6,7 @@
   <title>회원가입</title>
 
   <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" href="/css/style.css">
 
   <style>
 
@@ -25,21 +26,24 @@
   </style>
 </head>
 <body>
-  <div class="d-flex justify-content-center align-items-center vh-100">
-    <a th:href="@{/users/join}" class="text-decoration-none text-dark">
-      <div class="custom-card d-flex flex-column justify-content-center align-items-center">
-        <img th:src="@{/images/icon.png}" class="custom-icon" alt="유저">
-        <b>여행자 등록</b>
-      </div>
-    </a>
-    <a th:href="@{/sellers/join}" class="text-decoration-none text-dark">
-      <div class="custom-card d-flex flex-column justify-content-center align-items-center">
-        <img th:src="@{/images/icon.png}" class="custom-icon" alt="유저">
-        <b>파트너 등록</b>
-      </div>
-    </a>
-  </div>
+  <div class="d-flex flex-column align-items-center justify-content-center vh-100">
+    <a href="/"><img src="/images/logo.png" class="mb-3" alt="로고" width="446" height="129"></a>
 
+    <div class="d-flex justify-content-center align-items-center mb-5">
+      <a th:href="@{/users/join}" class="text-decoration-none text-dark">
+        <div class="custom-card d-flex flex-column justify-content-center align-items-center">
+          <img th:src="@{/images/icon.png}" class="custom-icon" alt="유저">
+          <b>여행자 등록</b>
+        </div>
+      </a>
+      <a th:href="@{/sellers/join}" class="text-decoration-none text-dark">
+        <div class="custom-card d-flex flex-column justify-content-center align-items-center">
+          <img th:src="@{/images/icon.png}" class="custom-icon" alt="유저">
+          <b>파트너 등록</b>
+        </div>
+      </a>
+    </div>
+  </div>
 
 </body>
 </html>
