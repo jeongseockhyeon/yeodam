@@ -240,13 +240,15 @@ public class TourItemService {
     }
     /*상품_여행 판매자 조회*/
     @Transactional(readOnly = true)
-    public List<TourItemResDto> findBySeller(Auth auth){
+    public Slice<TourItemResDto> findBySeller(Long cursorId, int pageSize,Auth auth){
         Seller seller = sellerService.getSellerByAuth(auth);
-        List<Tour> sellerTours = tourRepository.findBySeller(seller);
-        return sellerTours.stream()
+        Slice<Tour> sellerTours = tourRepository.findBySeller(cursorId,pageSize,seller);
+        List<TourItemResDto> tourItemResDtoList =  sellerTours.stream()
                 .map(TourItemResDto::new)
                 .toList();
+        return new SliceImpl<>(tourItemResDtoList, sellerTours.getPageable(), sellerTours.hasNext());
     }
+
     //formData로 인해 문자열로 들어오는 id들을 리스트 List<Long>으로 변환
     public List<Long> convertToList(String arg) {
         if (arg == null || arg.trim().equals("[]")) {

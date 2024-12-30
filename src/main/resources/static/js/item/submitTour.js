@@ -85,10 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "삭제";
             deleteButton.className = "remove-image";
-            deleteButton.style.position = "absolute";
-            deleteButton.style.top = "5px";
-            deleteButton.style.right = "5px";
-
 
             deleteButton.onclick = () => {
                 // 업로드된 파일에서 제거

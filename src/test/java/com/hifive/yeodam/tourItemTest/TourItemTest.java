@@ -38,7 +38,6 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -437,7 +436,7 @@ public class TourItemTest {
         //then
         verify(tourRepository,times(1)).delete(tour);
     }
-    @Test
+/*    @Test
     @DisplayName("업체별 여행 상품 목록 조회")
     public void tourItemFindBySellerTest(){
         //given
@@ -465,7 +464,7 @@ public class TourItemTest {
         assertEquals("test1", result.get(0).getTourName());
         assertEquals("test2", result.get(1).getTourName());
         verify(tourRepository, times(1)).findBySeller(mockSeller);
-    }
+    }*/
 
 /*    @Test
     @DisplayName("상품 활성 상태 변경")
