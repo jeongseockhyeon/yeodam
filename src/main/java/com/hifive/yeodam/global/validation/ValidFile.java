@@ -15,4 +15,5 @@ public @interface ValidFile {
     String message() default "Invalid file";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+    UploadAllowImageTypeDefine[] allowImageTypeDefine() default {};
 }

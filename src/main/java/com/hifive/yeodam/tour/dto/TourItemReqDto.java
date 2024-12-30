@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static com.hifive.yeodam.global.validation.UploadAllowImageTypeDefine.*;
+
 @Getter
 public class TourItemReqDto {
 
@@ -39,7 +41,7 @@ public class TourItemReqDto {
     @NotNull(message = "가이드 1명 이상을 선택해주세요.")
     private final String guideIdList;
 
-    @ValidFile
+    @ValidFile(allowImageTypeDefine = {JPG, PNG, JPEG})
     private final List<MultipartFile> tourImages;
 
     public TourItemReqDto(String tourName,
