@@ -1,126 +1,23 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>상품 상세 페이지</title>
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            display: flex;
-            flex-direction: row;
-            margin: 20px;
-        }
-        .left-section {
-            flex: 3;
-        }
-        .right-section {
-            flex: 1;
-            margin-left: 20px;
-        }
-        .calendar {
-            margin: 20px 0;
-        }
-        .images {
-            display: flex;
-            gap: 10px;
-        }
-        .images img {
-            width: calc(50% - 5px);
-            height: auto;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .detail-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            padding: 8px 0;
-            border-bottom: 1px solid #e0e0e0; /* Optional: Divider between rows */
-        }
-
-        .detail-label {
-            font-weight: bold;
-            color: #666;
-            margin-right: 8px;
-        }
-
-        .detail-value {
-            color: #333;
-            margin-right: 16px;
-            flex-grow: 1;
-        }
-        .reserve-section {
-            border: 1px solid #ddd;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-            border-radius: 5px;
-        }
-        /* 캘린더 크기 조정 */
-        #calendar {
-            max-width: 900px;
-            margin: auto;
-        }
-        .btn-like {
-            background-color: transparent;
-            border: none;
-            color: #ff6b6b;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn-like:hover {
-            color: #ff4040;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/css/item-detail.css">
 </head>
-<body>
+<body class="detail-body">
 <div class="container">
     <!-- 왼쪽 섹션 -->
     <div class="left-section">
-        <h1 id="tourName"></h1>
         <div class="images">
             <img id="mainImage" alt="Main Image">
             <img id="additionalImage" alt="Additional Image" style="display: none;">
         </div>
         <h2>상품 제목</h2>
+        <h3 id="tourName"></h3>
         <div class="detail-container">
             <div class="detail-row">
                 <span class="detail-label">가이드</span>
@@ -128,6 +25,9 @@
 
                 <span class="detail-label">기간</span>
                 <span id="tourPeriod" class="detail-value"></span>
+
+                <span class="detail-label">최대 인원</span>
+                <span id="maximum" class="detail-value"></span>
 
                 <span class="detail-label">테마</span>
                 <span id="categories" class="detail-value"></span>
@@ -164,74 +64,7 @@
     </div>
 
 </div>
-
-<script>
-    const id = getTourItemIdFromUrl();
-
-    async function fetchTourData() {
-        try {
-            const response = await fetch(`/api/tours/${id}`);
-            if (!response.ok) {
-                throw new Error('데이터를 가져오는데 실패했습니다.');
-            }
-            const data = await response.json();
-            renderTourData(data);
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
-
-    function renderTourData(data) {
-        document.getElementById('tourName').textContent = data.tourName;
-        document.getElementById('mainImage').src = data.itemImgResDtoList[0]?.imgUrl || '';
-        document.getElementById('additionalImage').style.display = data.itemImgResDtoList.length > 1 ? 'block' : 'none';
-        if (data.itemImgResDtoList[1]) {
-            document.getElementById('additionalImage').src = data.itemImgResDtoList[1].imgUrl;
-        }
-
-        document.getElementById('guideName').textContent = data.guideInTourResDtos.length > 0 ? data.guideInTourResDtos[0].name : '없음';
-        document.getElementById('tourPeriod').textContent = data.tourPeriod;
-
-        const categoryContainer = document.getElementById('categories');
-        categoryContainer.textContent = data.categoryResDtoList.map(category => category.name).join(', ');
-
-        document.getElementById('tourDesc').textContent = data.tourDesc;
-        document.getElementById('tourPrice').textContent = `가격: ${data.tourPrice}원`;
-
-        const guideList = document.getElementById('guideList');
-        guideList.innerHTML = ''; // 기존 가이드를 초기화
-        data.guideInTourResDtos.forEach(guide => {
-            const listItem = document.createElement('li');
-            const button = document.createElement('button');
-            button.textContent = guide.name;
-            button.setAttribute('data-name', guide.name);
-            button.setAttribute('data-id', guide.id);
-            button.classList.add('guide-option');
-            button.style.cssText = 'display: block; width: 100%; text-align: left; padding: 5px;';
-            button.onclick = () => selectGuide(button);
-            listItem.appendChild(button);
-            guideList.appendChild(listItem);
-        });
-    }
-
-    function toggleGuideDropdown() {
-        const dropdown = document.getElementById('guideDropdown');
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function selectGuide(button) {
-        const selectedGuide = document.getElementById('selectedGuide');
-        selectedGuide.textContent = `선택된 가이드: ${button.dataset.name}`;
-    }
-
-    // 데이터 가져오기 실행
-    fetchTourData();
-
-    function getTourItemIdFromUrl() {
-        const pathSegments = window.location.pathname.split('/');
-        return pathSegments[2];
-    }
-</script>
-<script src="/js/fullcalendar/fullcalendar.js"></script>
+<script src="/js/item/sendItemInfoToOrder.js"></script>
+<script src="/js/item/getTourDetailToDetailPage.js"></script>
 </body>
 </html>
