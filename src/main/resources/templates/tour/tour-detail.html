@@ -108,7 +108,64 @@
         .btn-like:hover {
             color: #ff4040;
         }
-
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .modal-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .modal-close {
+            float: right;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #333;
+        }
+        .modal-close:hover {
+            color: #000;
+        }
+        .modal input, .modal textarea {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .modal button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal button:hover {
+            background-color: #0056b3;
+        }
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -138,6 +195,7 @@
             <p id="tourDesc"></p>
         </div>
         <div id="calendar" class="calendar"></div>
+        <button id="inquiryAllButton" class="btn-secondary">문의 전체 보기</button>
     </div>
 
     <!-- 오른쪽 섹션 -->
@@ -155,7 +213,7 @@
             <div class="actions">
                 <button class="btn-primary">예약하기</button>
                 <button class="btn-secondary">장바구니 담기</button>
-                <button class="btn-secondary">문의하기</button>
+                <button id="inquiryButton" class="btn-secondary">문의하기</button>
                 <button id="likeButton" class="btn-like">
                     ❤️ 찜하기
                 </button>
@@ -163,6 +221,30 @@
         </div>
     </div>
 
+</div>
+
+<!-- 문의 전체 보기 모달 -->
+<div id="inquiryAllModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('inquiryAllModal')">&times;</span>
+        <div class="modal-header">전체 문의</div>
+        <div id="inquiryList">
+            <p>등록된 문의가 없습니다.</p>
+        </div>
+    </div>
+</div>
+
+<!-- 문의하기 모달 -->
+<div id="inquiryModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('inquiryModal')">&times;</span>
+        <div class="modal-header">문의하기</div>
+        <form id="inquiryForm">
+            <input type="text" id="inquiryTitle" placeholder="문의 제목" required>
+            <textarea id="inquiryContent" placeholder="문의 내용을 입력하세요" rows="10" required></textarea>
+            <button type="button" onclick="submitInquiry()">문의 제출</button>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -233,5 +315,6 @@
     }
 </script>
 <script src="/js/fullcalendar/fullcalendar.js"></script>
+<script src="/js/inquiry/addInquiry.js"></script>
 </body>
 </html>

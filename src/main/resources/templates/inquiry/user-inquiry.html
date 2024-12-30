@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>유저 - 내가 쓴 문의</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .inquiry-box {
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .inquiry-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .inquiry-content {
+            margin-bottom: 10px;
+        }
+        .answer-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .answer-status.pending {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="container">
+        <h1 class="mt-4">문의 내역</h1>
+        <div id="inquiry-list" class="inquiry-list"></div>
+        <div id="empty-message" class="empty-message" style="display: none;">문의 내역이 없습니다.</div>
+    </div>
+</div>
+
+<script src="/js/inquiry/userInquires.js"></script>
+
+</body>
+</html>
