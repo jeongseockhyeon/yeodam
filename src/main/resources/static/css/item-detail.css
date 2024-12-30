@@ -31,8 +31,8 @@
     gap: 10px;
 }
 .images img {
-    width: calc(50% - 5px);
-    height: auto;
+    width: 500px;
+    height: 500px;
     border-radius: 8px;
     cursor: pointer;
 }

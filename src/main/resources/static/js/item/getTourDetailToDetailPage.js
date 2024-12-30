@@ -24,6 +24,7 @@ function renderTourData(data) {
 
     document.getElementById('guideName').textContent = data.guideInTourResDtos.length > 0 ? data.guideInTourResDtos[0].name : '없음';
     document.getElementById('tourPeriod').textContent = data.tourPeriod;
+    document.getElementById('maximum').textContent = data.maximum;
 
     const categoryContainer = document.getElementById('categories');
     categoryContainer.textContent = data.categoryResDtoList.map(category => category.name).join(', ');
@@ -55,6 +56,8 @@ function toggleGuideDropdown() {
 function selectGuide(button) {
     const selectedGuide = document.getElementById('selectedGuide');
     selectedGuide.textContent = `선택된 가이드: ${button.dataset.name}`;
+
+    selectedGuide.setAttribute('data-id', button.dataset.id);
 }
 
 // 데이터 가져오기 실행
@@ -71,10 +74,11 @@ function formatLocalDate(date) {
     const day = date.getDate().toString().padStart(2, '0'); // 1자리 숫자일 경우 0으로 채움
     return `${year}-${month}-${day}`;
 }
+let calendar;
 
 function initializeCalendar(data) {
     const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
         selectable: true,
@@ -111,3 +115,4 @@ function initializeCalendar(data) {
     });
     calendar.render();
 }
+
