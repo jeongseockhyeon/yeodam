@@ -44,9 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${tour.guideInTourResDtos && tour.guideInTourResDtos.length > 0 ? tour.guideInTourResDtos[0].name : '없음'}</td>
             <td>${tour.tourPrice}원</td>
             <td>
-                <a href="/tours/${tour.id}/update">
-                    <button class="edit-button">수정</button>
-                </a>
+                <button class="edit-button" onclick="location.href='/tours/${tour.id}/update'">수정</button>
                 <button class="delete-button" data-id="${tour.id}">삭제</button>
             </td>
             <td>${tour.active ? 'O' : 'X'}</td> 
