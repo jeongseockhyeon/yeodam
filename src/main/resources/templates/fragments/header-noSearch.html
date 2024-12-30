@@ -13,16 +13,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <header th:fragment="header" class="d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
         <a th:href="@{/}"><img class="custom-logo" src="/images/logo.png" alt="로고"></a>
-        <form th:action="@{#}" class="d-flex align-items-center custom-search-box">
-            <button type="submit" class="btn"><i class="bi bi-search"></i></button>
-            <input type="text" name="" placeholder="어디로 떠나시나요?">
-        </form>
     </div>
     <div class="user-menu">
-        <!-- 장바구니 -->
-        <a href="/carts" class="cart-icon">
-            <i class="bi bi-cart2"></i>
-        </a>
 
         <th:block sec:authorize="isAnonymous()">
             <!-- 비로그인 상태 -->
@@ -32,6 +24,11 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
         <!-- 로그인 상태 -->
         <th:block sec:authorize="isAuthenticated()">
+            <!-- 장바구니 -->
+            <a href="/carts" class="cart-icon">
+                <i class="bi bi-cart2"></i>
+            </a>
+
             <!-- 판매자일 경우 -->
             <th:block th:if="${role == 'SELLER'}">
                 <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
