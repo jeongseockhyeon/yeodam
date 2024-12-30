@@ -2,10 +2,13 @@ package com.hifive.yeodam.global.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class CustomFileValidator implements ConstraintValidator<ValidFile, List<MultipartFile>> {
 
     @Override
@@ -24,7 +27,20 @@ public class CustomFileValidator implements ConstraintValidator<ValidFile, List<
                 context.buildConstraintViolationWithTemplate("업로드 사진이 존재하지 않습니다.").addConstraintViolation();
                 return false;
             }
+            try {
+                int targetByte = file.getBytes().length;
+                if (targetByte == 0) {
+                    context.buildConstraintViolationWithTemplate("사진의 용량이 0 byte입니다.").addConstraintViolation();
+                    return false;
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                context.buildConstraintViolationWithTemplate("사진의 용량 확인 중 에러가 발생했습니다.").addConstraintViolation();
+                return false;
+            }
         }
+
+
 
         return true;
     }
