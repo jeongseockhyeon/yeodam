@@ -1,7 +1,5 @@
 const validateUrl = "/api/payments/validate";
 const failApiUrl = "/api/payments/fail?orderUid=";
-const failFormUrl = "/payments/fail?orderUid=";
-const successUrl = "/payments/success?orderUid=";
 
 
 function requestPay(itemName, price, orderUid, username, email, phone) {
@@ -31,7 +29,7 @@ function requestPay(itemName, price, orderUid, username, email, phone) {
                     .then(response => response.json())
                     .then(data => {
                         console.log(data);
-                        window.location.href = successUrl + data.orderUid;
+                        window.location.href = "/payments" + data.orderUid + "/success";
                     });
             } else {
                 alert("결제에 실패하였습니다. 에러 내용: " + rsp.error_msg);
@@ -47,7 +45,7 @@ function requestPay(itemName, price, orderUid, username, email, phone) {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        window.location.href = failFormUrl + data.orderUid;
+                        window.location.href = "/payments" + data.orderUid + "/fail";
                     })
             }
         }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tour List</title>
+    <title>상품 관리</title>
     <link rel="stylesheet" href="/css/item-mange.css">
 </head>
 <body class="manage-body">
@@ -12,40 +12,22 @@
     <a href="/tours/add">
         <button class="add-button">추가</button>
     </a>
-    <table>
+    <table id="tourTable">
         <thead>
         <tr>
             <th>NO</th>
             <th>상품명</th>
-            <th>상품 소개</th>
             <th>선택 가이드</th>
             <th>금액</th>
-            <th>관리</th> <!-- 새로운 관리 열 -->
+            <th>관리</th>
+            <th>활성 상태</th>
         </tr>
         </thead>
         <tbody>
-        <!-- 여행 상품 목록 -->
-        <tr th:each="tour, iterStat : ${tourList}">
-            <td th:text="${iterStat.index + 1}"></td>
-            <td th:text="${tour.tourName}"></td>
-            <td th:text="${tour.tourDesc}"></td>
-            <td th:if="${!tour.guideInTourResDtos.isEmpty()}"
-                th:text="${tour.guideInTourResDtos.get(0).name}"></td>
-            <td th:if="${tour.guideInTourResDtos.isEmpty()}">없음</td>
-            <td th:text="${tour.tourPrice} + '원'"></td>
-            <td>
-                <!-- 수정 버튼 -->
-                <a th:href="@{/tours/{id}/update(id=${tour.id})}">
-                    <button class="edit-button">수정</button>
-                </a>
-                <!-- 삭제 버튼 -->
-                <form th:action="@{/tours/delete/{id}(id=${tour.id})}" method="post" style="display:inline;">
-                    <button type="submit" class="delete-button">삭제</button>
-                </form>
-            </td>
-        </tr>
         </tbody>
     </table>
 </div>
+<script src = "/js/item/getTourItemListBySeller.js"></script>
+<script src = "/js/item/tourDelete.js"></script>
 </body>
 </html>

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,29 @@ public class UserApiController {
                 .body(userResponse);
     }
 
+    @PutMapping
+    public ResponseEntity<?> editUser(@AuthenticationPrincipal Auth auth,
+                                      @Valid @RequestBody UserUpdateRequest request, BindingResult result) {
+
+        userService.checkDuplicatedNickname(request, result);
+
+        if (result.hasErrors()) {
+            Map<String, String> errorMessages = new HashMap<>();
+
+            result.getFieldErrors().forEach(error -> {
+                errorMessages.put(error.getField(), error.getDefaultMessage());
+            });
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(errorMessages);
+        }
+
+        authService.updateAuth(auth.getId(), request);
+        UserResponse userResponse = userService.updateUser(auth.getId(), request);
+
+        return ResponseEntity.ok(userResponse);
+    }
+
     @GetMapping
     public ResponseEntity<List<UserResponse>> getUsers() {
 
@@ -65,16 +89,6 @@ public class UserApiController {
         UserResponse userResponse = userService.getUser(id);
 
         return ResponseEntity.ok(userResponse);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id,
-                                           @RequestBody UserUpdateRequest request) {
-
-        UserResponse userResponse = userService.updateUser(id, request);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(userResponse);
     }
 
     @DeleteMapping("/{id}")

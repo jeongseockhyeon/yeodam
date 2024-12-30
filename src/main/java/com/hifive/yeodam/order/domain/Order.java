@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.hifive.yeodam.order.domain.OrderStatus.PENDING;
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;

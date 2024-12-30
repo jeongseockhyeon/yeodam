@@ -1,4 +1,4 @@
-package com.hifive.yeodam.cart.dto;
+package com.hifive.yeodam.cart.dto.command;
 
 import lombok.*;
 

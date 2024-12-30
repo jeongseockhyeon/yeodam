@@ -1,6 +1,7 @@
 const removeCategoryList = new Set();
 const removeImageList = new Set();
 
+
 // 카테고리 체크박스 상태 변경 이벤트 리스너
 document.getElementById("categoryCheckBox").addEventListener("change", (event) => {
     const target = event.target;
@@ -20,6 +21,7 @@ document.getElementById("previewContainer").addEventListener("click", (event) =>
         event.target.parentElement.remove(); // 화면에서 삭제
     }
 });
+
 
 document.getElementById("submitBtn").addEventListener("click", () => {
     if (!validationFormData()) {
@@ -48,6 +50,10 @@ document.getElementById("submitBtn").addEventListener("click", () => {
 
     //제거된 이미지 추가
     formData.append("removeImageIds", JSON.stringify(Array.from(removeImageList)));
+
+    // 새로 선택된 가이드와 제거된 가이드 추가
+    formData.append("addGuideIds", JSON.stringify(Array.from(addGuideList)));
+    formData.append("removeGuideIds", JSON.stringify(Array.from(removeGuideList)));
 
     // 이미지 파일 추가
     const imageFiles = document.getElementById("tourImages").files;

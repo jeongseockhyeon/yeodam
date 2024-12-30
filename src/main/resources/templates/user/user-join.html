@@ -6,6 +6,7 @@
     <title>유저 회원가입</title>
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/style.css">
 
     <style>
         body {
@@ -29,11 +30,15 @@
 
 </head>
 
-<body class="container mt-5">
 
-    <h2 class="mb-3 text-center">회원 가입</h2>
 
-    <form>
+<body class="container">
+    <div class="header-area">
+        <div th:replace="~{fragments/header-noSearch :: header}"></div>
+    </div>
+<!--    <h2 class="mb-3 text-center">회원 가입</h2>-->
+
+    <form class="mt-3">
 
         <div class="mb-3">
             <label for="userEmail" class="form-label">이메일</label>
@@ -102,7 +107,8 @@
     </form>
 
 <script src="/js/user/userRequestCheck.js"></script>
-<script src="/js/user/submitJoin.js"></script>
+<script src="/js/user/showErrorMessages.js"></script>
+<script src="/js/user/userJoin.js"></script>
 <script th:inline="javascript">
 
     const updateSubmitBtn = () => {
@@ -111,7 +117,7 @@
 
     const checkCancel = () => {
         if (window.confirm("회원가입을 취소하시겠습니까?")) {
-            location.href='/login';
+            location.href='/';
         }
     }
 </script>

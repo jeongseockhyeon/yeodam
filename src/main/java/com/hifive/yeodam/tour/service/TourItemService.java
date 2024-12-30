@@ -25,6 +25,8 @@ import com.hifive.yeodam.tour.repository.TourGuideRepository;
 import com.hifive.yeodam.tour.repository.TourRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -120,28 +122,15 @@ public class TourItemService {
         }
         return new TourItemResDto(savedTour);
     }
-    /*상품_여행 목록 조회*/
-    @Transactional(readOnly = true)
-    public List<TourItemResDto> findAll() {
-        List<Tour> tours = tourRepository.findAll();
-        List<TourItemResDto> tourItemResDtos = new ArrayList<>();
-        for(Tour tour : tours){
-            TourItemResDto tourItemResDto = new TourItemResDto(tour);
-            tourItemResDtos.add(tourItemResDto);
-        }
-        return tourItemResDtos;
-    }
 
-    /*카테고리 적용 조회*/
+    /*필터링 적용, 커서 페이지네이션 조회*/
     @Transactional(readOnly = true)
-    public List<TourItemResDto> getSearchFilterTour(SearchFilterDto searchFilterDto) {
-        List<Tour> filterTours = tourRepository.searchByFilter(searchFilterDto);
-        List<TourItemResDto> tourItemResDtos = new ArrayList<>();
-        for(Tour tour : filterTours){
-            TourItemResDto tourItemResDto = new TourItemResDto(tour);
-            tourItemResDtos.add(tourItemResDto);
-        }
-        return tourItemResDtos;
+    public Slice<TourItemResDto> getSearchFilterTour(Long cursorId, int pageSize, SearchFilterDto searchFilterDto) {
+        Slice<Tour> filterTours = tourRepository.searchByFilterAndActive(cursorId, pageSize, searchFilterDto);
+        List<TourItemResDto> tourItemResDtoList = filterTours.getContent().stream()
+                .map(TourItemResDto::new)
+                .toList();
+        return new SliceImpl<>(tourItemResDtoList, filterTours.getPageable(), filterTours.hasNext());
     }
 
     /*상품_여행 단일 조회*/
@@ -193,6 +182,7 @@ public class TourItemService {
 
         //가이드 추가
         List<Long> addGuideIdList = convertToList(tourItemUpdateReqDto.getAddGuideIds());
+        log.info("addGuideIdList: {}", addGuideIdList);
         if(isNotNullCheck(addGuideIdList)){
             for(Long guideId : addGuideIdList){
                 Guide guide = guideRepository.findById(guideId)
@@ -207,11 +197,12 @@ public class TourItemService {
 
         //가이드 삭제
         List<Long> removeGuideIdList = convertToList(tourItemUpdateReqDto.getRemoveGuideIds());
+        log.info("removeGuideIdList: {}", removeGuideIdList);
         if(isNotNullCheck(removeGuideIdList)){
-            for(Long guideId : removeGuideIdList){
-                Guide guide = guideRepository.findById(guideId)
-                        .orElseThrow(()->new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
-                tourGuideRepository.deleteByGuide(guide);
+            List<Guide> guides = guideRepository.findAllById(removeGuideIdList);
+            for(Guide guide : guides){
+                log.info("deleting guideName: {}", guide.getName());
+                tourGuideRepository.deleteByTourAndGuide(targetTour,guide);
             }
         }
         //상품 이미지 추가
@@ -249,13 +240,15 @@ public class TourItemService {
     }
     /*상품_여행 판매자 조회*/
     @Transactional(readOnly = true)
-    public List<TourItemResDto> findBySeller(Auth auth){
+    public Slice<TourItemResDto> findBySeller(Long cursorId, int pageSize,Auth auth){
         Seller seller = sellerService.getSellerByAuth(auth);
-        List<Tour> sellerTours = tourRepository.findBySeller(seller);
-        return sellerTours.stream()
+        Slice<Tour> sellerTours = tourRepository.findBySeller(cursorId,pageSize,seller);
+        List<TourItemResDto> tourItemResDtoList =  sellerTours.stream()
                 .map(TourItemResDto::new)
                 .toList();
+        return new SliceImpl<>(tourItemResDtoList, sellerTours.getPageable(), sellerTours.hasNext());
     }
+
     //formData로 인해 문자열로 들어오는 id들을 리스트 List<Long>으로 변환
     public List<Long> convertToList(String arg) {
         if (arg == null || arg.trim().equals("[]")) {

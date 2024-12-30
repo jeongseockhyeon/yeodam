@@ -12,20 +12,18 @@ import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hifive.yeodam.global.exception.CustomErrorCode.GUIDE_NOT_FOUND;
-import static com.hifive.yeodam.global.exception.CustomErrorCode.ITEM_NOT_FOUND;
+import static com.hifive.yeodam.global.exception.CustomErrorCode.*;
 import static com.hifive.yeodam.order.dto.request.AddOrderRequest.orderRequest;
 
 @Service
 @RequiredArgsConstructor
-public class OrderDetailService {
+public class OrderDetailCommandService {
 
     private final OrderDetailRepository orderDetailRepository;
     private final ReservationRepository reservationRepository;
@@ -33,15 +31,15 @@ public class OrderDetailService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public List<OrderDetail> insertOrderDetails(AddOrderRequest request) {
+    public List<OrderDetail> createDetails(AddOrderRequest request) {
 
         List<orderRequest> orderRequests = request.getOrderRequests();
 
         List<OrderDetail> orderDetails = new ArrayList<>();
 
-        orderRequests.forEach(or -> {
-            Reservation reservation = buildReservation(or);
-            OrderDetail orderDetail = buildOrderDetail(or, reservation);
+        orderRequests.forEach(orderRequest -> {
+            Reservation reservation = buildReservation(orderRequest);
+            OrderDetail orderDetail = buildOrderDetail(orderRequest, reservation);
 
             orderDetails.add(orderDetail);
 
@@ -56,6 +54,8 @@ public class OrderDetailService {
 
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND));
+
+        item.removeStock();
 
         validateOrderMessage(request);
 
@@ -75,6 +75,8 @@ public class OrderDetailService {
         Guide guide = guideRepository.findById(request.getGuideId())
                 .orElseThrow(() -> new CustomException(GUIDE_NOT_FOUND));
 
+        checkGuideAvailability(request, guide);
+
         return Reservation.builder()
                 .guide(guide)
                 .reservationStartDate(request.getStartDate())
@@ -85,5 +87,11 @@ public class OrderDetailService {
     private void validateOrderMessage(AddOrderRequest.orderRequest request) {
         if (!StringUtils.hasText(request.getOrderMessage()))
             request.setOrderMessage("메세지 없음");
+    }
+
+    private void checkGuideAvailability(orderRequest request, Guide guide) {
+        if (orderDetailRepository.isGuideAvailable(guide.getGuideId(), request.getStartDate(), request.getEndDate())) {
+            throw new CustomException(RESERVED_GUIDE);
+        }
     }
 }

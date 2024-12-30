@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.*;
-import static jakarta.persistence.EnumType.*;
+import static com.hifive.yeodam.orderdetail.domain.OrderDetailStatus.PENDING;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -41,7 +41,7 @@ public class OrderDetail {
     private String message;
 
     @Enumerated(STRING)
-    private OrderDetailsStatus status;
+    private OrderDetailStatus status;
 
     @JoinColumn(name = "reservation_id")
     @OneToOne(fetch = LAZY)
@@ -67,7 +67,7 @@ public class OrderDetail {
         return getPrice() * getCount();
     }
 
-    public void changeStatus(OrderDetailsStatus status) {
+    public void changeStatus(OrderDetailStatus status) {
         this.status = status;
     }
 }
