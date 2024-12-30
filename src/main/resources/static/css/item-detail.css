@@ -12,8 +12,16 @@
     flex: 3;
 }
 .right-section {
-    flex: 1;
-    margin-left: 20px;
+    position: fixed; /* 화면에 고정 */
+    top: 20px; /* 상단에서 20px 떨어짐 */
+    right: 20px; /* 오른쪽에서 20px 떨어짐 */
+    width: 250px; /* 오른쪽 섹션의 너비 */
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff; /* 배경색 설정 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    overflow-y: auto; /* 내용이 많을 경우 스크롤 추가 */
 }
 .calendar {
     margin: 20px 0;
