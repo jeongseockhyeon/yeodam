@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     // 가이드 데이터 가져오기
-    fetch("/api/sellers/guide-list")
+    fetch("/api/guides/list")
         .then(response => response.json())
         .then(guides => {
             guides.forEach(guide => {

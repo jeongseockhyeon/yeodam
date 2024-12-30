@@ -39,6 +39,7 @@ public enum CustomErrorCode {
 
     // Cart 관련 ERROR
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"),
+    CART_FULL(HttpStatus.BAD_REQUEST, "장바구니에는 최대 20개의 상품만 담을 수 있습니다"),
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다"),
     CART_ITEM_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 장바구니에 존재하는 상품입니다"),
     CART_ITEM_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "상품 유형이 일치하지 않습니다"),
