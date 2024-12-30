@@ -8,7 +8,6 @@ import com.hifive.yeodam.user.dto.UserUpdateRequest;
 import com.hifive.yeodam.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -80,23 +78,5 @@ public class UserViewController {
         model.addAttribute("userUpdateRequest", userUpdateRequest);
 
         return "user/user-edit";
-    }
-
-    @PutMapping
-    public String userEdit(@AuthenticationPrincipal Auth auth,
-                           @Valid @ModelAttribute("userUpdateRequest") UserUpdateRequest request, BindingResult result, Model model) {
-
-        userService.checkDuplicatedNickname(request, result);
-
-        if(result.hasErrors()) {
-            return "user/user-edit";
-        }
-
-        UserResponse userResponse = userService.getUserByAuth(auth);
-
-        userService.updateUser(userResponse.getId(), request);
-        authService.updateAuth(auth.getId(), request);
-
-        return "redirect:/users/myPage";
     }
 }
