@@ -63,56 +63,58 @@ let existingImages = []; // 서버에서 가져온 기존 이미지 배열
 
 // 미리보기 업데이트 함수
 function updatePreview() {
+    // 기존 미리보기 내용 초기화
+    previewContainer.innerHTML = "";
+
     // 기존 이미지와 새로 업로드된 파일 모두 처리
     [...existingImages, ...selectedImages].forEach((item) => {
-        createImagePreview(item, item.id ? "existing" : "new");
+        const imgContainer = createImagePreview(item, item.id ? "existing" : "new");
+        previewContainer.appendChild(imgContainer); // 미리보기 컨테이너에 추가
     });
 }
 
 // 이미지 미리보기 생성 함수
 function createImagePreview(image, type) {
-    const imgFragment = document.createDocumentFragment(); // DocumentFragment 생성
-
     const imgContainer = document.createElement("div");
     imgContainer.style.position = "relative";
 
     const img = document.createElement("img");
-    if (type === "existing") {
-        img.src = image.imgUrl; // 기존 이미지
-        img.alt = image.imgName;
-    } else {
-        const reader = new FileReader();
-        reader.onload = () => {
-            img.src = reader.result; // 새로 업로드된 이미지
-        };
-        reader.readAsDataURL(image);
-    }
-    imgContainer.appendChild(img);
+    img.src = type === "existing" ? image.imgUrl : URL.createObjectURL(image);
+    img.alt = image.imgName || image.name;
+    img.className = "preview-img"
 
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "삭제";
     deleteButton.className = "remove-image";
-
     if (type === "existing") {
-        deleteButton.setAttribute("data-image-id", image.id); // 기존 이미지의 ID 설정
+        deleteButton.dataset.imageId = image.id; // 기존 이미지의 ID 설정
+    } else {
+        deleteButton.dataset.imageFile = image; // 새로 업로드된 파일 참조
     }
 
-    deleteButton.onclick = () => {
-        if (type === "existing") {
-            // 기존 이미지 삭제
-            existingImages = existingImages.filter((existing) => existing.id !== image.id);
-        } else {
-            // 새로 업로드된 이미지 삭제
-            selectedImages = selectedImages.filter((file) => file !== image);
-        }
-        imgContainer.remove(); // 화면에서 삭제
-    };
-
+    imgContainer.appendChild(img);
     imgContainer.appendChild(deleteButton);
-    imgFragment.appendChild(imgContainer);
-
-    previewContainer.appendChild(imgFragment);
+    return imgContainer;
 }
+
+// 삭제 버튼 이벤트 위임
+previewContainer.addEventListener("click", (event) => {
+    if (event.target.classList.contains("remove-image")) {
+        const imageId = event.target.dataset.imageId;
+        const imageFile = event.target.dataset.imageFile;
+
+        if (imageId) {
+            // 기존 이미지 삭제
+            existingImages = existingImages.filter(img => img.id !== parseInt(imageId));
+        } else if (imageFile) {
+            // 새로 업로드된 이미지 삭제
+            selectedImages = selectedImages.filter(file => file.name !== imageFile.name);
+        }
+
+        // 삭제 버튼의 부모 요소 제거
+        event.target.closest("div").remove();
+    }
+});
 
 // 파일 입력 이벤트 처리
 tourImagesInput.addEventListener('change', () => {
