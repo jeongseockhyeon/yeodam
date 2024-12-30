@@ -12,10 +12,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class CustomFileValidator implements ConstraintValidator<ValidFile, List<MultipartFile>> {
     private ValidFile validFile;
+
+    // 허용되지 않는 특수문자 정의
+    private static final Pattern INVALID_CHARACTERS_PATTERN = Pattern.compile("[%$#@!^&*()+=\\[\\]{};:'\"|<>?,]");
 
     @Override
     public void initialize(ValidFile validFile) {
@@ -38,6 +42,7 @@ public class CustomFileValidator implements ConstraintValidator<ValidFile, List<
                 context.buildConstraintViolationWithTemplate("업로드 사진이 존재하지 않습니다.").addConstraintViolation();
                 return false;
             }
+            //사진 용량 검증
             try {
                 int targetByte = file.getBytes().length;
                 if (targetByte == 0) {
@@ -47,6 +52,23 @@ public class CustomFileValidator implements ConstraintValidator<ValidFile, List<
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
                 context.buildConstraintViolationWithTemplate("사진의 용량 확인 중 에러가 발생했습니다.").addConstraintViolation();
+                return false;
+            }
+
+            //사진 이름 검증
+            String originalFileName = file.getOriginalFilename();
+            if (originalFileName == null) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate("사진 이름이 유효하지 않습니다.").addConstraintViolation();
+                return false;
+            }
+
+            // 특수문자 검증
+            if (INVALID_CHARACTERS_PATTERN.matcher(originalFileName).find()) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                        "사진 이름에 허용되지 않는 특수문자가 포함되어 있습니다: " + originalFileName
+                ).addConstraintViolation();
                 return false;
             }
 
