@@ -8,20 +8,18 @@ import lombok.Getter;
 @Getter
 public class InquiryResponse {
     private final Long id;
-    private final Auth auth;
-    private final Item item;
+    private final Long itemId;
+    private final String itemName;
     private final String title;
     private final String content;
     private final String isAnswered;
-    private final Inquiry parentInquiry;
 
     public InquiryResponse(Inquiry inquiry) {
         this.id = inquiry.getId();
-        this.auth = inquiry.getAuth();
-        this.item = inquiry.getItem();
+        this.itemId = inquiry.getItem().getId();
+        this.itemName = inquiry.getItem().getItemName();
         this.title = inquiry.getTitle();
         this.content = inquiry.getContent();
         this.isAnswered = inquiry.getIsAnswered();
-        this.parentInquiry = inquiry.getParentInquiry();
     }
 }

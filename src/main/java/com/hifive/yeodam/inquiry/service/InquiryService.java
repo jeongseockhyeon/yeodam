@@ -51,4 +51,16 @@ public class InquiryService {
                 .map(InquiryResponse::new)
                 .toList();
     }
+
+    @Transactional
+    public void deleteInquiry(Long id, Auth auth) {
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 문의를 찾을 수 없습니다."));
+
+        if (!inquiry.getAuth().getId().equals(auth.getId())) {
+            throw new RuntimeException("삭제 권한이 없습니다.");
+        }
+
+        inquiryRepository.delete(inquiry);
+    }
 }

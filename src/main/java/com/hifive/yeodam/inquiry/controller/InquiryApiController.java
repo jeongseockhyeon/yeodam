@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/inquires")
+@RequestMapping("/inquiries")
 public class InquiryApiController {
 
     private final InquiryService inquiryService;
@@ -29,15 +29,22 @@ public class InquiryApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(inquiryService.createInquiry(request, auth));
     }
 
-    @GetMapping("/user")
+    @GetMapping("/user/data")
     public ResponseEntity<?> getInquiryListByUser(Authentication authentication) {
         Auth auth = (Auth) authentication.getPrincipal();
         return ResponseEntity.ok(inquiryService.getInquiryByAuth(auth));
     }
 
-    @GetMapping("/seller")
-    public ResponseEntity<?> getInquiryListBySeller(Authentication authentication) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteInquiry(@PathVariable Long id, Authentication authentication) {
         Auth auth = (Auth) authentication.getPrincipal();
-        return ResponseEntity.ok(inquiryService.getInquiryByAuth(auth));
+        inquiryService.deleteInquiry(id, auth);
+        return ResponseEntity.noContent().build();
     }
+
+//    @GetMapping("/seller")
+//    public ResponseEntity<?> getInquiryListBySeller(Authentication authentication) {
+//        Auth auth = (Auth) authentication.getPrincipal();
+//        return ResponseEntity.ok(inquiryService.getInquiryByAuth(auth));
+//    }
 }
