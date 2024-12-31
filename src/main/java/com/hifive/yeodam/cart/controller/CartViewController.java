@@ -8,6 +8,7 @@ import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
+import com.hifive.yeodam.seller.entity.Guide;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -77,6 +79,12 @@ public class CartViewController {
                             .name(item.getItemName())
                             .count(cart.getCount())
                             .price(item.getPrice())
+                            .bookerName("")
+                            .phoneNumber("")
+                            .orderMessage("")
+                            .guideId(Optional.ofNullable(cart.getGuide()).map(Guide::getGuideId).orElse(null))
+                            .startDate(cart.getStartDate())
+                            .endDate(cart.getEndDate())
                             .build();
                 })
                 .toList();
