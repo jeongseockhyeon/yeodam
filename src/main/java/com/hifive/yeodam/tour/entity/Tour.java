@@ -13,13 +13,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@DiscriminatorValue("t")
 public class Tour extends Item {
 
     private String region;
 
     private String period;
 
-    private int maximum;
+    private Integer maximum;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();

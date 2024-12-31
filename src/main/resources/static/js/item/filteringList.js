@@ -17,6 +17,6 @@ function populateDropdown(id, options) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    populateDropdown("period", periods);
-    populateDropdown("region", regions);
+    populateDropdown("tourPeriod", periods);
+    populateDropdown("tourRegion", regions);
 });

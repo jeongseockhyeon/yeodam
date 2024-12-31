@@ -16,7 +16,7 @@ async function fetchTourData() {
 
 function renderTourData(data) {
     document.getElementById('tourName').textContent = data.tourName;
-    document.getElementById('mainImage').src = data.itemImgResDtoList[0]?.imgUrl || '';
+    document.getElementById('mainImage').src = data.itemImgResDtoList[0]?.imgUrl || "/images/default-thumbnail.jpg";
     document.getElementById('additionalImage').style.display = data.itemImgResDtoList.length > 1 ? 'block' : 'none';
     if (data.itemImgResDtoList[1]) {
         document.getElementById('additionalImage').src = data.itemImgResDtoList[1].imgUrl;
