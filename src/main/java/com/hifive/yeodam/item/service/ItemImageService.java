@@ -1,5 +1,7 @@
 package com.hifive.yeodam.item.service;
 
+import com.hifive.yeodam.global.exception.CustomErrorCode;
+import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.image.service.ImageService;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.entity.ItemImage;
@@ -31,6 +33,9 @@ public class ItemImageService {
 
     @Transactional
     public void delete(Long imageId) {
-        itemImageRepository.deleteById(imageId);
+        ItemImage itemImage = itemImageRepository.findById(imageId)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.IMG_NOT_FOUND));
+        imageService.delete(itemImage.getStorePath());
+        itemImageRepository.delete(itemImage);
     }
 }
