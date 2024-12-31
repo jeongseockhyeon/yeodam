@@ -137,7 +137,7 @@ public class UserServiceTest {
     @Test
     public void 회원수정실패_회원존재하지않음() throws Exception{
         //given
-        doReturn(Optional.empty()).when(userRepository).findById(-1L);
+        doReturn(Optional.empty()).when(userRepository).findByAuthId(-1L);
 
         //when
         CustomException result = assertThrows(CustomException.class, () -> target.updateUser(-1L, new UserUpdateRequest()));
@@ -149,15 +149,15 @@ public class UserServiceTest {
     @Test
     public void 회원수정성공() throws Exception{
         //given
-        doReturn(Optional.of(user())).when(userRepository).findById(-1L);
+        doReturn(Optional.of(user())).when(userRepository).findByAuthId(-1L);
 
         //when
         UserResponse result = target.updateUser(-1L, userUpdateRequest());
 
         //then
-        assertThat(result.getName()).isEqualTo("kim");
-        assertThat(result.getNickname()).isEqualTo("kim12");
-        assertThat(result.getPhone()).isEqualTo("01012345678");
+        assertThat(result.getName()).isEqualTo(userUpdateRequest().getName());
+        assertThat(result.getNickname()).isEqualTo(userUpdateRequest().getNickname());
+        assertThat(result.getPhone()).isEqualTo(userUpdateRequest().getPhone());
     }
 
     @Test

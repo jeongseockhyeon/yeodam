@@ -13,13 +13,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@DiscriminatorValue("t")
 public class Tour extends Item {
 
     private String region;
 
     private String period;
 
-    private int maximum;
+    private Integer maximum;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TourCategory> tourCategories = new ArrayList<>();
@@ -36,7 +37,7 @@ public class Tour extends Item {
                 String description,
                 int price,
                 boolean reservation,
-                int maximum,
+                Integer maximum,
                 int stock,
                 double rate,
                 boolean active
@@ -49,7 +50,7 @@ public class Tour extends Item {
     }
 
     @Override
-    public void updateSubItem(String region, String period, int maximum) {
+    public void updateSubItem(String region, String period, Integer maximum) {
         this.region = region;
         this.period = period;
         this.maximum = maximum;

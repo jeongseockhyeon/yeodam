@@ -27,7 +27,7 @@ public class UserApiController {
     private final AuthService authService;
 
     @PostMapping
-    public ResponseEntity<?> addUser(@Valid JoinRequest request, BindingResult result) {
+    public ResponseEntity<?> addUser(@RequestBody @Valid JoinRequest request, BindingResult result) {
 
         authService.checkDuplicatedEmail(request, result);
         userService.checkDuplicatedNickname(request, result);
@@ -100,20 +100,16 @@ public class UserApiController {
                 .build();
     }
 
-    @PostMapping("/email-check")
-    @ResponseBody
-    public ResponseEntity<Boolean> emailCheck(@RequestBody String userEmail) {
-
-        boolean isDuplicated = authService.checkEmail(userEmail);
-        return ResponseEntity.ok(isDuplicated);
-    }
-
     @PostMapping("/nickname-check")
-    @ResponseBody
-    public ResponseEntity<Boolean> nicknameCheck(@RequestBody String nickname) {
+    public ResponseEntity<Void> nicknameCheck(@RequestBody String nickname) {
 
         boolean isDuplicated = userService.checkNickname(nickname);
-        return ResponseEntity.ok(isDuplicated);
+
+        if (isDuplicated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
 

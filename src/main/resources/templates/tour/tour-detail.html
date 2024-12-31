@@ -16,8 +16,7 @@
             <img id="mainImage" alt="Main Image">
             <img id="additionalImage" alt="Additional Image" style="display: none;">
         </div>
-        <h2>상품 제목</h2>
-        <h3 id="tourName"></h3>
+        <h2 id="tourName"></h2>
         <div class="detail-container">
             <div class="detail-row">
                 <span class="detail-label">가이드</span>
@@ -54,7 +53,7 @@
             <p id="tourPrice"></p>
             <div class="actions">
                 <button class="btn-primary">예약하기</button>
-                <button class="btn-secondary" onclick="addToCart()">장바구니 담기</button>
+                <button class="btn-secondary">장바구니 담기</button>
                 <button class="btn-secondary">문의하기</button>
                 <button id="likeButton" class="btn-like">
                     ❤️ 찜하기
@@ -64,8 +63,24 @@
     </div>
 
 </div>
+
+<!-- 문의하기 모달 -->
+<div id="inquiryModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('inquiryModal')">&times;</span>
+        <div class="modal-header">문의하기</div>
+        <form id="inquiryForm">
+            <input type="text" id="inquiryTitle" placeholder="문의 제목" required>
+            <textarea id="inquiryContent" placeholder="문의 내용을 입력하세요" rows="10" required></textarea>
+            <button id="submitInquiryButton" type="button">문의 제출</button>
+        </form>
+    </div>
+</div>
+
+<script src="/js/fullcalendar/fullcalendar.js"></script>
 <script src="/js/item/sendItemInfoToOrder.js"></script>
 <script src="/js/item/getTourDetailToDetailPage.js"></script>
 <script src="/js/cart/addToCart.js"></script>
+<script src="/js/inquiry/addInquiry.js"></script>
 </body>
 </html>
