@@ -31,11 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (selectedCategories.length > 0) filters.categories = selectedCategories.join(",");
 
         // 기간 필터
-        const period = document.getElementById("period").value;
+        const period = document.getElementById("tourPeriod").value;
         if (period) filters.period = period;
 
         // 지역 필터
-        const region = document.getElementById("region").value;
+        const region = document.getElementById("tourRegion").value;
         if (region) filters.region = region;
 
         // 가격 필터
