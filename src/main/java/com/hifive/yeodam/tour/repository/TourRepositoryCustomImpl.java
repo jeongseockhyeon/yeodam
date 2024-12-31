@@ -7,6 +7,7 @@ import com.hifive.yeodam.tour.entity.QTour;
 import com.hifive.yeodam.tour.entity.QTourCategory;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +44,28 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (hasText(searchFilterDto.getPeriod())){
             builder.and(tour.period.eq(searchFilterDto.getPeriod()));
         }
+        if (searchFilterDto.getMinPrice() != null) {
+            builder.and(tour.price.goe(Integer.parseInt(searchFilterDto.getMinPrice())));
+        }
+        if (searchFilterDto.getMaxPrice() != null) {
+            builder.and(tour.price.loe(Integer.parseInt(searchFilterDto.getMaxPrice())));
+        }
+
+        //정렬 조건
+        OrderSpecifier<?> sortOrder = null;
+        if(searchFilterDto.getSortBy() == null){
+            sortOrder = tour.id.desc();
+        } else {
+            if ("price".equals(searchFilterDto.getSortBy())) {
+                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.price.asc() : tour.price.desc();
+            }/*else if ("rating".equals(searchFilterDto.getSortBy())) {
+                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.rating.asc() : tour.rating.desc();
+            } else if ("reviews".equals(searchFilterDto.getSortBy())) {
+                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.reviews.asc() : tour.reviews.desc();
+            }*/
+        }
+
+
 
         List<Tour> results = jpaQueryFactory.select(tour)
                 .from(tour)
@@ -51,7 +74,7 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
                 .where(tour.active.isTrue()
                         .and(builder)
                         .and(cursorId != null ? tour.id.lt(cursorId) : null))
-                .orderBy(tour.id.desc())
+                .orderBy(sortOrder)
                 .limit(pageSize + 1)
                 .distinct()
                 .fetch();

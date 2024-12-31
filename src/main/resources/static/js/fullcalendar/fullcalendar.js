@@ -1,20 +1,24 @@
-document.addEventListener('DOMContentLoaded', function () {
+function initializeCalendar(tourData) {
     const calendarEl = document.getElementById('calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
-        events: [
-            // 서버에서 예약 불가능한 날짜를 전달받아 렌더링
-            /* 샘플
-            {
-                title: '예약 불가',
-                start: '2025-01-15',
-                end: '2025-01-20',
-                backgroundColor: '#ff0000',
-                borderColor: '#ff0000',
-            },
-            */
-        ],
+        selectable: true,
+        select: function (info) {
+            const selectedStartDate = new Date(info.start);
+            const days = parseInt(tourData.tourPeriod.replace("일", "").trim());
+            const selectedEndDate = new Date(selectedStartDate);
+            selectedEndDate.setDate(selectedStartDate.getDate() + days - 1);
+
+            calendar.addEvent({
+                title: '예약 선택',
+                start: selectedStartDate.toISOString().split('T')[0],
+                end: selectedEndDate.toISOString().split('T')[0],
+                backgroundColor: '#28a745',
+                borderColor: '#28a745',
+            });
+        },
+        events: [],
     });
     calendar.render();
-});
+}

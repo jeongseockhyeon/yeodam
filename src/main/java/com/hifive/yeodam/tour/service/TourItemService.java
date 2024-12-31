@@ -8,6 +8,7 @@ import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.image.service.ImageService;
 import com.hifive.yeodam.item.entity.ItemImage;
 import com.hifive.yeodam.item.repository.ItemImageRepository;
+import com.hifive.yeodam.item.service.ItemImageService;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
@@ -47,13 +48,14 @@ public class TourItemService {
     private final SellerService sellerService;
     private final CategoryRepository categoryRepository;
     private final GuideRepository guideRepository;
-    private final ImageService imageService;
-    private final ItemImageRepository itemImageRepository;
 
     private final static int tourStock = 1;
     private final static boolean reservation = true;
     private final static double defaultRate = 0.0;
     private final static boolean defaultActive = true;
+    private final ItemImageService itemImageService;
+    private final ItemImageRepository itemImageRepository;
+    private final ImageService imageService;
 
 
     /*상품_여행 등록*/
@@ -102,22 +104,12 @@ public class TourItemService {
                         .build();
                 tourGuideRepository.save(tourGuide);
             }
-
         }
 
         /*여행 상품 이미지 저장*/
         if(tourItemReqDto.getTourImages() != null ){
             for(MultipartFile imageFile : tourItemReqDto.getTourImages()){
-                String originalName = imageFile.getOriginalFilename();
-                String storePath = imageService.upload(imageFile);
-
-                ItemImage itemImage = ItemImage.builder()
-                        .item(savedTour)
-                        .originalName(originalName)
-                        .storePath(storePath)
-                        .build();
-
-                itemImageRepository.save(itemImage);
+                itemImageService.save(imageFile,savedTour);
             }
         }
         return new TourItemResDto(savedTour);
@@ -208,16 +200,7 @@ public class TourItemService {
         //상품 이미지 추가
         if(isNotNullCheck(tourItemUpdateReqDto.getAddTourImages())){
             for(MultipartFile imageFile : tourItemUpdateReqDto.getAddTourImages()){
-                String originalName = imageFile.getOriginalFilename();
-                String storePath = imageService.upload(imageFile);
-
-                ItemImage itemImage = ItemImage.builder()
-                        .item(targetTour)
-                        .originalName(originalName)
-                        .storePath(storePath)
-                        .build();
-
-                itemImageRepository.save(itemImage);
+                itemImageService.save(imageFile,targetTour);
             }
         }
 
@@ -225,7 +208,7 @@ public class TourItemService {
         List<Long> removeTourImageList = convertToList(tourItemUpdateReqDto.getRemoveImageIds());
         if(isNotNullCheck(removeTourImageList)){
             for(Long imageId : removeTourImageList){
-                itemImageRepository.deleteById(imageId);
+                itemImageService.delete(imageId);
             }
         }
 
@@ -236,6 +219,10 @@ public class TourItemService {
     public void delete(Long id) {
         Tour targetTour = tourRepository.findById(id)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
+        List<ItemImage> targetItemImage = itemImageRepository.findByItemId(id);
+        for(ItemImage itemImage : targetItemImage){
+            imageService.delete(itemImage.getStorePath());
+        }
         tourRepository.delete(targetTour);
     }
     /*상품_여행 판매자 조회*/

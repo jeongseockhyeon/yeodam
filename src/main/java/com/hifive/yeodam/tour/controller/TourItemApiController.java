@@ -35,7 +35,7 @@ public class TourItemApiController {
         return ResponseEntity.ok(tourItemService.getSearchFilterTour(cursorId, pageSize, searchFilterDto));
     }
 
-    /*업체별 여행 상품 등록*/
+    /*업체별 여행 상품 조회*/
     @GetMapping("/seller-tour")
     public ResponseEntity<Slice<TourItemResDto>> findSellerTour(@RequestParam(required = false) Long cursorId,
                                                                 @RequestParam int pageSize,
