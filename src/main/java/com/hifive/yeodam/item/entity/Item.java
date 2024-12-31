@@ -77,5 +77,5 @@ public abstract class Item {
     public void removeStock() {
         this.stock -= 1;
     }
-    public abstract void updateSubItem(String region,String period,int maximum);
+    public abstract void updateSubItem(String region,String period,Integer maximum);
 }

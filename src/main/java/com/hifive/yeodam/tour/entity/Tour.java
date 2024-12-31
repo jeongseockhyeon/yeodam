@@ -37,7 +37,7 @@ public class Tour extends Item {
                 String description,
                 int price,
                 boolean reservation,
-                int maximum,
+                Integer maximum,
                 int stock,
                 double rate,
                 boolean active
@@ -50,7 +50,7 @@ public class Tour extends Item {
     }
 
     @Override
-    public void updateSubItem(String region, String period, int maximum) {
+    public void updateSubItem(String region, String period, Integer maximum) {
         this.region = region;
         this.period = period;
         this.maximum = maximum;
