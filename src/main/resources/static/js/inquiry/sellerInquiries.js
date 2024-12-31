@@ -8,8 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch("/inquiries/seller/data", {
                 method: "GET",
                 headers: {
-                    "Content-Type": "application/json"
-                }
+                    "Content-Type": "application/json",
+                },
             });
 
             if (!response.ok) {
@@ -64,61 +64,107 @@ document.addEventListener("DOMContentLoaded", () => {
                 answerStatus.classList.add("pending");
             }
 
-            // 답변하기 버튼 추가
-            const answerButton = document.createElement("button");
-            answerButton.className = "answer-button";
-            answerButton.id = `answer-button-${inquiry.id}`;
-            answerButton.textContent = "답변하기";
-            answerButton.style.display = inquiry.isAnswered === "N" ? "block" : "none"; // 미답변인 경우에만 버튼 표시
-            answerButton.addEventListener("click", () => showAnswerForm(inquiry.id));
-
-            // 답변 입력 폼
-            const answerForm = document.createElement("div");
-            answerForm.className = "answer-form";
-            answerForm.id = `answer-form-${inquiry.id}`;
-            answerForm.style.display = "none";
-            answerForm.innerHTML = `
-                <input type="text" id="answer-title-${inquiry.id}" placeholder="답변 제목" />
-                <textarea id="answer-content-${inquiry.id}" rows="4" placeholder="답변 내용을 입력하세요"></textarea>
-                <button class="submit-answer" data-id="${inquiry.id}">답변 제출</button>
-            `;
-
-            answerForm.querySelector(".submit-answer").addEventListener("click", async () => {
-                const title = document.getElementById(`answer-title-${inquiry.id}`).value;
-                const content = document.getElementById(`answer-content-${inquiry.id}`).value;
-
-                if (!title || !content) {
-                    alert("제목과 내용을 모두 입력해주세요.");
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`/inquiries/${inquiry.id}/answer`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ title, content })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error("답변 등록 실패");
-                    }
-
-                    alert("답변이 등록되었습니다.");
-                    fetchInquiries();
-                } catch (error) {
-                    console.error("Error submitting answer:", error);
-                    alert("답변 등록 중 오류가 발생했습니다.");
-                }
-            });
-
             inquiryBox.appendChild(itemName);
             inquiryBox.appendChild(title);
             inquiryBox.appendChild(content);
             inquiryBox.appendChild(answerStatus);
-            inquiryBox.appendChild(answerButton);
-            inquiryBox.appendChild(answerForm);
+
+            if (inquiry.isAnswered === "Y") {
+                // 답변 보기 버튼
+                const toggleAnswerButton = document.createElement("button");
+                toggleAnswerButton.className = "toggle-answer-button";
+                toggleAnswerButton.textContent = "답변 보기";
+
+                const answerContainer = document.createElement("div");
+                answerContainer.className = "answer-container";
+                answerContainer.style.display = "none";
+
+                toggleAnswerButton.addEventListener("click", async () => {
+                    if (answerContainer.style.display === "none") {
+                        try {
+                            const response = await fetch(`/inquiries/${inquiry.id}/answer`, {
+                                method: "GET",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                            });
+
+                            if (!response.ok) {
+                                throw new Error("Failed to fetch answer");
+                            }
+
+                            const answer = await response.json();
+                            answerContainer.innerHTML = `
+                                <div class='answer-title'>${answer.title}</div>
+                                <div class='answer-content'>${answer.content}</div>
+                            `;
+
+                            answerContainer.style.display = "block";
+                            toggleAnswerButton.textContent = "답변 접기";
+                        } catch (error) {
+                            console.error("Error fetching answer:", error);
+                            alert("답변을 가져오는 중 오류가 발생했습니다.");
+                        }
+                    } else {
+                        answerContainer.style.display = "none";
+                        toggleAnswerButton.textContent = "답변 보기";
+                    }
+                });
+
+                inquiryBox.appendChild(toggleAnswerButton);
+                inquiryBox.appendChild(answerContainer);
+            }
+            else {
+                // 답변하기 버튼
+                const answerButton = document.createElement("button");
+                answerButton.className = "answer-button";
+                answerButton.textContent = "답변하기";
+                answerButton.addEventListener("click", () => showAnswerForm(inquiry.id));
+
+                // 답변 입력 폼
+                const answerForm = document.createElement("div");
+                answerForm.className = "answer-form";
+                answerForm.id = `answer-form-${inquiry.id}`;
+                answerForm.style.display = "none";
+                answerForm.innerHTML = `
+                    <input type="text" id="answer-title-${inquiry.id}" placeholder="답변 제목" />
+                    <textarea id="answer-content-${inquiry.id}" rows="4" placeholder="답변 내용을 입력하세요"></textarea>
+                    <button class="submit-answer" data-id="${inquiry.id}">답변 제출</button>
+                `;
+
+                answerForm.querySelector(".submit-answer").addEventListener("click", async () => {
+                    const title = document.getElementById(`answer-title-${inquiry.id}`).value;
+                    const content = document.getElementById(`answer-content-${inquiry.id}`).value;
+
+                    if (!title || !content) {
+                        alert("제목과 내용을 모두 입력해주세요.");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/inquiries/${inquiry.id}/answer`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ title, content })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("답변 등록 실패");
+                        }
+
+                        alert("답변이 등록되었습니다.");
+                        fetchInquiries();
+                    } catch (error) {
+                        console.error("Error submitting answer:", error);
+                        alert("답변 등록 중 오류가 발생했습니다.");
+                    }
+                });
+
+                inquiryBox.appendChild(answerButton);
+                inquiryBox.appendChild(answerForm);
+            }
 
             inquiryListContainer.appendChild(inquiryBox);
         });

@@ -58,9 +58,10 @@ public class InquiryService {
     }
 
     @Transactional
-    public List<InquiryResponse> getInquiriesByItemIds(List<Long> itemIds) {
+    public List<InquiryResponse> getInquiriesByItemIdsExcludingSeller(List<Long> itemIds, Auth auth) {
         List<Inquiry> inquiries = inquiryRepository.findByItemIdIn(itemIds);
         return inquiries.stream()
+                .filter(inquiry -> !inquiry.getAuth().getId().equals(auth.getId()))
                 .map(InquiryResponse::new)
                 .toList();
     }

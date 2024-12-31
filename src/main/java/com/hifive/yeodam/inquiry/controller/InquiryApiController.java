@@ -51,7 +51,7 @@ public class InquiryApiController {
         Auth auth = (Auth) authentication.getPrincipal();
         Seller seller = sellerService.getSellerByAuth(auth);
         List<Long> itemIds = itemService.getItemsBySeller(seller.getCompanyId());
-        List<InquiryResponse> inquiries = inquiryService.getInquiriesByItemIds(itemIds);
+        List<InquiryResponse> inquiries = inquiryService.getInquiriesByItemIdsExcludingSeller(itemIds, auth);
         return ResponseEntity.ok(inquiries);
     }
 
