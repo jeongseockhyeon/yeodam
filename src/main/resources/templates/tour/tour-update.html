@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>여행 상품 수정</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/tour-add.css">
     <link rel="stylesheet" href="/css/category-check-box.css">
     <link rel="stylesheet" href="/css/guide-list.css">
@@ -25,6 +28,10 @@
     </style>
 </head>
 <body>
+<!-- 헤더 추가 -->
+<div class="header-area">
+    <div th:replace="~{fragments/header-noSearch :: header}"></div>
+</div>
 <div class="container">
     <!-- 왼쪽 메뉴 -->
     <div class="sidebar">
