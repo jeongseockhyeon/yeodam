@@ -4,6 +4,7 @@ import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.image.common.GenerateImageName;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,10 +14,9 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
-import java.io.IOException;
-
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ImageService {
     private final S3Client s3Client;
 
@@ -48,6 +48,7 @@ public class ImageService {
 
     public void delete(String storePath) {
         String imageKey = storePath.substring(storePath.lastIndexOf("/") + 1);
+        log.info("Delete image: " + imageKey);
         try {
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(bucket)

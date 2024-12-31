@@ -5,6 +5,9 @@ import com.hifive.yeodam.category.entity.Category;
 import com.hifive.yeodam.category.repository.CategoryRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
+import com.hifive.yeodam.image.service.ImageService;
+import com.hifive.yeodam.item.entity.ItemImage;
+import com.hifive.yeodam.item.repository.ItemImageRepository;
 import com.hifive.yeodam.item.service.ItemImageService;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
@@ -51,6 +54,8 @@ public class TourItemService {
     private final static double defaultRate = 0.0;
     private final static boolean defaultActive = true;
     private final ItemImageService itemImageService;
+    private final ItemImageRepository itemImageRepository;
+    private final ImageService imageService;
 
 
     /*상품_여행 등록*/
@@ -214,6 +219,10 @@ public class TourItemService {
     public void delete(Long id) {
         Tour targetTour = tourRepository.findById(id)
                         .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
+        List<ItemImage> targetItemImage = itemImageRepository.findByItemId(id);
+        for(ItemImage itemImage : targetItemImage){
+            imageService.delete(itemImage.getStorePath());
+        }
         tourRepository.delete(targetTour);
     }
     /*상품_여행 판매자 조회*/
