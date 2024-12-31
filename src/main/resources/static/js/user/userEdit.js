@@ -10,8 +10,6 @@ document.getElementById("userEditForm").addEventListener("submit", function (eve
         jsonData[key] = value;
     })
 
-    console.log(jsonData);
-
     fetch("/api/users", {
         method: "PUT",
         headers: {
