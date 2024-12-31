@@ -295,35 +295,42 @@ function updateSelectedCount() {
 }
 
 // 주문 진행 함수
-function proceedToCheckout() {
-    const checkedItems = document.querySelectorAll('.item-checkbox:checked');
-    if (checkedItems.length === 0) {
-        alert('선택된 상품이 없습니다.');
-        return;
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    window.proceedToCheckout = function () {
+        const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+        if (checkedItems.length === 0) {
+            alert('선택된 상품이 없습니다.');
+            return;
+        }
 
-    //비로그인 시 로그인 페이지로 이동
-    if (!isLoggedIn) {
-        window.location.href = '/login';
-        return;
-    }
+        //비로그인 시 로그인 페이지로 이동
+        if (!isLoggedIn) {
+            window.location.href = '/login';
+            return;
+        }
 
-    // form submit으로 선택된 cartIds 전송
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/order';
+        const form = document.getElementById('orderForm');
+        if (!form) {
+            console.error('orderForm을 찾을 수 없습니다');
+            return;
+        }
 
-    checkedItems.forEach(item => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'cartIds';
-        input.value = item.value;
-        form.appendChild(input);
-    })
+        // 기존의 hidden input 제거
+        form.querySelectorAll('input[type="hidden"]').forEach(input => input.remove());
 
-    document.body.appendChild(form);
-    form.submit();
-}
+        // 선택 상품 ID를 hidden input으로 추가
+        checkedItems.forEach(item => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'cartIds';
+            input.value = item.value;
+            form.appendChild(input);
+        });
+
+        form.submit();
+    };
+});
+
 
 // 선택 상품 삭제 함수 추가
 async function deleteSelectedItems() {

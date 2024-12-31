@@ -376,9 +376,12 @@
             </div>
 
             <div class="cart-buttons">
-                <button class="order-button" onclick="proceedToCheckout()">
-                    <span id="selectedCount">0</span>개 상품 구매하기
-                </button>
+                <form id="orderForm" method="POST" action="/carts/order">
+                    <!-- hidden input 추가 예정 -->
+                    <button type="button" class="order-button" onclick="proceedToCheckout()">
+                        <span id="selectedCount">0</span>개 상품 구매하기
+                    </button>
+                </form>
                 <button class="continue-shopping" onclick="continueShopping()">
                     쇼핑 계속하기
                 </button>
