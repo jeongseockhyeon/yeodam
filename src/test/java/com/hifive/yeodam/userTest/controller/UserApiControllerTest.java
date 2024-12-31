@@ -28,15 +28,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,7 +74,7 @@ public class UserApiControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("invalidJoinRequestParameter")
+    @MethodSource("invalidRequestParameter")
     public void 유저등록실패_잘못된파라미터(String email, String password, String name,
                                     String nickname, String phone, LocalDate birthDate, String gender) throws Exception{
         //given
@@ -95,20 +92,19 @@ public class UserApiControllerTest {
         resultActions.andExpect(status().isBadRequest());
     }
 
-    // BindingResult 에서 이메일, 닉네임 중복처리하기 때문에 인증서비스에서 중복 에러를 뱉을 경우의 테스트를 할 필요 없다고 생각
-/*
     @Test
     public void 유저등록실패_AuthService에서에러Throw() throws Exception{
         //given
         String url = "/api/users";
-        doThrow(new AuthException(AuthErrorResult.DUPLICATED_EMAIL_JOIN))
+        JoinRequest request = joinRequest(email, password, name, nickname, phone, birthDate, "M");
+
+        doThrow(new CustomException(CustomErrorCode.DUPLICATED_EMAIL_JOIN))
                 .when(authService).addAuth(any(JoinRequest.class));
 
         //when
         ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
-                        .content(gson.toJson(joinRequest(email, password, name,
-                                nickname, phone, birthDate, "M")))
+                        .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -120,59 +116,77 @@ public class UserApiControllerTest {
     public void 유저등록실패_UserService에서에러Throw() throws Exception{
         //given
         String url = "/api/users";
+        JoinRequest request = joinRequest(email, password, name, nickname, phone, birthDate, "M");
 
-        Auth auth = Auth.builder()
-                .id(-1L).email(email).password(password)
-                .build();
+        doReturn(Auth.builder().email(email).build())
+                .when(authService).addAuth(any(JoinRequest.class));
 
-        doReturn(auth).when(authService).addAuth(any(JoinRequest.class));
-        doThrow(new UserException(UserErrorResult.DUPLICATED_NICKNAME_JOIN))
-                .when(userService)
-                .addUser(any(JoinRequest.class), any(Auth.class));
+        doThrow(new CustomException(CustomErrorCode.DUPLICATED_NICKNAME_JOIN))
+                .when(userService).addUser(any(JoinRequest.class), any(Auth.class));
 
         //when
         ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
-                        .content(gson.toJson(joinRequest(email, password, name,
-                                nickname, phone, birthDate, "M")))
+                        .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
         //then
         resultActions.andExpect(status().isBadRequest());
     }
-    */
-/*
 
     @Test
     public void 유저등록성공() throws Exception{
         //given
         String url = "/api/users";
-
-        Auth auth = Auth.builder()
-                .id(-1L).email(email).password(password)
-                .build();
-
-        User user = User.builder()
-                .id(-1L).name(name).nickname(nickname).birthDate(birthDate).gender("M").phone(phone).auth(auth)
-                .build();
-
-        UserResponse userResponse = new UserResponse(user);
-
-        doReturn(auth).when(authService).addAuth(any(JoinRequest.class));
-        doReturn(userResponse).when(userService).addUser(any(JoinRequest.class), any(Auth.class));
+        JoinRequest request = joinRequest(email, password, name, nickname, phone, birthDate, "M");
 
         //when
         ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post(url)
-                        .content(gson.toJson(joinRequest(email, password, name, nickname, phone, birthDate, "M")))
+                        .content(gson.toJson(request))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
         //then
         resultActions.andExpect(status().isCreated());
     }
-*/
+
+    @ParameterizedTest
+    @MethodSource("invalidRequestParameter")
+    public void 유저수정실패_잘못된파라미터(String email, String password, String name,
+                               String nickname, String phone, LocalDate birthDate, String gender) throws Exception{
+        //given
+        String url = "/api/users";
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .content(gson.toJson(updateRequest(email, password, name, nickname, phone, birthDate, gender)))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void 유저수정성공() throws Exception{
+        //given
+        String url =  "/api/users";
+
+        UserUpdateRequest request = updateRequest(email, password, name, "sonny1", phone, birthDate, "M");
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.put(url)
+                        .content(gson.toJson(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk());
+    }
 
     @Test
     public void 회원목록조회성공() throws Exception{
@@ -228,52 +242,6 @@ public class UserApiControllerTest {
     }
 
     @Test
-    public void 회원수정실패_회원이존재하지않음() throws Exception{
-        //given
-        String url = "/api/users/-1";
-
-        doThrow(new CustomException(CustomErrorCode.USER_NOT_FOUND))
-                .when(userService).updateUser(any(Long.class), any(UserUpdateRequest.class));
-
-        //when
-        ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.patch(url)
-                        .content(gson.toJson(new UserUpdateRequest()))
-                        .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        //then
-        resultActions.andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void 회원수정성공() throws Exception{
-        //given
-        String url = "/api/users/-1";
-
-        doReturn(new UserResponse(User.builder().name("kim").nickname("kim12")
-                .build()))
-                .when(userService).updateUser(any(Long.class), any(UserUpdateRequest.class));
-
-        //when
-        ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.patch(url)
-                        .content(gson.toJson(userUpdateRequest()))
-                        .contentType(MediaType.APPLICATION_JSON)
-        );
-
-        //then
-        resultActions.andExpect(status().isOk());
-
-        User response = gson.fromJson(resultActions.andReturn()
-                .getResponse()
-                .getContentAsString(StandardCharsets.UTF_8), User.class);
-
-        assertThat(response.getName()).isEqualTo("kim");
-        assertThat(response.getNickname()).isEqualTo("kim12");
-    }
-
-    @Test
     public void 회원삭제실패_회원존재하지않음() throws Exception{
         //given
         String url = "/api/users/-1";
@@ -305,15 +273,42 @@ public class UserApiControllerTest {
         resultActions.andExpect(status().isNoContent());
     }
 
-    private UserUpdateRequest userUpdateRequest() {
-        return UserUpdateRequest.builder()
-                .name("kim")
-                .nickname("kim12")
-                .build();
+    @Test
+    public void 닉네임중복체크_중복닉네임없음() throws Exception{
+        //given
+        String url = "/api/users/nickname-check";
+
+        doReturn(false).when(userService).checkNickname(nickname);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(nickname)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @Test
+    public void 닉네임중복체크_중복닉네임존재() throws Exception{
+        //given
+        String url = "/api/users/nickname-check";
+
+        doReturn(true).when(userService).checkNickname(nickname);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(nickname)
+        );
+
+        //then
+        resultActions.andExpect(status().isBadRequest());
     }
 
     // validation, 유효하지 않은 파라미터들
-    private static Stream<Arguments> invalidJoinRequestParameter() {
+    private static Stream<Arguments> invalidRequestParameter() {
         return Stream.of(
                 //null 을 포함하는 경우
                 Arguments.of(null, password, name, nickname, phone, birthDate, "M"), //이메일이 Null
@@ -341,6 +336,15 @@ public class UserApiControllerTest {
                                     String nickname, String phone, LocalDate birthDate, String gender) {
 
         return JoinRequest.builder()
+                .email(email).password(password).name(name).nickname(nickname)
+                .phone(phone).birthDate(birthDate).gender(gender)
+                .build();
+    }
+
+    private UserUpdateRequest updateRequest(String email, String password, String name,
+                                    String nickname, String phone, LocalDate birthDate, String gender) {
+
+        return UserUpdateRequest.builder()
                 .email(email).password(password).name(name).nickname(nickname)
                 .phone(phone).birthDate(birthDate).gender(gender)
                 .build();
