@@ -16,12 +16,15 @@ public enum CustomErrorCode {
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 카테고리가 존재하지 않습니다"),
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품이 존재하지 않습니다"),
     GUIDE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 가이드가 존재하지 않습니다"),
+    IMG_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사진이 존재하지 않습니다"),
 
     /**
      * 500 INTERNAL_SERVER_ERROR
      * 서버 내부 오류
      */
     UNKNOWN_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에 오류가 발생했습니다"),
+    IMG_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"이미지 업로드 중 오류가 발생했습니다"),
+    IMG_DELETE_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"이미지 삭제 중 오류가 발생했습니다"),
 
     // User 관련 ERROR
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
