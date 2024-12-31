@@ -11,11 +11,20 @@ public class SearchFilterDto {
     private final String keyword;
     private final String region;
     private final String period;
+    private final String minPrice;
+    private final String maxPrice;
 
-    public SearchFilterDto(List<String> categories, String keyword, String region, String period) {
+    public SearchFilterDto(List<String> categories,
+                           String keyword,
+                           String region,
+                           String period,
+                           String minPrice,
+                           String maxPrice) {
         this.categories = categories;
         this.keyword = keyword;
         this.region = region;
         this.period = period;
+        this.minPrice = minPrice;
+        this.maxPrice = maxPrice;
     }
 }

@@ -43,6 +43,13 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (hasText(searchFilterDto.getPeriod())){
             builder.and(tour.period.eq(searchFilterDto.getPeriod()));
         }
+        if (searchFilterDto.getMinPrice() != null) {
+            builder.and(tour.price.goe(Integer.parseInt(searchFilterDto.getMinPrice())));
+        }
+        if (searchFilterDto.getMaxPrice() != null) {
+            builder.and(tour.price.loe(Integer.parseInt(searchFilterDto.getMaxPrice())));
+        }
+
 
         List<Tour> results = jpaQueryFactory.select(tour)
                 .from(tour)
