@@ -19,9 +19,21 @@ import java.util.Map;
 @ResponseBody
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthRestController {
+public class AuthApiController {
 
     private final AuthService authService;
+
+    @PostMapping("/email-check")
+    public ResponseEntity<Void> emailCheck(@RequestBody String userEmail) {
+
+        boolean isDuplicated = authService.checkEmail(userEmail);
+
+        if (isDuplicated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     @PostMapping("/expiration")
     public ResponseEntity<Void> addExpirationDate(@RequestBody LocalDate expiredDate, @AuthenticationPrincipal Auth auth) {
