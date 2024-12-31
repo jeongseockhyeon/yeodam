@@ -46,6 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
             filters.maxPrice = maxPrice || 9999999;
         }
 
+        // 정렬 기준 및 순서
+        const sortBy = document.querySelector("#sortBy").value;
+        const order = document.querySelector("#sortOrder").value;
+        if (sortBy) filters.sortBy = sortBy;
+        if (order) filters.order = order;
+
         // 필터 조건 추가
         Object.keys(filters).forEach((key) => {
             params.append(key, filters[key]);
