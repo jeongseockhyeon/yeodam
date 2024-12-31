@@ -102,9 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span>가이드: ${
                 primaryGuide ? primaryGuide.name : "정보 없음"
             }</span>
-                        <span> | 평점: ${
-                primaryGuide ? primaryGuide.rating : "N/A"
-            }⭐</span>
+                        <span> | 평점: ${tour.rate}⭐</span>
                         <span> (${primaryGuide ? primaryGuide.reviews : 0}명)</span>
                     </div>
                     <div class="price">${tour.tourPrice.toLocaleString()}원</div>
