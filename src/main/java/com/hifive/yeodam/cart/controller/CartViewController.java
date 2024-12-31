@@ -10,6 +10,7 @@ import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/carts")
@@ -37,17 +39,25 @@ public class CartViewController {
 
     @GetMapping
     public String cartList(Model model){
-        boolean anonymous = isAnonymous();
+        try {
+            log.info("장바구니 페이지 접속");
+            boolean anonymous = isAnonymous();
+            log.info("로그인 상태: {}", !anonymous);
 
-        if (!anonymous){
-            //로그인 상태 - 서버 장바구니 데이터
-            List<Cart> cartList = cartQueryService.getCartList();
-            CartTotalPriceDto totalPrice = cartQueryService.getTotalPrice();
-            model.addAttribute("carts", cartList);
-            model.addAttribute("totalPrice", totalPrice);
+            if (!anonymous){
+                List<Cart> cartList = cartQueryService.getCartList();
+                log.info("장바구니 목록 조회 결과: {}", cartList != null ? cartList.size() : "null");
+
+                CartTotalPriceDto totalPrice = cartQueryService.getTotalPrice();
+                model.addAttribute("carts", cartList);
+                model.addAttribute("totalPrice", totalPrice);
+            }
+            model.addAttribute("anonymous", anonymous);
+            return "cart/cart-list";
+        } catch (Exception e) {
+            log.error("장바구니 조회 중 에러 발생: ", e);
+            throw e;
         }
-        model.addAttribute("anonymous", anonymous);
-        return "cart/cart-list";
     }
 
     @GetMapping("/selected-price")
@@ -65,6 +75,7 @@ public class CartViewController {
     //장바구니 - 주문 페이지 연결
     @PostMapping("/order")
     public String orderForm(@RequestParam List<Long> cartIds, Model model) {
+        log.info("주문 폼 요청 받음. cartIds: {}", cartIds);
         if (isAnonymous()) {
             throw new CustomException(CustomErrorCode.LOGIN_REQUIRED);
         }
