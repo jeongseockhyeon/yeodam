@@ -312,7 +312,6 @@ public class CartCommandServiceTest {
 
             List<LocalStorageCartDto> localCart = List.of(localItem);
 
-            // 이 부분이 누락되어 USER_NOT_FOUND 발생
             when(userRepository.findByEmail(any())).thenReturn(Optional.of(testUser));
             when(cartRepository.countByUser(any())).thenReturn(0);
             when(itemRepository.findById(1L)).thenReturn(Optional.of(normalItem));
@@ -337,7 +336,6 @@ public class CartCommandServiceTest {
                             .build()
             );
 
-            // 이 부분이 누락되어 USER_NOT_FOUND 발생
             when(userRepository.findByEmail(any())).thenReturn(Optional.of(testUser));
             when(cartRepository.countByUser(any())).thenReturn(20);
 
