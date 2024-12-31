@@ -31,4 +31,11 @@ public class ItemService {
         item.updateActive(activeUpdateDto.isActive());
         return item.isActive();
     }
+
+    public List<Long> getItemsBySeller(Long companyId) {
+        List<Item> items = itemRepository.findBySellerCompanyId(companyId);
+        return items.stream()
+                .map(Item::getId)
+                .toList();
+    }
 }

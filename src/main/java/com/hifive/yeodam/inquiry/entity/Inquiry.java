@@ -1,7 +1,7 @@
 package com.hifive.yeodam.inquiry.entity;
 
+import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.item.entity.Item;
-import com.hifive.yeodam.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +19,8 @@ public class Inquiry {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "auth_id")
+    private Auth auth;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
@@ -33,4 +33,8 @@ public class Inquiry {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_inquiry_id")
     private Inquiry parentInquiry;
+
+    public void update() {
+        this.isAnswered = "Y";
+    }
 }
