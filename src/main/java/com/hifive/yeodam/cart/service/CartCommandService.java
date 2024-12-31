@@ -20,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +42,12 @@ public class CartCommandService {
 
         if(authentication == null || authentication instanceof AnonymousAuthenticationToken){
             return null;
+        }
+
+        //USER 권한 체크
+        if (!authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
+            throw new AccessDeniedException("사용자 권한이 필요합니다.");
         }
 
         //로그인 사용자 정보 가져오기
