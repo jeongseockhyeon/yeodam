@@ -12,8 +12,8 @@ import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("SELECT DISTINCT c FROM Cart c " +
-            "JOIN FETCH c.item i " +
-            "JOIN FETCH i.itemImages " +
+            "LEFT JOIN FETCH c.item i " +
+            "LEFT JOIN FETCH i.itemImages " +
             "WHERE c.user = :user")
     List<Cart> findByUserWithItemsAndImages(@Param("user") User user);
 
