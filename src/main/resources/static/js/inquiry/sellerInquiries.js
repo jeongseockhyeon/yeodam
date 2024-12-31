@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // 답변하기 버튼 추가
             const answerButton = document.createElement("button");
             answerButton.className = "answer-button";
+            answerButton.id = `answer-button-${inquiry.id}`;
             answerButton.textContent = "답변하기";
             answerButton.style.display = inquiry.isAnswered === "N" ? "block" : "none"; // 미답변인 경우에만 버튼 표시
             answerButton.addEventListener("click", () => showAnswerForm(inquiry.id));
@@ -129,10 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const answerButton = document.querySelector(`#answer-button-${inquiryId}`);
         if (form.style.display === "none") {
             form.style.display = "block";
-            answerButton.style.display = "none";
+            answerButton.textContent = "취소";
         } else {
             form.style.display = "none";
-            answerButton.style.display = "block";
+            answerButton.textContent = "답변하기";
         }
     };
 

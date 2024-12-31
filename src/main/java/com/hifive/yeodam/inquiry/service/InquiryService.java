@@ -87,4 +87,9 @@ public class InquiryService {
 
         inquiryRepository.save(answer);
     }
+
+    @Transactional
+    public Inquiry getAnswerInquiry(Long parentId) {
+        return inquiryRepository.findByParentInquiryId(parentId);
+    }
 }

@@ -64,33 +64,81 @@ document.addEventListener("DOMContentLoaded", () => {
                 answerStatus.classList.add("pending");
             }
 
-            // 삭제 버튼 추가
-            const deleteButton = document.createElement("button");
-            deleteButton.className = "delete-button";
-            deleteButton.textContent = "삭제";
-            deleteButton.addEventListener("click", async () => {
-                if (confirm("이 문의를 삭제하시겠습니까?")) {
-                    try {
-                        const response = await fetch(`/inquiries/${inquiry.id}`, {
-                            method: "DELETE",
-                        });
-                        if (!response.ok) {
-                            throw new Error("삭제 실패");
-                        }
-                        alert("문의가 삭제되었습니다.");
-                        fetchInquiries();
-                    } catch (error) {
-                        console.error("Error deleting inquiry:", error);
-                        alert("삭제 중 오류가 발생했습니다.");
-                    }
-                }
-            });
-
             inquiryBox.appendChild(itemName);
             inquiryBox.appendChild(title);
             inquiryBox.appendChild(content);
             inquiryBox.appendChild(answerStatus);
-            inquiryBox.appendChild(deleteButton);
+
+            if (inquiry.isAnswered === "Y") {
+                // 답변 보기 버튼
+                const toggleAnswerButton = document.createElement("button");
+                toggleAnswerButton.className = "toggle-answer-button";
+                toggleAnswerButton.textContent = "답변 보기";
+
+                const answerContainer = document.createElement("div");
+                answerContainer.className = "answer-container";
+                answerContainer.style.display = "none";
+
+                toggleAnswerButton.addEventListener("click", async () => {
+                    if (answerContainer.style.display === "none") {
+                        try {
+                            const response = await fetch(`/inquiries/${inquiry.id}/answer`, {
+                                method: "GET",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error("Failed to fetch answer");
+                            }
+
+                            const answer = await response.json();
+                            answerContainer.innerHTML = `
+                                <div class='answer-title'>${answer.title}</div>
+                                <div class='answer-content'>${answer.content}</div>
+                            `;
+
+                            answerContainer.style.display = "block";
+                            toggleAnswerButton.textContent = "답변 접기";
+                        } catch (error) {
+                            console.error("Error fetching answer:", error);
+                            alert("답변을 가져오는 중 오류가 발생했습니다.");
+                        }
+                    } else {
+                        answerContainer.style.display = "none";
+                        toggleAnswerButton.textContent = "답변 보기";
+                    }
+                });
+
+                inquiryBox.appendChild(toggleAnswerButton);
+                inquiryBox.appendChild(answerContainer);
+            }
+            else {
+                // 삭제 버튼
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "delete-button";
+                deleteButton.textContent = "삭제";
+                deleteButton.addEventListener("click", async () => {
+                    if (confirm("이 문의를 삭제하시겠습니까?")) {
+                        try {
+                            const response = await fetch(`/inquiries/${inquiry.id}`, {
+                                method: "DELETE",
+                            });
+                            if (!response.ok) {
+                                throw new Error("삭제 실패");
+                            }
+                            alert("문의가 삭제되었습니다.");
+                            fetchInquiries();
+                        } catch (error) {
+                            console.error("Error deleting inquiry:", error);
+                            alert("삭제 중 오류가 발생했습니다.");
+                        }
+                    }
+                });
+
+                inquiryBox.appendChild(deleteButton);
+            }
 
             inquiryListContainer.appendChild(inquiryBox);
         });

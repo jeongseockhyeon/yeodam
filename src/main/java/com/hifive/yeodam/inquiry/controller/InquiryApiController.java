@@ -61,4 +61,10 @@ public class InquiryApiController {
         inquiryService.answerInquiry(id, request, auth);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{id}/answer")
+    public ResponseEntity<?> getAnswerInquiry(@PathVariable Long id) {
+        InquiryResponse answer = new InquiryResponse(inquiryService.getAnswerInquiry(id));
+        return ResponseEntity.ok(answer);
+    }
 }
