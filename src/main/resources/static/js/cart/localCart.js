@@ -359,64 +359,6 @@ async function deleteSelectedItems() {
     }
 }
 
-// 로컬 스토리지 렌더링 함수
-function renderLocalCart(items) {
-    const container = document.getElementById('localCartItems');
-    container.innerHTML = '';
-
-    if (items.length === 0) {
-        container.innerHTML = '<div class="text-center p-5">장바구니가 비어있습니다.</div>';
-        return;
-    }
-
-    items.forEach(item => {
-        const itemElement = document.createElement('div');
-        itemElement.className = 'cart-item';
-        itemElement.innerHTML = `
-            <div class="cart-item-header">
-                <div class="header-left">
-                    <input type="checkbox" class="item-checkbox" value="${item.itemId}">
-                    <h3 class="item-title">${item.itemName}</h3>
-                </div>
-                <button class="delete-btn" onclick="removeLocalItem(${item.itemId})">×</button>
-            </div>
-            <div class="cart-item-content">
-                <div class="item-image">
-                    ${item.imagePath ?
-            `<img src="${item.imagePath}" alt="${item.itemName}" class="product-image">` :
-            `<div class="no-image"><i class="bi bi-image text-secondary"></i></div>`}
-                </div>
-                <div class="item-info">
-                    ${item.reservation ? `
-                        <div class="tour-info">
-                            <p>지역: ${item.region || ''}</p>
-                            <p>기간: ${item.period || ''}</p>
-                            <p>가이드: ${item.guideName || '선택된 가이드 없음'}</p>
-                            <p>예약일: ${item.startDate || ''} - ${item.endDate || ''}</p>
-                        </div>
-                    ` : ''}
-                </div>
-                <div>
-                    ${!item.reservation ? `
-                        <div class="quantity-control">
-                            <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count - 1})">-</button>
-                            <span>${item.count}</span>
-                            <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count + 1})">+</button>
-                        </div>
-                    ` : `
-                        <div class="badge-reserved">예약상품</div>
-                    `}
-                </div>
-                <div class="price">₩${(item.price * item.count).toLocaleString()}</div>
-            </div>
-        `;
-        container.appendChild(itemElement);
-    });
-
-    addCheckboxEventListeners();
-    calculateTotalPrice();  // 렌더링 후 가격 계산
-}
-
 // 페이지 로드 시 초기화 - 가격 계산 다시 실행
 document.addEventListener('DOMContentLoaded', () => {
     if (!isLoggedIn) {
