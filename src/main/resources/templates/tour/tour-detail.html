@@ -7,6 +7,9 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
     <link rel="stylesheet" href="/css/item-detail.css">
+    <script th:inline="javascript">
+        const isLoggedIn = [[${!anonymous}]];
+    </script>
 </head>
 <body class="detail-body">
 <div class="container">
