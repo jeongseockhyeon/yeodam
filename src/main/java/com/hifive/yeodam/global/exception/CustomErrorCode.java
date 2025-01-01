@@ -48,6 +48,7 @@ public enum CustomErrorCode {
     //주문 관련 ERROR
     NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "해당 상품의 재고가 없습니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문이 존재하지 않습니다."),
+    ORDER_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문이 존재하지 않습니다."),
     ORDER_CAN_NOT_CANCEL(HttpStatus.BAD_REQUEST, "해당 주문을 취소할 수 없습니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제 내역이 존재하지 않습니다."),
     PAYMENT_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다."),
@@ -56,9 +57,12 @@ public enum CustomErrorCode {
 
     //예약 관련 ERROR
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "예약 내역이 존재하지 않습니다."),
-    RESERVED_GUIDE(HttpStatus.BAD_REQUEST, "이미 예약되어있는 가이드 입니다.")
-    ;
+    RESERVED_GUIDE(HttpStatus.BAD_REQUEST, "이미 예약되어있는 가이드 입니다."),
 
+    //리뷰 관련 ERROR
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰가 없습니다."),
+    REVIEW_NOT_CREATE(HttpStatus.BAD_REQUEST, "해당 리뷰를 등록할 수 없습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
