@@ -1,7 +1,6 @@
 package com.hifive.yeodam.category.dto;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class CategoryReqDto {
