@@ -43,4 +43,9 @@ public class HomeController {
         }
         return "index";
     }
+
+    @GetMapping("/survey")
+    public String survey() {
+        return "survey";
+    }
 }
