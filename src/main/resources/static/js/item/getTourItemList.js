@@ -21,6 +21,15 @@ document.addEventListener("DOMContentLoaded", () => {
         // 필터 값 가져오기
         const filters = {};
 
+        // 로컬 스토리지에서 필터 값 가져오기
+        const regionParam = localStorage.getItem("selectedRegion");
+        const themeParam = localStorage.getItem("selectedThemes");
+        const periodParam = localStorage.getItem("selectedPeriod");
+
+        if (regionParam) filters.region = regionParam;
+        if (themeParam) filters.categories = themeParam;
+        if (periodParam) filters.period = periodParam;
+
         // 카테고리 필터
         const selectedCategories = [];
         const checkboxes = document.querySelectorAll("#categoryCheckBox input[type='checkbox']:checked");
@@ -61,6 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((response) => response.json())
             .then((data) => {
                 renderTours(data.content);
+
+                // 로컬 스토리지 비우기 (요청 성공 시)
+                localStorage.removeItem("selectedRegion");
+                localStorage.removeItem("selectedThemes");
+                localStorage.removeItem("selectedPeriod");
+
                 if (data.content.length > 0) {
                     cursorId = data.content[data.content.length - 1].id; // 마지막 요소의 ID 저장
                 } else {

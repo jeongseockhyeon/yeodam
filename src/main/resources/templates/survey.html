@@ -43,20 +43,23 @@
             gap: 10px;
             justify-content: center;
         }
-        .option {
-            padding: 10px 15px;
-            background-color: #f1f1f1;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .option:hover {
-            background-color: #d1d1d1;
-        }
         .arrow {
             margin-top: 20px;
             font-size: 20px;
             cursor: pointer;
+        }
+        button.option {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+        }
+        button.option.selected {
+            background-color: #007bff;
+            color: white;
+            border-color: #0056b3;
         }
     </style>
 </head>
@@ -81,7 +84,8 @@
         <div class="title">며칠 동안 여행하실 예정이신가요?</div>
         <div class="subtitle">* 최대 3개까지 선택 가능합니다.</div>
         <div class="options" id="period-options"></div>
-        <div class="arrow" onclick="submitSurvey()">→</div>
+        <div class="arrow" onclick="prevStep()">←</div>
+        <div class="arrow" onclick="goToTourList()">→</div>
     </div>
 </div>
 
