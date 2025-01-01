@@ -4,9 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class CategoryReqDto {
-    private Long parentCategoryId;
+    private final Long parentCategoryId;
 
-    private String categoryName;
+    private final String categoryName;
+
+    public CategoryReqDto(Long parentCategoryId, String categoryName) {
+        this.parentCategoryId = parentCategoryId;
+        this.categoryName = categoryName;
+    }
 }
