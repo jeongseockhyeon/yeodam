@@ -9,6 +9,8 @@ let selectedRegion = null; // 지역 단일 선택
 let selectedPeriod = null; // 기간 단일 선택
 let selectedThemes = []; // 테마 다중 선택
 
+const MAX_SELECTIONS = 3;
+
 // 선택값 처리 함수 (단일 선택)
 function toggleSelectionSingle(option, currentSelection, list, containerId) {
     const container = document.getElementById(containerId);
@@ -31,6 +33,11 @@ function toggleSelectionSingle(option, currentSelection, list, containerId) {
 
 // 선택값 처리 함수 (다중 선택)
 function toggleSelectionMultiple(option, list, buttonElement) {
+    if (list.length >= MAX_SELECTIONS && !list.includes(option)) {
+        alert(`최대 ${MAX_SELECTIONS}개까지만 선택할 수 있습니다.`);
+        return; // 최대 선택 수를 초과하면 선택을 추가하지 않음
+    }
+
     const index = list.indexOf(option);
     if (index > -1) {
         list.splice(index, 1); // 이미 선택된 값 제거
