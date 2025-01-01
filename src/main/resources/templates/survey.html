@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 설문</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 400px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .step {
+            display: none;
+        }
+        .step.active {
+            display: block;
+        }
+        .title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .option {
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #d1d1d1;
+        }
+        .arrow {
+            margin-top: 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="step active" id="step-region">
+        <div class="title">어느 지역으로의 여행을 원하시나요?</div>
+        <div class="subtitle">* 최대 3개까지 선택 가능합니다.</div>
+        <div class="options" id="region-options"></div>
+        <div class="arrow" onclick="nextStep()">→</div>
+    </div>
+
+    <div class="step" id="step-theme">
+        <div class="title">어느 테마의 여행을 원하시나요?</div>
+        <div class="subtitle">* 최대 3개까지 선택 가능합니다.</div>
+        <div class="options" id="theme-options"></div>
+        <div class="arrow" onclick="prevStep()">←</div>
+        <div class="arrow" onclick="nextStep()">→</div>
+    </div>
+
+    <div class="step" id="step-period">
+        <div class="title">며칠 동안 여행하실 예정이신가요?</div>
+        <div class="subtitle">* 최대 3개까지 선택 가능합니다.</div>
+        <div class="options" id="period-options"></div>
+        <div class="arrow" onclick="submitSurvey()">→</div>
+    </div>
+</div>
+
+<script src="/js/item/surveyList.js"></script>
+</body>
+</html>
