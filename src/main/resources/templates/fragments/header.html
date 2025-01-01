@@ -42,6 +42,11 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
                 <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
             </th:block>
 
+            <!-- 관리자일 경우 -->
+            <th:block th:if="${role == 'ADMIN'}">
+                <button class="btn" onclick="location.href='/admins/manage'">관리자 페이지</button>
+            </th:block>
+
             <button class="btn" onclick="location.href='/logout'">로그아웃</button>
         </th:block>
     </div>
