@@ -5,6 +5,7 @@ import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
+import com.hifive.yeodam.orderdetail.domain.OrderDetailStatus;
 import com.hifive.yeodam.orderdetail.repository.OrderDetailRepository;
 import com.hifive.yeodam.reservation.entity.Reservation;
 import com.hifive.yeodam.reservation.repository.ReservationRepository;
@@ -55,6 +56,10 @@ public class OrderDetailCommandService {
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND));
 
+        if (item.getStock() <= 0) {
+            throw new CustomException(NOT_ENOUGH_STOCK);
+        }
+
         item.removeStock();
 
         validateOrderMessage(request);
@@ -90,7 +95,7 @@ public class OrderDetailCommandService {
     }
 
     private void checkGuideAvailability(orderRequest request, Guide guide) {
-        if (orderDetailRepository.isGuideAvailable(guide.getGuideId(), request.getStartDate(), request.getEndDate())) {
+        if (orderDetailRepository.isGuideAvailable(guide.getGuideId(), OrderDetailStatus.PENDING,request.getStartDate(), request.getEndDate())) {
             throw new CustomException(RESERVED_GUIDE);
         }
     }
