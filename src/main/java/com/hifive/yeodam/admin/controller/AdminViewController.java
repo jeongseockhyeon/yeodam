@@ -47,4 +47,9 @@ public class AdminViewController {
         return "admin/admin-edit";
     }
 
+    @GetMapping("/category-manage")
+    public String categoryManagePage(){
+        return "admin/category-manage";
+    }
+
 }
