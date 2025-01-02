@@ -38,9 +38,7 @@ public class CategoryTest {
     @DisplayName("카테고리 생성 테스트")
     public void saveCategoryTest(){
         // given
-        CategoryReqDto categoryReqDto = new CategoryReqDto();
-        categoryReqDto.setCategoryName(categoryName);
-        categoryReqDto.setParentCategoryId(null);
+        CategoryReqDto categoryReqDto = new CategoryReqDto(null,categoryName);
 
         Category savedCategory = Category.builder()
                 .id(1L)
@@ -70,9 +68,7 @@ public class CategoryTest {
                 .name(categoryName)
                 .build();
 
-        CategoryReqDto categoryReqDto = new CategoryReqDto();
-        categoryReqDto.setCategoryName(subCategoryName);
-        categoryReqDto.setParentCategoryId(parentCategoryId);
+        CategoryReqDto categoryReqDto = new CategoryReqDto(parentCategoryId,subCategoryName);
 
         Category savedCategory = Category.builder()
                 .id(2L)

@@ -38,11 +38,11 @@ function renderTourData(data) {
         const listItem = document.createElement('li');
         const button = document.createElement('button');
         button.textContent = guide.name;
-        button.setAttribute('data-name', guide.name);
-        button.setAttribute('data-id', guide.id);
+        button.setAttribute('data-name', guide.name);  // 가이드 이름
+        button.setAttribute('data-id', guide.id);  // 가이드 ID
         button.classList.add('guide-option');
         button.style.cssText = 'display: block; width: 100%; text-align: left; padding: 5px;';
-        button.onclick = () => selectGuide(button);
+        button.onclick = () => selectGuide(button);  // 클릭 시 selectGuide 호출
         listItem.appendChild(button);
         guideList.appendChild(listItem);
     });
@@ -52,12 +52,28 @@ function toggleGuideDropdown() {
     const dropdown = document.getElementById('guideDropdown');
     dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
 }
-
 function selectGuide(button) {
-    const selectedGuide = document.getElementById('selectedGuide');
-    selectedGuide.textContent = `선택된 가이드: ${button.dataset.name}`;
+    const guideId = button.getAttribute('data-id'); // 클릭한 버튼의 가이드 ID
+    const guideName = button.getAttribute('data-name'); // 클릭한 버튼의 가이드 이름
 
-    selectedGuide.setAttribute('data-id', button.dataset.id);
+    if (!guideId || !guideName) {
+        alert('유효하지 않은 가이드 정보입니다.');
+        return;
+    }
+
+    // 선택된 가이드 표시 및 데이터 설정
+    const selectedGuideElement = document.getElementById('selectedGuide');
+    selectedGuideElement.innerText = `선택된 가이드: ${guideName}`;
+    selectedGuideElement.setAttribute('data-guide-id', guideId); // 선택된 가이드 ID 설정
+
+    // 예약 일정 불러오기
+    fetchAndDisplayReservations(guideId); // 해당 가이드의 예약 일정을 가져와서 달력에 표시
+
+    // 선택된 버튼 스타일 업데이트
+    document.querySelectorAll('.guide-option').forEach(btn => {
+        btn.classList.remove('selected-guide'); // 기존 선택 스타일 제거
+    });
+    button.classList.add('selected-guide'); // 선택된 가이드 스타일 적용
 }
 
 // 데이터 가져오기 실행
@@ -76,6 +92,32 @@ function formatLocalDate(date) {
 }
 let calendar;
 
+function fetchAndDisplayReservations(guideId) {
+    fetch(`/api/tours/${guideId}/reservation`)
+        .then(response => response.json())
+        .then(reservations => {
+            if (!reservations || reservations.length === 0) {
+                console.warn('예약 데이터가 비어 있습니다.');
+                return;
+            }
+            const events = reservations.map(reservation => ({
+                title: '예약 불가',
+                start: reservation.startDate,
+                end: new Date(new Date(reservation.endDate).getTime() + 24 * 60 * 60 * 1000),
+                backgroundColor: '#dc3545',
+                borderColor: '#dc3545',
+                rendering: 'background',
+                overlap: false,
+                allDay: true,
+            }));
+
+            // 기존 이벤트 제거 및 새 이벤트 추가
+            calendar.getEvents().forEach(event => event.remove());
+            events.forEach(event => calendar.addEvent(event));
+        })
+        .catch(error => console.error('예약 데이터를 가져오는 중 오류 발생:', error));
+}
+
 function initializeCalendar(data) {
     const calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {
@@ -83,35 +125,45 @@ function initializeCalendar(data) {
         locale: 'ko',
         selectable: true,
         dateClick: function (info) {
-            // 클릭한 날짜 기준으로 선택 기간 설정
             const selectedStartDate = new Date(info.date);
             const days = parseInt(data.tourPeriod.replace("일", "").trim());
             const selectedEndDate = new Date(selectedStartDate);
+            selectedEndDate.setDate(selectedStartDate.getDate() + days - 1);
 
-            // 날짜 계산 시, 'days' 만큼 추가
-            selectedEndDate.setDate(selectedStartDate.getDate() + days - 1); // 기간 끝 날짜를 정확하게 설정
-
-            // 이미 존재하는 "예약 선택" 이벤트 제거
-            calendar.getEvents().forEach(event => {
-                if (event.title === '예약 선택') {
-                    event.remove();
+            // 예약 불가 여부 확인 (title이 '예약 불가'인 경우에만 확인)
+            const isUnavailable = calendar.getEvents().some(event => {
+                if (event.title === '예약 불가') {
+                    const eventStart = new Date(event.start);
+                    const eventEnd = new Date(event.end);
+                    return (
+                        (selectedStartDate >= eventStart && selectedStartDate < eventEnd) || // 시작 날짜 겹침
+                        (selectedEndDate >= eventStart && selectedEndDate < eventEnd) ||    // 종료 날짜 겹침
+                        (selectedStartDate <= eventStart && selectedEndDate >= eventEnd)   // 전체 포함
+                    );
                 }
+                return false;
             });
 
-            // 로컬 시간대 기준으로 날짜를 포맷팅
-            const startDateString = formatLocalDate(selectedStartDate);  // "2024-12-20"
-            const endDateString = formatLocalDate(new Date(selectedEndDate.getTime() + 24 * 60 * 60 * 1000));  // "2024-12-21"
+            if (isUnavailable) {
+                alert('선택한 날짜에 예약이 불가능합니다.');
+                return;
+            }
 
-            // 새로운 "예약 선택" 이벤트 추가
+            // 기존 예약 선택 제거
+            calendar.getEvents().forEach(event => {
+                if (event.title === '예약 선택') event.remove();
+            });
+
+            // 새로운 예약 선택 추가
             calendar.addEvent({
                 title: '예약 선택',
-                start: startDateString,
-                end: endDateString, // FullCalendar는 end 날짜를 포함하지 않음
+                start: formatLocalDate(selectedStartDate),
+                end: formatLocalDate(new Date(selectedEndDate.getTime() + 24 * 60 * 60 * 1000)),
                 backgroundColor: '#28a745',
                 borderColor: '#28a745',
             });
         },
-        events: [],
+        events: [], // 초기 이벤트 비워둠
     });
     calendar.render();
 }

@@ -1,12 +1,15 @@
 package com.hifive.yeodam.seller.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.reservation.entity.Reservation;
+import com.hifive.yeodam.reservation.repository.ReservationRepository;
 import com.hifive.yeodam.seller.dto.GuideJoinRequest;
 import com.hifive.yeodam.seller.dto.GuideResDto;
 import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
+import com.hifive.yeodam.tour.repository.TourGuideRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +22,8 @@ public class GuideService {
 
     private final SellerService sellerService;
     private final GuideRepository guideRepository;
+    private final ReservationRepository reservationRepository;
+    private final TourGuideRepository tourGuideRepository;
 
     // 가이드 등록
     @Transactional
@@ -44,6 +49,13 @@ public class GuideService {
     // 가이드 삭제
     @Transactional
     public void deleteGuide(Long id) {
+        Guide guide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
+        Guide delete = guideRepository.findById(1L).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
+        List<Reservation> reservationList = reservationRepository.findByGuide(guide);
+        for(Reservation reservation : reservationList) {
+            reservation.changeGuide(delete);
+        }
+        tourGuideRepository.deleteByGuideId(id);
         guideRepository.deleteById(id);
     }
 
@@ -65,5 +77,20 @@ public class GuideService {
         return guides.stream()
                 .map(GuideResDto::new)
                 .toList();
+    }
+
+    // 가이드 전체 삭제
+    public void deleteAllGuides(Auth auth) {
+        Seller seller = sellerService.getSellerByAuth(auth);
+        Guide delete = guideRepository.findById(1L).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
+        List<Guide> guides = guideRepository.findBySellerCompanyId(seller.getCompanyId());
+        for(Guide guide : guides) {
+            List<Reservation> reservationList = reservationRepository.findByGuide(guide);
+            for(Reservation reservation : reservationList) {
+                reservation.changeGuide(delete);
+            }
+            tourGuideRepository.deleteByGuideId(guide.getGuideId());
+            guideRepository.delete(guide);
+        }
     }
 }

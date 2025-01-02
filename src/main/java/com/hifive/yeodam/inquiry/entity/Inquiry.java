@@ -37,4 +37,8 @@ public class Inquiry {
     public void update() {
         this.isAnswered = "Y";
     }
+
+    public void changeAuth(Auth auth) {
+        this.auth = auth;
+    }
 }

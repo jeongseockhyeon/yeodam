@@ -1,0 +1,91 @@
+.custom-container {
+    width: 65%;
+    height: 80%;
+    background: #F8F8F8;
+    overflow-y: auto;
+    border-radius: 12px;
+    padding: 5%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    text-align: center;
+    align-items: center
+}
+
+.item-title {
+    font-style: italic;
+}
+
+.input-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.input-field label {
+    flex: 0 0 40%;
+    text-align: left;
+}
+
+.input-field input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.input-field textarea {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize: none;
+}
+
+.section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.back-button {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    padding: 10px 15px;
+    font-size: 30px;
+    font-weight: bold;
+    color: #000;
+    text-decoration: none;
+}
+
+.back-button:hover {
+    color: #8c8a8a;
+}
+
+#policy {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+#submit-btn {
+    width: 30%;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#submit-btn:hover {
+    background-color: #8c8a8a;
+}

@@ -11,10 +11,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
 
     @Query("select od from OrderDetail od " +
+            "join fetch od.reservation r " +
+            "join fetch r.guide d " +
             "join fetch od.item " +
             "join fetch od.order o " +
             "join fetch o.payment p " +
@@ -23,11 +26,19 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "and o.user = :user ")
     Slice<OrderDetail> findOrderByDetailStatus(List<OrderDetailStatus> detailsStatus, OrderStatus status, User user, Pageable pageable);
 
-    @Query("select case when count(o) > 0 then true else false end " +
-            "from OrderDetail o " +
-            "join o.reservation r " +
+    @Query("select case when count(od) > 0 then true else false end " +
+            "from OrderDetail od " +
+            "join od.reservation r " +
             "where r.guide.guideId = :guideId " +
+            "and od.status = :status " +
             "and (r.startDate between :startDate and :endDate " +
             "or r.endDate between :startDate and :endDate)")
-    boolean isGuideAvailable(Long guideId, LocalDate startDate, LocalDate endDate);
+    boolean isGuideAvailable(Long guideId,OrderDetailStatus status ,LocalDate startDate, LocalDate endDate);
+
+    @Query("select od from OrderDetail od " +
+            "join fetch od.item i " +
+            "join fetch od.reservation r " +
+            "where i.id = :itemId " +
+            "and od.order.orderUid = :orderUid")
+    Optional<OrderDetail> findByItemOrderUid(Long itemId, String orderUid);
 }

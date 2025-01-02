@@ -1,47 +1,31 @@
 package com.hifive.yeodam.cart.dto.command;
 
 import lombok.*;
-import java.time.LocalDate;
+
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartRequestDto {
     private Long itemId;
-    private String itemName;
-    private String description;
-    private String period;
-    private String region;
-    private int price;
-    private int count;
-    private boolean reservation;
+    private String tourName;
+    private String tourRegion;
+    private String tourPeriod;
+    private int tourPrice;
+    private int maximum;
     private Long guideId;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String imgUrl;
 
     @Builder
-    public CartRequestDto(Long itemId, String itemName, String description,
-                          String period, String region, int price,
-                          Long guideId, LocalDate startDate, LocalDate endDate) {
+    public CartRequestDto(Long itemId, String tourName, String tourRegion,
+                          String tourPeriod, int tourPrice, int maximum,
+                          Long guideId, String imgUrl) {
         this.itemId = itemId;
-        this.itemName = itemName;
-        this.description = description;
-        this.period = period;
-        this.region = region;
-        this.price = price;
-        this.count = 1;
-        this.reservation = true;
+        this.tourName = tourName;
+        this.tourRegion = tourRegion;
+        this.tourPeriod = tourPeriod;
+        this.tourPrice = tourPrice;
+        this.maximum = maximum;
         this.guideId = guideId;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
-
-    // 일반 상품
-    @Builder
-    public CartRequestDto(Long itemId, String itemName, int price, int count) {
-        this.itemId = itemId;
-        this.itemName = itemName;
-        this.price = price;
-        this.count = count;
-        this.reservation = false;
+        this.imgUrl = imgUrl;
     }
 }

@@ -30,10 +30,14 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/css/**", "/js/**").permitAll()
                         .requestMatchers("/", "/login", "/join", "/logout", "/order/**", "/api/**", "tours/**", "/carts/**").permitAll()
                         .requestMatchers("/users/join", "/users/email-check", "/users/nickname-check", "/users/password-check").permitAll()
                         .requestMatchers("/sellers", "/sellers/join", "/sellers/check-email").permitAll()
                         .requestMatchers("/inquiries/**").permitAll()
+                        .requestMatchers("/api/carts/sync").authenticated()
+                        .requestMatchers("/api/carts/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

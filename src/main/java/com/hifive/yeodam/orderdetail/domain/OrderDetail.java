@@ -3,6 +3,7 @@ package com.hifive.yeodam.orderdetail.domain;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.reservation.entity.Reservation;
+import com.hifive.yeodam.review.domain.Review;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +47,10 @@ public class OrderDetail {
     @JoinColumn(name = "reservation_id")
     @OneToOne(fetch = LAZY)
     private Reservation reservation;
+
+    @Setter
+    @OneToOne(mappedBy = "orderDetail")
+    private Review review;
 
     @Builder
     public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
