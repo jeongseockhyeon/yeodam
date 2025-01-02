@@ -13,13 +13,15 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("SELECT DISTINCT c FROM Cart c " +
             "LEFT JOIN FETCH c.item i " +
-            "LEFT JOIN FETCH i.itemImages " +
+            "LEFT JOIN FETCH i.itemImages img " +
+            "LEFT JOIN FETCH c.guide g " +
             "WHERE c.auth = :auth")
     List<Cart> findByAuthWithItemsAndImages(@Param("auth") Auth auth);
 
     @Query("SELECT DISTINCT c FROM Cart c " +
-            "JOIN FETCH c.item i " +
-            "JOIN FETCH i.itemImages " +
+            "LEFT JOIN FETCH c.item i " +
+            "LEFT JOIN FETCH i.itemImages img " +
+            "LEFT JOIN FETCH c.guide g " +
             "WHERE c.id IN :cartIds")
     List<Cart> findByIdsWithItemsAndImages(@Param("cartIds") List<Long> cartIds);
 
