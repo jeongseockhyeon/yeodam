@@ -35,12 +35,7 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Authentication authentication, Model model) {
-        if (authentication != null && authentication.getAuthorities() != null) {
-            Auth auth = (Auth) authentication.getPrincipal();
-            RoleType role = auth.getRole();
-            model.addAttribute("role", role.toString());
-        }
+    public String home() {
         return "index";
     }
 

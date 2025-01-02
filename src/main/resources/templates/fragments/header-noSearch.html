@@ -30,17 +30,17 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
             </a>
 
             <!-- 판매자일 경우 -->
-            <th:block th:if="${role == 'SELLER'}">
+            <th:block sec:authorize="hasRole('ROLE_SELLER')">
                 <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
             </th:block>
 
             <!-- 유저일 경우 -->
-            <th:block th:if="${role == 'USER'}">
+            <th:block sec:authorize="hasRole('ROLE_USER')">
                 <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
             </th:block>
 
             <!-- 관리자일 경우 -->
-            <th:block th:if="${role == 'ADMIN'}">
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                 <button class="btn" onclick="location.href='/admins/manage'">관리자 페이지</button>
             </th:block>
 
