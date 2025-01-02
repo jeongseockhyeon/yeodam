@@ -49,6 +49,13 @@ public class GuideService {
     // 가이드 삭제
     @Transactional
     public void deleteGuide(Long id) {
+        Guide guide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
+        Guide delete = guideRepository.findById(1L).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
+        List<Reservation> reservationList = reservationRepository.findByGuide(guide);
+        for(Reservation reservation : reservationList) {
+            reservation.changeGuide(delete);
+        }
+        tourGuideRepository.deleteByGuideId(id);
         guideRepository.deleteById(id);
     }
 
