@@ -32,14 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("deleteBtn").addEventListener("click", () => {
 
-        let expirationDate = new Date(deleteYear, deleteMonth - 1, deleteDay);
-
         fetch("/api/auth/expiration", {
             method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(expirationDate.toISOString().split('T')[0])
         })
             .then(response => {
                 if (!response.ok) {
