@@ -2,6 +2,8 @@ package com.hifive.yeodam.global.config;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.seller.service.SellerService;
+import com.hifive.yeodam.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,8 @@ import java.util.List;
 public class SchedulerConfig {
 
     private final AuthRepository authRepository;
+    private final SellerService sellerService;
+    private final UserService userService;
 
     /**
      * 만료 날짜가 된 인증 정보 삭제
@@ -31,6 +35,11 @@ public class SchedulerConfig {
         log.info("만료된 인증 정보 size: {}", expiredAuth.size());
 
         for (Auth auth : expiredAuth) {
+            if(auth.getRole().toString().equals("SELLER"))
+                sellerService.deleteSellerContent(auth);
+            else if(auth.getRole().toString().equals("USER"))
+                userService.deleteUserContent(auth);
+
             authRepository.deleteById(auth.getId());
         }
         log.info("만료된 인증 정보 삭제 완료");
