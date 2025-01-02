@@ -1,13 +1,13 @@
 spring.application.name: Yeodam
 
 imp:
-  store-key: imp65451236
-  api-key: 1821116401505487
-  secret-key: DH0KJWY8lzqX4lYLkHQUeelZ8OoxFZTLbfni89eKLmUjbYzv5m3AsMI6W71xa2CHNFcFUJ3U62LusAex
+  store-key: test
+  api-key: test
+  secret-key: test
 
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/elice/project/yeodam
+    url: test
     username: sa
     password:
 
@@ -28,16 +28,16 @@ spring:
   cloud:
     aws:
       credentials:
-        accessKey: AKIAZQ3DR4M3OKBX277X
-        secretKey: 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
+        accessKey: test
+        secretKey: test
       s3:
-        bucket: kcabsohwsseug
+        bucket: test
       region:
-        static: ap-northeast-2
+        static: test
       stack:
         auto: false
       cloudfront:
-        domainName: djwm3h8i3zg0e.cloudfront.net
+        domainName: test
 
   servlet:
     multipart:
