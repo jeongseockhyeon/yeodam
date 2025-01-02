@@ -108,6 +108,7 @@ function fetchAndDisplayReservations(guideId) {
                 borderColor: '#dc3545',
                 rendering: 'background',
                 overlap: false,
+                allDay: true,
             }));
 
             // 기존 이벤트 제거 및 새 이벤트 추가
@@ -129,15 +130,18 @@ function initializeCalendar(data) {
             const selectedEndDate = new Date(selectedStartDate);
             selectedEndDate.setDate(selectedStartDate.getDate() + days - 1);
 
-            // 예약 불가 여부 확인
+            // 예약 불가 여부 확인 (title이 '예약 불가'인 경우에만 확인)
             const isUnavailable = calendar.getEvents().some(event => {
-                const eventStart = new Date(event.start);
-                const eventEnd = new Date(event.end);
-                return (
-                    (selectedStartDate >= eventStart && selectedStartDate < eventEnd) || // 시작 날짜 겹침
-                    (selectedEndDate >= eventStart && selectedEndDate < eventEnd) ||    // 종료 날짜 겹침
-                    (selectedStartDate <= eventStart && selectedEndDate >= eventEnd)   // 전체 포함
-                );
+                if (event.title === '예약 불가') {
+                    const eventStart = new Date(event.start);
+                    const eventEnd = new Date(event.end);
+                    return (
+                        (selectedStartDate >= eventStart && selectedStartDate < eventEnd) || // 시작 날짜 겹침
+                        (selectedEndDate >= eventStart && selectedEndDate < eventEnd) ||    // 종료 날짜 겹침
+                        (selectedStartDate <= eventStart && selectedEndDate >= eventEnd)   // 전체 포함
+                    );
+                }
+                return false;
             });
 
             if (isUnavailable) {
