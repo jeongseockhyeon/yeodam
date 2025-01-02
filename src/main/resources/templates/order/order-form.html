@@ -3,101 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>주문 폼</title>
-    <style>
-        .custom-container {
-            width: 70%;
-            height: 95%;
-            background: #F8F8F8;
-            overflow-y: auto;
-            border-radius: 12px;
-            padding: 5%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            justify-content: center;
-            text-align: center;
-            align-items: center
-        }
+    <link rel="stylesheet" href="/css/order-form.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-        .item-title {
-            font-style: italic;
-        }
-
-        .input-field {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .input-field label {
-            flex: 0 0 40%;
-            text-align: left;
-        }
-
-        .input-field input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .input-field textarea {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            resize: none;
-        }
-
-        .section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .back-button {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            padding: 10px 15px;
-            font-size: 30px;
-            font-weight: bold;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .back-button:hover {
-            color: #8c8a8a;
-        }
-
-        #policy {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        #submit-btn {
-            width: 30%;
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff;
-            background-color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #submit-btn:hover {
-            background-color: #8c8a8a;
-        }
-    </style>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../static/css/bootstrap.min.css">
-    <script src="/payment/payment.js"></script>
     <!-- jQuery -->
     <script
             type="text/javascript"
@@ -109,8 +19,13 @@
             type="text/javascript"
             src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"
     ></script>
+    <script src="/js/order/order.js"></script>
+    <script src="/js/payment/payment.js"></script>
 </head>
 <body>
+<div class="header-area">
+    <div th:replace="~{/fragments/header-noSearch::header}"></div>
+</div>
 <div class="custom-container">
     <a onclick="history.back()" class="back-button">←</a>
     <form th:action="@{/api/orders}" method="post" th:object="${addOrderRequest}" id="order-form">
@@ -162,84 +77,7 @@
             <label for="check2">여담 개인정보 처리 방침에 동의합니다.</label>
         </div>
     </form>
-
     <button id="submit-btn" onclick="submitOrder()">결제하기</button>
 </div>
 </body>
-<script th:inline="javascript">
-
-    const paymentStatusCheckUrl = "/api/payments/check?orderUid=";
-
-    async function submitOrder() {
-
-        if (!validateCheckBox()) {
-            alert("약관에 동의해주세요");
-            return;
-        }
-
-        const form = document.getElementById('order-form');
-        const data = new FormData(form);
-
-        try {
-            let response = await (await fetch(form.action, {
-                method: "POST",
-                body: data
-            })).json();
-
-            if (response.statusCode === 400 || response.statusCode === 404) {
-                alert(response.message);
-                return;
-            }
-
-            sessionStorage.setItem("orderUid", response.orderUid);
-
-
-            var IMP = window.IMP;
-            IMP.init('imp65451236'); // 아임포트 가맹점 식별코드
-
-            requestPay(
-                response.itemName,
-                response.price,
-                response.orderUid,
-                response.username,
-                response.email,
-                response.phone
-            );
-
-        } catch (error) {
-            console.log('에러발생 : ' + error);
-        }
-    }
-
-    function validateCheckBox() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        let allChecked = true;
-
-        checkboxes.forEach((checkbox) => {
-            const label = document.querySelector(`label[for="${checkbox.id}"]`);
-            if (!checkbox.checked) {
-                label.style.color = 'red';
-                allChecked = false;
-            } else {
-                label.style.color = '';
-            }
-        });
-
-        return allChecked;
-    }
-
-    window.addEventListener("load", () => {
-        sessionStorage.removeItem('orderUid');
-    });
-
-    window.addEventListener("beforeunload", () => {
-        if (sessionStorage.getItem("orderUid")) {
-            let orderUid = sessionStorage.getItem("orderUid");
-            fetch(paymentStatusCheckUrl + orderUid, {
-                    method: "POST"
-                }
-            );
-        }
-    });
-</script>
 </html>

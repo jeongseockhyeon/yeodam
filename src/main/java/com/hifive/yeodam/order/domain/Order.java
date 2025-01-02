@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -59,12 +60,11 @@ public class Order {
     }
 
     private String createOrderUid() {
-        return UUID.randomUUID().toString();
+        return LocalDate.now().toString().replace("-", "") + UUID.randomUUID().toString().substring(0, 8);
     }
 
     private void setOrderDetails(List<OrderDetail> orderDetails) {
-        orderDetails
-                .forEach(this::addOrderDetail);
+        orderDetails.forEach(this::addOrderDetail);
     }
 
     //== 연관관계 메서드 ==//
@@ -95,4 +95,7 @@ public class Order {
         this.status = status;
     }
 
+    public void updateUser(User user) {
+        this.user = user;
+    }
 }

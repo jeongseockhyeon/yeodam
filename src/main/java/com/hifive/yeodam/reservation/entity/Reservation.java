@@ -12,13 +12,14 @@ import java.time.temporal.ChronoUnit;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
+
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 public class Reservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
     private Long id;
 
@@ -39,5 +40,9 @@ public class Reservation {
 
     public int getRemainingDay() {
         return (int) ChronoUnit.DAYS.between(LocalDate.now(), startDate);
+    }
+
+    public void changeGuide(Guide guide) {
+        this.guide = guide;
     }
 }

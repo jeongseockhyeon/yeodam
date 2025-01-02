@@ -9,15 +9,14 @@ import com.hifive.yeodam.image.service.ImageService;
 import com.hifive.yeodam.item.entity.ItemImage;
 import com.hifive.yeodam.item.repository.ItemImageRepository;
 import com.hifive.yeodam.item.service.ItemImageService;
+import com.hifive.yeodam.reservation.entity.Reservation;
+import com.hifive.yeodam.reservation.repository.ReservationRepository;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
-import com.hifive.yeodam.tour.dto.SearchFilterDto;
-import com.hifive.yeodam.tour.dto.TourItemReqDto;
-import com.hifive.yeodam.tour.dto.TourItemResDto;
-import com.hifive.yeodam.tour.dto.TourItemUpdateReqDto;
+import com.hifive.yeodam.tour.dto.*;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.tour.entity.TourCategory;
 import com.hifive.yeodam.tour.entity.TourGuide;
@@ -56,6 +55,7 @@ public class TourItemService {
     private final ItemImageService itemImageService;
     private final ItemImageRepository itemImageRepository;
     private final ImageService imageService;
+    private final ReservationRepository reservationRepository;
 
 
     /*상품_여행 등록*/
@@ -214,6 +214,7 @@ public class TourItemService {
 
         return new TourItemResDto(targetTour);
     }
+
     /*상품_여행 삭제*/
     @Transactional
     public void delete(Long id) {
@@ -225,6 +226,7 @@ public class TourItemService {
         }
         tourRepository.delete(targetTour);
     }
+
     /*상품_여행 판매자 조회*/
     @Transactional(readOnly = true)
     public Slice<TourItemResDto> findBySeller(Long cursorId, int pageSize,Auth auth){
@@ -234,6 +236,17 @@ public class TourItemService {
                 .map(TourItemResDto::new)
                 .toList();
         return new SliceImpl<>(tourItemResDtoList, sellerTours.getPageable(), sellerTours.hasNext());
+    }
+
+    /*상품 내 가이드 예약 일정 조회*/
+    @Transactional(readOnly = true)
+    public List<ReservationInTourResDto> findReservationByGuide(Long guideId){
+        Guide guide = guideService.getGuideById(guideId);
+        List<Reservation> reservations = reservationRepository.findByGuide(guide);
+
+        return reservations.stream()
+                .map(ReservationInTourResDto::new)
+                .toList();
     }
 
     //formData로 인해 문자열로 들어오는 id들을 리스트 List<Long>으로 변환

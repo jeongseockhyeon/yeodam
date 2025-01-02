@@ -29,7 +29,7 @@ function requestPay(itemName, price, orderUid, username, email, phone) {
                     .then(response => response.json())
                     .then(data => {
                         console.log(data);
-                        window.location.href = "/payments" + data.orderUid + "/success";
+                        window.location.href = "/payments/" + data.orderUid + "/success";
                     });
             } else {
                 alert("결제에 실패하였습니다. 에러 내용: " + rsp.error_msg);
@@ -45,10 +45,22 @@ function requestPay(itemName, price, orderUid, username, email, phone) {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        window.location.href = "/payments" + data.orderUid + "/fail";
+                        window.location.href = "/payments/" + data.orderUid + "/fail";
                     })
             }
         }
     );
+}
+
+async function retryOrder() {
+    const path = window.location.pathname;
+    const parts = path.split('/');
+    const orderUid = parts[2];
+
+    if (orderUid) {
+        window.location.href = '/orders/' + orderUid + '/continue';
+    } else {
+        alert("정보가 없습니다");
+    }
 }
 

@@ -2,50 +2,17 @@
     <meta charset="UTF-8">
     <title>결제완료</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../static/css/bootstrap.min.css">
-    <style>
-        div {
-            width: 70%;
-            height: 40%;
-            background: #F8F8F8;
-            border-radius: 12px;
-            padding: 5%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            justify-content: center;
-            text-align: center;
-            align-items: center;
-        }
-        span {
-            font-weight: bold;
-        }
-
-        #cancel-btn{
-            background-color: #ffffff;
-        }
-        #cancel-btn:hover{
-            background-color: #cecece;
-        }
-        #search-btn{
-            background-color: black;
-            color: white;
-        }
-        #search-btn:hover{
-            background-color: #53575d;
-            color: white;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/css/success-form.css">
 </head>
 <body>
-<div>
+<div class="info">
     <h3>주문완료</h3>
     <p>여담을 이용해 주셔서 감사합니다. <br/>
-    주문이 정상적으로 처리되었습니다.</p>
+        주문이 정상적으로 처리되었습니다.</p>
     <p>주문 번호 : <span th:text="${orderUid}"></span></p>
-    <a href="/" class="btn" id="cancel-btn">홈 으로 이동하기</a>
-    <a href="/orders" class="btn btn-dark" id="search-btn">주문 내역 보기</a>
+    <div>
+        <a href="/" class="btn home-btn">홈으로 이동하기</a>
+        <a href="/orders" class="btn btn-dark search-btn">주문 내역 보기</a>
+    </div>
 </div>
 </body>

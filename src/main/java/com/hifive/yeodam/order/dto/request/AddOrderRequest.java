@@ -1,5 +1,6 @@
 package com.hifive.yeodam.order.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +21,22 @@ public class AddOrderRequest {
     @AllArgsConstructor
     @Builder
     public static class orderRequest {
+
+        @NotBlank
         private Long itemId;
+
         private String name;
+
+        @NotBlank
         private int count;
+
+        @NotBlank
         private int price;
+
+        @NotBlank
         private String bookerName;   // 예약자 이름
+
+        @NotBlank
         private String phoneNumber;  // 예약자 연락처
         private String orderMessage; // 예약 메시지
 
