@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -95,5 +96,24 @@ public class AuthService {
         Optional<Auth> optionalAuth = authRepository.findById(id);
 
         return optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
+    }
+
+    @Transactional
+    public void updateExpiration(Auth auth, LocalDate expirationDate) {
+
+        Optional<Auth> optionalAuth = authRepository.findById(auth.getId());
+
+        Auth findAuth = optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
+
+        findAuth.update(expirationDate);
+    }
+
+    public boolean checkExpired(Auth auth) {
+
+        Optional<Auth> optionalAuth = authRepository.findById(auth.getId());
+
+        Auth findAuth = optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
+
+        return findAuth.getExpirationDate() != null;
     }
 }

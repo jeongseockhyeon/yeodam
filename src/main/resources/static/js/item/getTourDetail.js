@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
     const id = getTourItemIdFromUrl(); // URL에서 상품 ID 추출
-    const activeBtn = document.getElementById('activeBtn');
 
     // 상품 데이터 로드 및 폼 초기화
     fetch(`/api/tours/${id}`)
@@ -18,45 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error fetching product data:", error);
             alert("상품 정보를 불러오는 데 문제가 발생했습니다.");
         });
-
-// 버튼 상태 업데이트 함수
-    function updateButton(isActive) {
-        if (isActive) {
-            activeBtn.textContent = '비활성화'; // 활성화 상태 -> 비활성화로 변경 가능
-            activeBtn.classList.add('inactive');
-            activeBtn.classList.remove('active');
-        } else {
-            activeBtn.textContent = '활성화'; // 비활성화 상태 -> 활성화로 변경 가능
-            activeBtn.classList.add('active');
-            activeBtn.classList.remove('inactive');
-        }
-    }
-
-// 활성화 상태 변경 요청
-    async function toggleActiveStatus() {
-        try {
-            const currentActive = activeBtn.textContent === '비활성화'; // 현재 상태 확인
-            const response = await fetch(`/api/items/${id}/active`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ active: !currentActive }), // 반대 상태로 변경 요청
-            });
-
-            if (!response.ok) throw new Error('Failed to update active status');
-
-            const updatedActive = await response.json(); // 서버에서 반환된 boolean 값
-            updateButton(updatedActive); // 버튼 상태 업데이트
-            alert(`상품 상태가 ${updatedActive ? '활성화' : '비활성화'}되었습니다.`);
-        } catch (error) {
-            console.error(error);
-            alert('상태 변경에 실패했습니다.');
-        }
-    }
-
-// 초기 로딩 및 이벤트 리스너
-    activeBtn.addEventListener('click', toggleActiveStatus);
 });
 
 
@@ -85,45 +45,180 @@ function populateForm(data) {
 
     // 이미지 미리보기 처리
     populateImagePreview(data.itemImgResDtoList);
+
+    // 기존 가이드 업데이트
+    if (data.guideInTourResDtos && data.guideInTourResDtos.length > 0) {
+        existingGuides = data.guideInTourResDtos;
+    }
+
+    updateSelectedGuidesText();
+
 }
 
 // 이미지 미리보기 처리
+const tourImagesInput = document.getElementById('tourImages');
+const previewContainer = document.getElementById('previewContainer');
+let selectedImages = []; // 새로 업로드된 파일 배열
+let existingImages = []; // 서버에서 가져온 기존 이미지 배열
+
+// 미리보기 업데이트 함수
+function updatePreview() {
+    // 기존 미리보기 내용 초기화
+    previewContainer.innerHTML = "";
+
+    // 기존 이미지와 새로 업로드된 파일 모두 처리
+    [...existingImages, ...selectedImages].forEach((item) => {
+        const imgContainer = createImagePreview(item, item.id ? "existing" : "new");
+        previewContainer.appendChild(imgContainer); // 미리보기 컨테이너에 추가
+    });
+}
+
+// 이미지 미리보기 생성 함수
+function createImagePreview(image, type) {
+    const imgContainer = document.createElement("div");
+    imgContainer.style.position = "relative";
+
+    const img = document.createElement("img");
+    img.src = type === "existing" ? image.imgUrl : URL.createObjectURL(image);
+    img.alt = image.imgName || image.name;
+    img.className = "preview-img"
+
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "삭제";
+    deleteButton.className = "remove-image";
+    if (type === "existing") {
+        deleteButton.dataset.imageId = image.id; // 기존 이미지의 ID 설정
+    } else {
+        deleteButton.dataset.imageFile = image; // 새로 업로드된 파일 참조
+    }
+
+    imgContainer.appendChild(img);
+    imgContainer.appendChild(deleteButton);
+    return imgContainer;
+}
+
+// 삭제 버튼 이벤트 위임
+previewContainer.addEventListener("click", (event) => {
+    if (event.target.classList.contains("remove-image")) {
+        const imageId = event.target.dataset.imageId;
+        const imageFile = event.target.dataset.imageFile;
+
+        if (imageId) {
+            // 기존 이미지 삭제
+            existingImages = existingImages.filter(img => img.id !== parseInt(imageId));
+        } else if (imageFile) {
+            // 새로 업로드된 이미지 삭제
+            selectedImages = selectedImages.filter(file => file.name !== imageFile.name);
+        }
+
+        // 삭제 버튼의 부모 요소 제거
+        event.target.closest("div").remove();
+    }
+});
+
+// 파일 입력 이벤트 처리
+tourImagesInput.addEventListener('change', () => {
+    const files = Array.from(tourImagesInput.files);
+
+    // 새로 추가된 파일만 필터링
+    const newFiles = files.filter(file =>
+        !existingImages.some(existingImage => existingImage.imgName === file.name) &&
+        !selectedImages.some(selectedImage => selectedImage.name === file.name)
+    );
+
+    selectedImages = [...selectedImages, ...newFiles];
+    updatePreview(); // 미리보기 갱신
+});
+
+// 초기 데이터로 미리보기 채우기
 function populateImagePreview(images) {
-    const previewContainer = document.getElementById("previewContainer");
-    previewContainer.innerHTML = ""; // 초기화
+    existingImages = images; // 서버에서 가져온 기존 이미지 설정
+    updatePreview();
+}
 
-    if (images) {
-        images.forEach((image) => {
-            const imgContainer = document.createElement("div");
-            imgContainer.style.position = "relative";
+// 기존 코드에서 가이드 선택과 제거 처리
+let existingGuides = []; // 기존 가이드 배열
+let selectedGuides = []; // 새로 추가된 가이드 배열
+let selectedGuideNames = []; // 새로 추가된 가이드 이름 배열
 
-            const img = document.createElement("img");
-            img.src = image.imgUrl; // 서버에서 반환된 이미지 URL
-            img.dataset.url = image.imgUrl; // 이미지 URL 저장
-            img.alt = image.imgName; // 이미지 이름 설정
-            imgContainer.appendChild(img);
+const selectedGuidesText = document.getElementById("selectedGuidesText");
+const guideSelect = document.getElementById("guideSelect");
 
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "삭제";
-            deleteButton.classList.add("remove-image");
-            deleteButton.style.position = "absolute";
-            deleteButton.style.top = "5px";
-            deleteButton.style.right = "5px";
+const addGuideList = new Set(); // 새로 추가된 가이드 목록
+const removeGuideList = new Set(); // 제거된 가이드 목록
 
-            // 이미지 ID를 데이터 속성으로 저장
-            deleteButton.setAttribute("data-image-id", image.id);
+// 가이드 텍스트 업데이트 함수
+function updateSelectedGuidesText() {
+    selectedGuidesText.innerHTML = ""; // 기존 내용을 초기화
 
-            deleteButton.onclick = () => {
-                const imageId = deleteButton.getAttribute("data-image-id"); // 이미지 ID 가져오기
+    // 기존 가이드 추가
+    existingGuides.forEach((guide) => {
+        const guideElement = createGuideElement(guide, "existing");
+        selectedGuidesText.appendChild(guideElement);
+    });
 
-                // 화면에서 삭제
-                imgContainer.remove();
-            };
+    // 새로 추가된 가이드 추가
+    selectedGuides.forEach((guide, index) => {
+        const guideElement = createGuideElement({ id: guide, name: selectedGuideNames[index] }, "new");
+        selectedGuidesText.appendChild(guideElement);
+    });
 
-            imgContainer.appendChild(deleteButton);
-            previewContainer.appendChild(imgContainer);
-        });
+    // 선택된 가이드가 없으면 기본 메시지 표시
+    if (existingGuides.length === 0 && selectedGuides.length === 0) {
+        selectedGuidesText.textContent = "선택된 가이드가 없습니다.";
     }
 }
 
+// 가이드 텍스트 생성 함수
+function createGuideElement(guide, type) {
+    const guideSpan = document.createElement("span");
+    guideSpan.style.marginRight = "10px";
 
+    const guideName = document.createElement("span");
+    guideName.textContent = guide.name;
+
+    const removeButton = document.createElement("button");
+    removeButton.textContent = "X";
+    removeButton.style.marginLeft = "5px";
+    removeButton.style.cursor = "pointer";
+
+    // 제거 버튼 클릭 이벤트
+    removeButton.addEventListener("click", () => {
+        if (type === "existing") {
+            // 기존 가이드에서 삭제 처리
+            existingGuides = existingGuides.filter((existing) => existing.id !== guide.id);
+            removeGuideList.add(guide.id); // 제거된 가이드 목록에 추가
+        } else {
+            const index = selectedGuides.indexOf(guide.id);
+            if (index > -1) {
+                selectedGuides.splice(index, 1);
+                selectedGuideNames.splice(index, 1);
+            }
+        }
+        updateSelectedGuidesText();
+    });
+
+    guideSpan.appendChild(guideName);
+    guideSpan.appendChild(removeButton);
+
+    return guideSpan;
+}
+
+// 새로운 가이드 추가 함수
+guideSelect.addEventListener("change", () => {
+    const selectedOptions = Array.from(guideSelect.selectedOptions);
+    selectedOptions.forEach(option => {
+        const guideId = parseInt(option.value); // 선택된 가이드 ID
+        const guideName = option.text; // 선택된 가이드 이름
+
+        // 기존 가이드나 이미 선택된 가이드에 포함되어 있지 않으면 추가
+        if (!existingGuides.some(guide => guide.id === guideId) && !selectedGuides.includes(guideId)) {
+            selectedGuides.push(guideId);
+            selectedGuideNames.push(guideName);
+            addGuideList.add(guideId); // 새로 추가된 가이드를 addGuideList에 추가
+        }
+    });
+
+    guideSelect.selectedIndex = -1; // 드롭다운 초기화
+    updateSelectedGuidesText();
+});

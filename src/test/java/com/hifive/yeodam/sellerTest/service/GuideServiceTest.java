@@ -3,12 +3,13 @@ package com.hifive.yeodam.sellerTest.service;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.seller.dto.GuideJoinRequest;
+import com.hifive.yeodam.seller.dto.GuideResDto;
 import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
-import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.seller.service.GuideService;
+import com.hifive.yeodam.seller.service.SellerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,6 +30,9 @@ class GuideServiceTest {
     @Mock
     private GuideRepository guideRepository;
 
+    @Mock
+    private SellerService sellerService;
+
     @InjectMocks
     private GuideService guideService;
 
@@ -39,7 +43,7 @@ class GuideServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER);
+        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER, null);
         seller = new Seller(1L, auth, "Company", "Owner", "Company Bio", "01012345678");
         guide = new Guide(null, seller, "Name", LocalDate.of(2002, 2, 25), "M", "01012345678", "Guide Bio");
     }
@@ -72,13 +76,9 @@ class GuideServiceTest {
         when(guideRepository.save(any(Guide.class))).thenReturn(guide);
 
         // when
-        Guide updatedGuide = guideService.updateGuide(1L, updateRequest);
+        guideService.updateGuide(1L, updateRequest);
 
         // then
-        assertNotNull(updatedGuide);
-        assertEquals("Updated Name", updatedGuide.getName());
-        assertEquals("01087654321", updatedGuide.getPhone());
-        assertEquals("Updated Bio", updatedGuide.getBio());
         verify(guideRepository, times(1)).findById(1L);
     }
 
@@ -141,17 +141,22 @@ class GuideServiceTest {
 
     // 회사 아이디로 가이드 조회 성공
     @Test
-    void getGuidesByCompanyIdTest() {
+    void getGuideByCompanyTest() {
         // given
-        when(guideRepository.findBySellerCompanyId(anyLong())).thenReturn(List.of(guide));
+        when(sellerService.getSellerByAuth(auth)).thenReturn(seller);
+        when(guideRepository.findBySellerCompanyId(seller.getCompanyId())).thenReturn(List.of(guide));
 
         // when
-        List<Guide> guides = guideService.getGuidesByCompanyId(1L);
+        List<GuideResDto> guides = guideService.getGuideByCompany(auth);
 
         // then
         assertNotNull(guides);
         assertEquals(1, guides.size());
-        assertEquals("Name", guides.get(0).getName());
-        verify(guideRepository, times(1)).findBySellerCompanyId(1L);
+        GuideResDto guideResDto = guides.get(0);
+        assertEquals(guide.getName(), guideResDto.getName());
+        assertEquals(guide.getPhone(), guideResDto.getPhone());
+        assertEquals(guide.getBio(), guideResDto.getBio());
+        verify(sellerService, times(1)).getSellerByAuth(auth);
+        verify(guideRepository, times(1)).findBySellerCompanyId(seller.getCompanyId());
     }
 }

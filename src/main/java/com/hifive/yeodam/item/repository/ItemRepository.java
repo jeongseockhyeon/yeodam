@@ -9,4 +9,6 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query(value = "SELECT DISTINCT item_type FROM item", nativeQuery = true)
     List<String> findAllItemType();
+
+    List<Item> findBySellerCompanyId(Long companyId);
 }

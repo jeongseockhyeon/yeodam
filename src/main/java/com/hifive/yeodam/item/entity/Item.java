@@ -83,6 +83,6 @@ public abstract class Item {
         totalCount++;
         this.rate = totalRate / totalCount;
     }
+    public abstract void updateSubItem(String region,String period,Integer maximum);
 
-    public abstract void updateSubItem(String region,String period,int maximum);
 }

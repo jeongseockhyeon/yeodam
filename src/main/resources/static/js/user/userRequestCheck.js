@@ -30,33 +30,29 @@ const emailCheck = () => {
         return false;
     }
 
-    fetch("/api/users/email-check", {
+    fetch("/api/auth/email-check", {
         method: "POST",
         body: email,
     })
         .then(response => {
-            if (!response.ok) {
-                throw new Error("HTTP error " + response.status)
-            }
-            return response.json();
-        })
-        .then(isDuplicated => {
-            if (isDuplicated) {
+            if (response.status === 400) {
                 checkEmailResult.innerHTML = "이미 사용 중입니다";
                 checkEmailResult.className = "error-message";
                 isEmailValid = false;
                 updateSubmitBtn();
-            } else {
+            } else if (response.ok) {
                 checkEmailResult.innerHTML = "사용 가능한 이메일입니다";
                 checkEmailResult.className = "success-message";
                 isEmailValid = true;
                 updateSubmitBtn();
+            } else {
+                throw new Error("HTTP error " + response.status);
             }
         })
         .catch(error => {
-            alert("이메일 중복 체크 중 오류가 발생했습니다.");
-            console.error("Error:", error);
+            alert(`이메일 중복 체크 중 오류가 발생했습니다 ${error}`);
         })
+    ;
 };
 
 const passwordCheck = () => {
@@ -127,26 +123,22 @@ const nicknameCheck = () => {
         body: nickname,
     })
         .then(response => {
-            if(!response.ok) {
-                throw new Error("HTTP error " + response.status)
-            }
-            return response.json();
-        })
-        .then(isDuplicated => {
-            if(isDuplicated) {
+            if (response.status === 400) {
                 checkNicknameResult.innerHTML = "이미 사용 중입니다";
                 checkNicknameResult.className = "error-message";
                 isNicknameValid = false;
                 updateSubmitBtn();
-            } else {
+            } else if (response.ok) {
                 checkNicknameResult.innerHTML = "사용 가능한 닉네임입니다";
                 checkNicknameResult.className = "success-message";
                 isNicknameValid = true;
                 updateSubmitBtn();
+            } else {
+                throw new Error("HTTP error " + response.status);
             }
         })
         .catch(error => {
-            alert("닉네임 중복 체크 중 오류가 발생했습니다.");
-            console.error("Error:", error);
+            alert(`닉네임 중복 체크 중 오류가 발생했습니다 ${error}`);
         })
+    ;
 }

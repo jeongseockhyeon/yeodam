@@ -12,8 +12,16 @@
     flex: 3;
 }
 .right-section {
-    flex: 1;
-    margin-left: 20px;
+    position: fixed; /* 화면에 고정 */
+    top: 20px; /* 상단에서 20px 떨어짐 */
+    right: 20px; /* 오른쪽에서 20px 떨어짐 */
+    width: 250px; /* 오른쪽 섹션의 너비 */
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff; /* 배경색 설정 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    overflow-y: auto; /* 내용이 많을 경우 스크롤 추가 */
 }
 .calendar {
     margin: 20px 0;
@@ -23,8 +31,8 @@
     gap: 10px;
 }
 .images img {
-    width: calc(50% - 5px);
-    height: auto;
+    width: 500px;
+    height: 500px;
     border-radius: 8px;
     cursor: pointer;
 }
@@ -87,4 +95,62 @@ button {
 #calendar {
     max-width: 900px;
     margin: auto;
+}
+/* 모달 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    border-radius: 8px;
+    text-align: center;
+}
+.modal-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.modal-close {
+    float: right;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #333;
+}
+.modal-close:hover {
+    color: #000;
+}
+.modal input, .modal textarea {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.modal button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.modal button:hover {
+    background-color: #0056b3;
+}
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
 }
