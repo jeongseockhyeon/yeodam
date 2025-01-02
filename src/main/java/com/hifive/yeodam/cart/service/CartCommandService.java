@@ -14,6 +14,7 @@ import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.tour.entity.Tour;
+import com.hifive.yeodam.tour.entity.TourGuide;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -120,8 +121,12 @@ public class CartCommandService {
 
         Cart cart;
         if (item instanceof Tour) {
-            Guide guide = guideRepository.findById(requestDto.getGuideId())
-                    .orElseThrow(() -> new CustomException(CustomErrorCode.GUIDE_NOT_FOUND));
+            Tour tour = (Tour) item;
+
+            Guide guide = tour.getTourGuides().stream()
+                    .findFirst()
+                    .map(TourGuide::getGuide)
+                    .orElse(null);
 
             cart = Cart.builder()
                     .auth(auth)
