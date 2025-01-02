@@ -46,15 +46,6 @@ public class AuthApiController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/expiration")
-    public ResponseEntity<Boolean> isExpired(@AuthenticationPrincipal Auth auth) {
-
-        boolean isExpired = authService.checkExpired(auth);
-        log.info("탈퇴 상태: {}", isExpired);
-
-        return ResponseEntity.ok(isExpired);
-    }
-
     @PutMapping("/expiration")
     public ResponseEntity<Void> removeExpirationDate(@AuthenticationPrincipal Auth auth) {
 
