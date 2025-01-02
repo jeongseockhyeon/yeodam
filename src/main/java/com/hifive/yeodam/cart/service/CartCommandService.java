@@ -12,7 +12,6 @@ import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.entity.ItemImage;
 import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.seller.entity.Guide;
-import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.hifive.yeodam.tour.entity.TourGuide;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,6 @@ public class CartCommandService {
     private final CartRepository cartRepository;
     private final AuthRepository authRepository;
     private final ItemRepository itemRepository;
-    private final GuideRepository guideRepository;
 
     private Auth getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
