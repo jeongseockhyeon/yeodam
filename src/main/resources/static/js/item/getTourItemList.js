@@ -3,7 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let cursorId = null; // 현재 커서 ID
     const tourList = document.getElementById("tourList");
 
-    // 필터링된 상품 목록 요청
+    const params = new URLSearchParams(window.location.search);
+    const keyword = params.get("keyword") || "";
+
+
     function fetchToursWithPagination(reset = false) {
         if (isFetching) return; // 이미 요청 중이면 종료
         isFetching = true;
@@ -18,17 +21,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if (cursorId) params.append("cursorId", cursorId);
         params.append("pageSize", 10); // 한 페이지에 가져올 데이터 수 (예: 10)
 
-        // 필터 값 가져오기
-        const filters = {};
+        // 검색어를 표시하거나 유지
+        const searchInput = document.querySelector('input[name="keyword"]');
+        if (searchInput) {
+            searchInput.value = keyword;
+        }
+
+        if(keyword) params.append("keyword",keyword)
 
         // 로컬 스토리지에서 필터 값 가져오기
         const regionParam = localStorage.getItem("selectedRegion");
         const themeParam = localStorage.getItem("selectedThemes");
         const periodParam = localStorage.getItem("selectedPeriod");
 
-        if (regionParam) filters.region = regionParam;
-        if (themeParam) filters.categories = themeParam;
-        if (periodParam) filters.period = periodParam;
+        if (regionParam) params.append("region", regionParam);
+        if (themeParam) params.append("categories", themeParam);
+        if (periodParam) params.append("period", periodParam);
+
+        // 로컬스토리지에서 가져온 값을 삭제
+        localStorage.removeItem("selectedRegion");
+        localStorage.removeItem("selectedThemes");
+        localStorage.removeItem("selectedPeriod");
 
         // 카테고리 필터
         const selectedCategories = [];
@@ -37,44 +50,34 @@ document.addEventListener("DOMContentLoaded", () => {
             const categoryName = document.querySelector(`label[for='category-${checkbox.value}']`).textContent;
             selectedCategories.push(categoryName);
         });
-        if (selectedCategories.length > 0) filters.categories = selectedCategories.join(",");
+        if (selectedCategories.length > 0) params.append("categories", selectedCategories.join(","));
 
         // 기간 필터
         const period = document.getElementById("tourPeriod").value;
-        if (period) filters.period = period;
+        if (period) params.append("period", period);
 
         // 지역 필터
         const region = document.getElementById("tourRegion").value;
-        if (region) filters.region = region;
+        if (region) params.append("region", region);
 
         // 가격 필터
         const minPrice = document.getElementById("minPrice").value;
         const maxPrice = document.getElementById("maxPrice").value;
         if (minPrice || maxPrice) {
-            filters.minPrice = minPrice || 0;
-            filters.maxPrice = maxPrice || 9999999;
+            params.append("minPrice", minPrice || 0);
+            params.append("maxPrice", maxPrice || 9999999);
         }
 
         // 정렬 기준 및 순서
         const sortBy = document.querySelector("#sortBy").value;
         const order = document.querySelector("#sortOrder").value;
-        if (sortBy) filters.sortBy = sortBy;
-        if (order) filters.order = order;
-
-        // 필터 조건 추가
-        Object.keys(filters).forEach((key) => {
-            params.append(key, filters[key]);
-        });
+        if (sortBy) params.append("sortBy", sortBy);
+        if (order) params.append("order", order);
 
         fetch(`/api/tours?${params.toString()}`)
             .then((response) => response.json())
             .then((data) => {
                 renderTours(data.content);
-
-                // 로컬 스토리지 비우기 (요청 성공 시)
-                localStorage.removeItem("selectedRegion");
-                localStorage.removeItem("selectedThemes");
-                localStorage.removeItem("selectedPeriod");
 
                 if (data.content.length > 0) {
                     cursorId = data.content[data.content.length - 1].id; // 마지막 요소의 ID 저장
@@ -151,4 +154,3 @@ document.addEventListener("DOMContentLoaded", () => {
     // 스크롤 이벤트 등록
     window.addEventListener("scroll", handleScroll);
 });
-
