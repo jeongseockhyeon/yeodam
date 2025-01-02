@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartTotalPriceDto {
-    private int totalPrice;
+    private int tourPrice;
 
     @Builder
-    private CartTotalPriceDto(int totalPrice) {
-        this.totalPrice = totalPrice;
+    public CartTotalPriceDto(int tourPrice) {
+        this.tourPrice = tourPrice;
     }
 }
