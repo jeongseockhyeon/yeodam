@@ -19,8 +19,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{orderUid}/fail")
-    public String failPayment(@PathVariable String orderUid, Model model) {
-        model.addAttribute("orderUid", orderUid);
+    public String failPayment() {
         return "/payment/fail-form";
     }
 }

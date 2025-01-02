@@ -4,6 +4,7 @@ import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.order.dto.request.CancelOrderRequest;
 import com.hifive.yeodam.order.dto.response.CreateOrderPaymentResponse;
 import com.hifive.yeodam.order.facade.OrderFacadeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,10 @@ public class OrderApiController {
     }
 
     @PostMapping("/api/orders")
-    public CreateOrderPaymentResponse order(Principal principal, @ModelAttribute(name = "addOrderRequests") AddOrderRequest request) {
+    public CreateOrderPaymentResponse order(
+            Principal principal,
+            @Valid @ModelAttribute(name = "addOrderRequests") AddOrderRequest request) {
+
         return orderFacadeService.createOrderPayment(request, principal);
     }
 }

@@ -77,5 +77,12 @@ public abstract class Item {
     public void removeStock() {
         this.stock -= 1;
     }
+
+    public void updateRate(double rate, int totalCount) {
+        double totalRate = this.rate + rate;
+        totalCount++;
+        this.rate = totalRate / totalCount;
+    }
     public abstract void updateSubItem(String region,String period,Integer maximum);
+
 }
