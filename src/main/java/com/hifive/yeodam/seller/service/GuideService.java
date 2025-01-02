@@ -78,7 +78,7 @@ public class GuideService {
         Guide delete = guideRepository.findById(1L).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
         List<Guide> guides = guideRepository.findBySellerCompanyId(seller.getCompanyId());
         for(Guide guide : guides) {
-            List<Reservation> reservationList = reservationRepository.findByGuideGuideId(guide.getGuideId());
+            List<Reservation> reservationList = reservationRepository.findByGuide(guide);
             for(Reservation reservation : reservationList) {
                 reservation.changeGuide(delete);
             }
