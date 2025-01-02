@@ -1,8 +1,22 @@
+//비로그인 사용자 로컬 스토리지 데이터 가져오기
+function getLocalCartItems() {
+    try {
+        const items = localStorage.getItem('cartItems');
+        console.log('Local storage items:', items);
+        return items ? JSON.parse(items) : [];
+    } catch (error) {
+        console.error('장바구니 데이터 파싱 실패:', error);
+        return [];
+    }
+}
+
 // 로그인 시 로컬 스토리지 장바구니 동기화
 async function syncLocalCartToServer() {
     const cartItems = getLocalCartItems();
+    console.log('Syncing items:', cartItems);
+    console.log('isLoggedIn:', isLoggedIn);
 
-    if (isLoggedIn && cartItems.length > 0) {
+    if (isLoggedIn && cartItems && cartItems.length > 0) {
         try {
             const cartData = cartItems.map(item => ({
                 itemId: item.itemId,

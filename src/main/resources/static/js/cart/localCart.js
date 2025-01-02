@@ -1,12 +1,3 @@
-//비로그인 사용자 로컬 스토리지 데이터 가져오기
-function getLocalCartItems() {
-    try {
-        return JSON.parse(localStorage.getItem('cartItems')) || [];
-    } catch (error) {
-        console.error('장바구니 데이터 파싱 실패:', error);
-        return [];
-    }
-}
 
 // 로컬 스토리지 장바구니 초기화
 function initializeLocalCart() {

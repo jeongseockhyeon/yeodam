@@ -369,7 +369,6 @@
 
             <div class="cart-buttons">
                 <form id="orderForm" method="POST" action="/carts/order">
-                    <!-- hidden input 추가 예정 -->
                     <button type="button" class="order-button" onclick="proceedToCheckout()">
                         <span id="selectedCount">0</span>개 상품 구매하기
                     </button>
@@ -383,8 +382,8 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-    <script th:if="${!anonymous}" src="/js/cart/dbCart.js"></script>
-    <script th:if="${anonymous}" src="/js/cart/localCart.js"></script>
     <script src="/js/cart/commonCart.js"></script>
+    <script th:if="${anonymous}" src="/js/cart/localCart.js"></script>
+    <script th:if="${!anonymous}" src="/js/cart/dbCart.js"></script>
 </body>
 </html>

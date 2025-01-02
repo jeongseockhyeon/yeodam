@@ -1,4 +1,3 @@
-
 // DB 아이템 삭제
 async function removeCart(cartId) {
     if (!isLoggedIn) return;
