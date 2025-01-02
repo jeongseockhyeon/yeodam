@@ -12,13 +12,14 @@ import java.time.temporal.ChronoUnit;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
+
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 public class Reservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
     private Long id;
 

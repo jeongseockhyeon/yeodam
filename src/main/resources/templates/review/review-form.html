@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="ok">
+<head>
+    <meta charset="UTF-8">
+    <title>여행 후기 작성</title>
+    <link rel="stylesheet" href="/css/review-form.css">
+    <script src="/js/review/review-form.js"></script>
+</head>
+<body>
+<div class="review-container">
+
+    <div class="title-area">
+        <img src="../../static/images/icon.png" alt="여행 이미지" class="title-image">
+        <div class="title" th:text="${request.itemName}">[제주] 일일 투어</div>
+    </div>
+
+    <div class="date-info">
+        <span th:text="${#temporals.format(request.startDate, 'yyyy년 MM월 dd일')}">2020년 11월 11일</span> ~
+        <span th:text="${#temporals.format(request.endDate, 'yyyy년 MM월 dd일')}">2020년 12월 12일</span>
+        <span th:text="|, ${request.count}명|">, 2명</span>
+    </div>
+
+    <form th:action="@{/items/{itemId}/reviews/new(itemId=${request.itemId})}" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" id="hiddenRating" name="rate" value="0">
+        <input type="hidden" th:field="${request.count}">
+        <input type="hidden" th:field="${request.orderUid}">
+        <input type="hidden" th:field="${request.itemId}">
+
+        <div class="stars" id="starRating"></div>
+
+        <textarea class="review-text" minlength="50" th:field="${request.description}" placeholder="50자 이상 작성해주세요"></textarea>
+
+        <div class="upload-area">
+            <input type="file" id="imageUpload" multiple accept="image/*" style="display: none"
+                   th:field="${request.images}">
+            <label for="imageUpload" class="img-add-btn">+ 이미지 추가</label>
+            <div class="uploaded-images" id="imagePreview"></div>
+            <div class="img-info">
+                최대 5장의 이미지를 등록할 수 있습니다. 또한 PNG, JPG, JPEG 파일만 로드가 가능합니다.
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button type="button" class="cancel">취소</button>
+            <button type="submit" class="submit">작성완료</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

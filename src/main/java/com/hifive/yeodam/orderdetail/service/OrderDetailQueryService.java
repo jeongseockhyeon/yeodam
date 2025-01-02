@@ -20,6 +20,8 @@ import java.util.function.Function;
 
 import static com.hifive.yeodam.global.exception.CustomErrorCode.USER_NOT_FOUND;
 import static com.hifive.yeodam.order.domain.OrderStatus.FAILED;
+import static com.hifive.yeodam.order.dto.response.OrderDetailsResponse.AfterOrderResponse;
+import static com.hifive.yeodam.order.dto.response.OrderDetailsResponse.BeforeOrderResponse;
 import static com.hifive.yeodam.orderdetail.domain.OrderDetailStatus.*;
 
 @Service
@@ -38,11 +40,13 @@ public class OrderDetailQueryService {
         Pageable beforePageable = Pageable.ofSize(beforeLimit);
         Pageable afterPageable = Pageable.ofSize(afterLimit);
 
-        SliceImpl<OrderDetailsResponse.BeforeOrderResponse> beforeOrderResponse =
-                getOrderResponses(user, beforePageable, List.of(PENDING), OrderDetailsResponse.BeforeOrderResponse::new);
+        //이용전 내역 찾아옴
+        SliceImpl<BeforeOrderResponse> beforeOrderResponse =
+                getOrderResponses(user, beforePageable, List.of(PENDING), BeforeOrderResponse::new);
 
-        SliceImpl<OrderDetailsResponse.AfterOrderResponse> afterOrderResponse =
-                getOrderResponses(user, afterPageable, List.of(USED, CANCELED), OrderDetailsResponse.AfterOrderResponse::new);
+        //이용후, 취소 내역 찾아옴
+        SliceImpl<AfterOrderResponse> afterOrderResponse =
+                getOrderResponses(user, afterPageable, List.of(USED, CANCELED), AfterOrderResponse::new);
 
         return new OrderDetailsResponse(beforeOrderResponse, afterOrderResponse);
     }
@@ -58,5 +62,4 @@ public class OrderDetailQueryService {
 
         return new SliceImpl<>(responses, pageable, page.hasNext());
     }
-
 }
