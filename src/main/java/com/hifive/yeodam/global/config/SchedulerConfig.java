@@ -2,6 +2,7 @@ package com.hifive.yeodam.global.config;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
+import com.hifive.yeodam.seller.service.GuideService;
 import com.hifive.yeodam.seller.service.SellerService;
 import com.hifive.yeodam.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class SchedulerConfig {
 
     private final AuthRepository authRepository;
     private final SellerService sellerService;
+    private final GuideService guideService;
     private final UserService userService;
 
     /**
@@ -35,8 +37,10 @@ public class SchedulerConfig {
         log.info("만료된 인증 정보 size: {}", expiredAuth.size());
 
         for (Auth auth : expiredAuth) {
-            if(auth.getRole().toString().equals("SELLER"))
+            if(auth.getRole().toString().equals("SELLER")) {
+                guideService.deleteAllGuides(auth);
                 sellerService.deleteSellerContent(auth);
+            }
             else if(auth.getRole().toString().equals("USER"))
                 userService.deleteUserContent(auth);
 

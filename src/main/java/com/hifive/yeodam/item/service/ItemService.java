@@ -5,6 +5,8 @@ import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.dto.ActiveUpdateDto;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.seller.entity.Seller;
+import com.hifive.yeodam.seller.repository.SellerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final SellerRepository sellerRepository;
 
     /*상품 타입 조회*/
     public List<String> findAllItemType(){
@@ -37,5 +40,14 @@ public class ItemService {
         return items.stream()
                 .map(Item::getId)
                 .toList();
+    }
+
+    public void changeCompany(Seller seller) {
+        Seller delete = sellerRepository.findById(1L).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
+        List<Item> items = itemRepository.findBySellerCompanyId(seller.getCompanyId());
+        for (Item item : items) {
+            item.updateActive(false);
+            item.changeSeller(delete);
+        }
     }
 }
