@@ -4,23 +4,15 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
-import com.hifive.yeodam.inquiry.entity.Inquiry;
-import com.hifive.yeodam.inquiry.repository.InquiryRepository;
 import com.hifive.yeodam.inquiry.service.InquiryService;
 import com.hifive.yeodam.item.service.ItemService;
-import com.hifive.yeodam.reservation.entity.Reservation;
-import com.hifive.yeodam.reservation.repository.ReservationRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
-import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
-import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.seller.repository.SellerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +20,6 @@ public class SellerService {
 
     private final SellerRepository sellerRepository;
     private final AuthRepository authRepository;
-    private final GuideService guideService;
     private final InquiryService inquiryService;
     private final ItemService itemService;
 
@@ -87,7 +78,6 @@ public class SellerService {
 
         itemService.changeCompany(seller);
         inquiryService.changeAuth(auth);
-        guideService.deleteAllGuides(seller);
 
         sellerRepository.delete(seller);
     }

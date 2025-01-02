@@ -9,7 +9,6 @@ import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
-import com.hifive.yeodam.tour.entity.TourGuide;
 import com.hifive.yeodam.tour.repository.TourGuideRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -74,11 +73,12 @@ public class GuideService {
     }
 
     // 가이드 전체 삭제
-    public void deleteAllGuides(Seller seller) {
+    public void deleteAllGuides(Auth auth) {
+        Seller seller = sellerService.getSellerByAuth(auth);
         Guide delete = guideRepository.findById(1L).orElseThrow(() -> new RuntimeException("가이드를 찾을 수 없습니다."));
         List<Guide> guides = guideRepository.findBySellerCompanyId(seller.getCompanyId());
         for(Guide guide : guides) {
-            List<Reservation> reservationList = reservationRepository.findByGuideId(guide.getGuideId());
+            List<Reservation> reservationList = reservationRepository.findByGuideGuideId(guide.getGuideId());
             for(Reservation reservation : reservationList) {
                 reservation.changeGuide(delete);
             }
