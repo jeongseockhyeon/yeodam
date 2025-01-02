@@ -33,58 +33,35 @@ function renderLocalCart(items) {
             <div class="cart-item-header">
                 <div class="header-left">
                     <input type="checkbox" class="item-checkbox" value="${item.itemId}">
-                    <h3 class="item-title">${item.itemName}</h3>
+                    <h3 class="item-title">${item.tourName}</h3>
                 </div>
                 <div><button class="delete-btn" onclick="removeLocalItem(${item.itemId})">×</button></div>
             </div>
             <div class="cart-item-content">
                 <div class="item-image">
-                    ${item.imagePath ?
-            `<img src="${item.imagePath}" alt="${item.itemName}" class="product-image">` :
+                    ${item.imgUrl ?
+            `<img src="${item.imgUrl}" alt="${item.tourName}" class="product-image">` :
             `<div class="no-image"><i class="bi bi-image text-secondary"></i></div>`}
                 </div>
                 <div class="item-info">
-                    ${item.reservation ? `
-                        <div class="tour-info">
-                            <p>지역: ${item.region || ''}</p>
-                            <p>기간: ${item.period || ''}</p>
-                            <p>가이드: ${item.guideName || '선택된 가이드 없음'}</p>
-                            <p>예약일: ${item.startDate || ''} - ${item.endDate || ''}</p>
-                        </div>
-                    ` : ''}
+                    <div class="tour-info">
+                        <p>지역: ${item.tourRegion || ''}</p>
+                        <p>기간: ${item.tourPeriod || ''}</p>
+                        <p>가이드: ${item.guideId ? '선택됨' : '선택된 가이드 없음'}</p>
+                    </div>
                 </div>
                 <div>
-                    ${!item.reservation ? `
-                        <div class="quantity-control">
-                            <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count - 1})">-</button>
-                            <span>${item.count}</span>
-                            <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${item.count + 1})">+</button>
-                        </div>
-                    ` : `
-                        <div class="badge-reserved">예약상품</div>
-                    `}
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${(item.count || 1) - 1})">-</button>
+                        <span>${item.count || 1}</span>
+                        <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${(item.count || 1) + 1})">+</button>
+                    </div>
                 </div>
-                <div class="price">₩${(item.price * item.count).toLocaleString()}</div>
+                <div class="price">₩${(item.tourPrice * (item.count || 1)).toLocaleString()}</div>
             </div>
         `;
         container.appendChild(itemElement);
     });
-}
-
-// 로컬 스토리지 수량 업데이트
-function updateLocalCount(itemId, newCount) {
-    if (newCount < 1) return;
-
-    const cartItems = getLocalCartItems();
-    const itemIndex = cartItems.findIndex(item => item.itemId === itemId);
-
-    if (itemIndex !== -1 && !cartItems[itemIndex].reservation) {
-        cartItems[itemIndex].count = newCount;
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
-        renderLocalCart(cartItems);
-        calculateTotalPrice();
-        updateSelectedCount();
-    }
 }
 
 // 로컬 스토리지 상품 삭제

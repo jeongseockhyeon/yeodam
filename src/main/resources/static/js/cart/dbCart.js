@@ -1,26 +1,3 @@
-// DB 수량 업데이트
-async function updateCartCount(cartId, newCount) {
-    if (newCount < 1) return;
-
-    try {
-        const response = await fetch(`/api/carts/${cartId}/count`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                count: newCount,
-                reservation: false
-            })
-        });
-
-        if (!response.ok) throw new Error('수량 업데이트 실패');
-        location.reload();
-    } catch (error) {
-        console.error('수량 업데이트 실패:', error);
-        alert('수량 변경에 실패했습니다.');
-    }
-}
 
 // DB 아이템 삭제
 async function removeCart(cartId) {

@@ -50,33 +50,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isLoggedIn) {
         initializeLocalCart();
     }
-    // 로그인 상태여도 초기에는 금액을 0으로 설정
-    document.getElementById('totalPrice').textContent = '0';
-    document.getElementById('subtotal').textContent = '0';
 
-    addCheckboxEventListeners();
-    updateSelectedCount();
-});
-
-// 페이지 로드 시 초기화 - 가격 계산 다시 실행
-document.addEventListener('DOMContentLoaded', () => {
-    if (!isLoggedIn) {
-        initializeLocalCart();
-    }
-    // 로그인 상태에서도 초기에는 0으로 표시
     document.getElementById('totalPrice').textContent = '0';
     document.getElementById('subtotal').textContent = '0';
 
     addCheckboxEventListeners();
     updateSelectedCount();
 
-    // 전체 선택 체크박스의 초기 상태를 해제로 설정
     const selectAllCheckbox = document.getElementById('selectAll');
     if (selectAllCheckbox) {
         selectAllCheckbox.checked = false;
     }
 
-    // 모든 개별 체크박스의 초기 상태를 해제로 설정
     const allCheckboxes = document.querySelectorAll('.item-checkbox');
     allCheckboxes.forEach(checkbox => {
         checkbox.checked = false;
@@ -118,11 +103,10 @@ function calculateSelectedPrice() {
                     document.getElementById('subtotal').textContent = data.tourPrice.toLocaleString();
                 });
         } else {
-            // 비로그인 상태: 로컬스토리지 데이터 사용
             const cartItems = getLocalCartItems();
             const total = cartItems
                 .filter(item => cartIds.includes(item.itemId.toString()))
-                .reduce((sum, item) => sum + (item.price * item.count), 0);
+                .reduce((sum, item) => sum + (parseInt(item.tourPrice) * (item.count || 1)), 0);
 
             document.getElementById('totalPrice').textContent = total.toLocaleString();
             document.getElementById('subtotal').textContent = total.toLocaleString();
@@ -130,28 +114,6 @@ function calculateSelectedPrice() {
     } else {
         document.getElementById('totalPrice').textContent = '0';
         document.getElementById('subtotal').textContent = '0';
-    }
-}
-
-// 가격 계산 함수
-function calculateTotalPrice() {
-    const checkedItems = document.querySelectorAll('.item-checkbox:checked');
-    const cartItems = getLocalCartItems();
-
-    if (checkedItems.length > 0) {
-        // 선택된 상품들의 total 계산
-        const total = Array.from(checkedItems)
-            .map(checkbox => parseInt(checkbox.value))
-            .reduce((sum, itemId) => {
-                const item = cartItems.find(item => item.itemId === itemId);
-                return sum + (item ? item.price * item.count : 0);
-            }, 0);
-
-        document.getElementById('subtotal').textContent = total.toLocaleString();
-        document.getElementById('totalPrice').textContent = total.toLocaleString();
-    } else {
-        document.getElementById('subtotal').textContent = '0';
-        document.getElementById('totalPrice').textContent = '0';
     }
 }
 
