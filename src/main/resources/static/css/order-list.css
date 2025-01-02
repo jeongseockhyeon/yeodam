@@ -1,7 +1,15 @@
-.container {
+.custom-container {
     max-width: 600px;
     margin: auto;
     padding: 20px;
+}
+.custom-container h2 {
+    margin: 20px 0;
+    font-size: 25px;
+}
+
+.custom-container p {
+    margin: 0;
 }
 
 .card {

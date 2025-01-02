@@ -8,8 +8,13 @@ async function submitOrder() {
         return;
     }
 
+    if (!validateFields()) {
+        return;
+    }
+
     const form = document.getElementById('order-form');
     const data = new FormData(form);
+
 
     try {
         let response = await (await fetch(form.action, {
@@ -57,6 +62,21 @@ function validateCheckBox() {
     });
 
     return allChecked;
+}
+
+function validateFields() {
+    const textFields = document.querySelectorAll('input[type="text"]');
+
+    textFields.forEach((field) => {
+        if (!field.value.trim()) {
+            field.style.borderColor = 'red';
+            field.focus();
+            return true;
+        } else {
+            field.style.borderColor = 'rgb(221, 221, 221)';
+            return false;
+        }
+    });
 }
 
 window.addEventListener("load", () => {

@@ -1,13 +1,13 @@
 spring.application.name: Yeodam
 
 imp:
-  store-key: testKey1
-  api-key: testKey2
-  secret-key: testKey3
+  store-key: imp65451236
+  api-key: 1821116401505487
+  secret-key: DH0KJWY8lzqX4lYLkHQUeelZ8OoxFZTLbfni89eKLmUjbYzv5m3AsMI6W71xa2CHNFcFUJ3U62LusAex
 
 spring:
   datasource:
-    url: yourUrl
+    url: jdbc:h2:tcp://localhost/~/elice/project/yeodam
     username: sa
     password:
 
@@ -16,21 +16,33 @@ spring:
       ddl-auto: create
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        default_batch_fetch_size: 100
 
   mvc:
     hiddenmethod:
       filter:
         enabled: true
 
+
   cloud:
     aws:
-      cloudfront.domainName: testKey
-      s3.bucket: test1
-      region.static: test2
       credentials:
-        access-key: test3
-        secret-key: test4
+        accessKey: AKIAZQ3DR4M3OKBX277X
+        secretKey: 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
+      s3:
+        bucket: kcabsohwsseug
+      region:
+        static: ap-northeast-2
+      stack:
+        auto: false
+      cloudfront:
+        domainName: djwm3h8i3zg0e.cloudfront.net
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 500MB
 
 logging:
   level:
