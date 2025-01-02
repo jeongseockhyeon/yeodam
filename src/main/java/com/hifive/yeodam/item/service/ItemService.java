@@ -46,6 +46,7 @@ public class ItemService {
         Seller delete = sellerRepository.findById(1L).orElseThrow(() -> new RuntimeException("판매자를 찾을 수 없습니다."));
         List<Item> items = itemRepository.findBySellerCompanyId(seller.getCompanyId());
         for (Item item : items) {
+            item.updateActive(false);
             item.changeSeller(delete);
         }
     }

@@ -85,9 +85,9 @@ public class SellerService {
     public void deleteSellerContent(Auth auth) {
         Seller seller = sellerRepository.findByAuthId(auth.getId()).orElseThrow(() -> new IllegalArgumentException("해당 Auth에 연결된 Seller가 없습니다."));
 
-        guideService.deleteAllGuides(seller);
-        inquiryService.changeAuth(auth);
         itemService.changeCompany(seller);
+        inquiryService.changeAuth(auth);
+        guideService.deleteAllGuides(seller);
 
         sellerRepository.delete(seller);
     }

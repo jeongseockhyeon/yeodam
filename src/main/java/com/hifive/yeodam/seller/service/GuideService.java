@@ -9,6 +9,8 @@ import com.hifive.yeodam.seller.dto.GuideUpdateRequest;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.seller.repository.GuideRepository;
+import com.hifive.yeodam.tour.entity.TourGuide;
+import com.hifive.yeodam.tour.repository.TourGuideRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class GuideService {
     private final SellerService sellerService;
     private final GuideRepository guideRepository;
     private final ReservationRepository reservationRepository;
+    private final TourGuideRepository tourGuideRepository;
 
     // 가이드 등록
     @Transactional
@@ -79,6 +82,7 @@ public class GuideService {
             for(Reservation reservation : reservationList) {
                 reservation.changeGuide(delete);
             }
+            tourGuideRepository.deleteByGuideId(guide.getGuideId());
             guideRepository.delete(guide);
         }
     }
