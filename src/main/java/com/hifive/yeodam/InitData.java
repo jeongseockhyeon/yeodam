@@ -54,6 +54,8 @@ public class InitData {
                     .name("알수없음")
                     .seller(seller)
                     .build();
+
+            em.persist(guide);
         }
     }
 
