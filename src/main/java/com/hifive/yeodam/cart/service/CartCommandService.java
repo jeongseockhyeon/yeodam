@@ -1,18 +1,20 @@
 package com.hifive.yeodam.cart.service;
 
+import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.cart.dto.command.CartRequestDto;
-import com.hifive.yeodam.cart.dto.command.CartUpdateCountDto;
-import com.hifive.yeodam.cart.dto.command.LocalStorageCartDto;
 import com.hifive.yeodam.cart.dto.query.CartResponseDto;
 import com.hifive.yeodam.cart.entity.Cart;
 import com.hifive.yeodam.cart.repository.CartRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
+import com.hifive.yeodam.item.entity.ItemImage;
 import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.seller.entity.Guide;
+import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.tour.entity.Tour;
-import com.hifive.yeodam.user.entity.User;
-import com.hifive.yeodam.user.repository.UserRepository;
+import com.hifive.yeodam.tour.entity.TourGuide;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -20,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.access.AccessDeniedException;
 
 
 import java.util.List;
@@ -34,26 +35,21 @@ public class CartCommandService {
     private static final int MAX_CART_SLOTS = 20; //장바구니 상품 종류 최대 개수
 
     private final CartRepository cartRepository;
-    private final UserRepository userRepository;
+    private final AuthRepository authRepository;
     private final ItemRepository itemRepository;
+    private final GuideRepository guideRepository;
 
-    private User getCurrentUser() {
+    private Auth getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(authentication == null || authentication instanceof AnonymousAuthenticationToken){
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return null;
-        }
-
-        //USER 권한 체크
-        if (!authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
-            throw new AccessDeniedException("사용자 권한이 필요합니다.");
         }
 
         //로그인 사용자 정보 가져오기
         String email = authentication.getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+        return authRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
     }
 
     //장바구니 최대 상품 종류 개수 반환
@@ -61,13 +57,13 @@ public class CartCommandService {
         return MAX_CART_SLOTS;
     }
 
-    public void syncCartWithLocal(List<LocalStorageCartDto> localStorageCart) {
-        User user = getCurrentUser();
-        if (user == null) {
+    public void syncCartWithLocal(List<CartRequestDto> cartRequests) {
+        Auth auth = getCurrentUser();
+        if (auth == null) {
             throw new CustomException(CustomErrorCode.LOGIN_REQUIRED);
         }
 
-        int currentCart = cartRepository.countByUser(user);
+        int currentCart = cartRepository.countByAuth(auth);
         int remainingCart = MAX_CART_SLOTS - currentCart;
 
         if (remainingCart <= 0) {
@@ -75,62 +71,41 @@ public class CartCommandService {
         }
 
         //추가 가능 개수만큼만 처리
-        List<LocalStorageCartDto> itemsToAdd = localStorageCart.size() > remainingCart
-                ? localStorageCart.subList(0, remainingCart)
-                : localStorageCart;
+        List<CartRequestDto> itemsToAdd = cartRequests.size() > remainingCart
+                ? cartRequests.subList(0, remainingCart)
+                : cartRequests;
 
-        for (LocalStorageCartDto localItem : itemsToAdd) {
+        for (CartRequestDto cartRequest : itemsToAdd) {
             try {
-                Item item = itemRepository.findById(localItem.getItemId())
+                Item item = itemRepository.findById(cartRequest.getItemId())
                         .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
 
-                if (localItem.isReservation()) {
-                    boolean exists = cartRepository.findByUserAndItem(user, item).isPresent();
-                    if (exists) {
-                        log.warn("장바구니에 이미 존재하는 상품입니다. itemId: " + localItem.getItemId());
-                        continue;
-                    }
+                boolean exists = cartRepository.findByAuthAndItem(auth, item).isPresent();
+                if (exists) {
+                    log.warn("장바구니에 이미 존재하는 상품입니다. itemId: " + cartRequest.getItemId());
+                    continue;
                 }
 
-                CartRequestDto requestDto;
-                if (!localItem.isReservation()) {
-                    requestDto = new CartRequestDto(
-                            localItem.getItemId(),
-                            item.getItemName(),
-                            item.getPrice(),
-                            localItem.getCount()
-                    );
-                } else {
-                    Tour tour = (Tour) item;
-                    requestDto = CartRequestDto.builder()
-                            .itemId(localItem.getItemId())
-                            .itemName(tour.getItemName())
-                            .description(tour.getDescription())
-                            .period(tour.getPeriod())
-                            .region(tour.getRegion())
-                            .price(tour.getPrice())
-                            .build();
-                }
-
-                addCart(requestDto);
+                addCart(cartRequest);
             } catch (Exception e) {
                 log.warn("장바구니 연동 중 오류 발생: " + e.getMessage());
             }
         }
 
-        if (localStorageCart.size() > remainingCart) {
+        if (cartRequests.size() > remainingCart) {
             log.warn("장바구니 개수 제한으로 " + remainingCart + "개의 상품만 추가되었습니다.");
         }
     }
 
     public CartResponseDto addCart(CartRequestDto requestDto) {
-        User user = getCurrentUser();
-        if (user == null) {
+        log.info("카트 추가 요청: {}", requestDto);
+        Auth auth = getCurrentUser();
+        if (auth == null) {
             throw new CustomException(CustomErrorCode.LOGIN_REQUIRED);
         }
 
-        //징바구니 개수 제한 검증 절차
-        int currentCart = cartRepository.countByUser(user);
+        //장바구니 개수 제한 검증 절차
+        int currentCart = cartRepository.countByAuth(auth);
         if (currentCart >= MAX_CART_SLOTS) {
             throw new CustomException(CustomErrorCode.CART_FULL);
         }
@@ -138,61 +113,66 @@ public class CartCommandService {
         Item item = itemRepository.findById(requestDto.getItemId())
                 .orElseThrow(() -> new CustomException(CustomErrorCode.ITEM_NOT_FOUND));
 
-        if (item.isReservation() != requestDto.isReservation()) {
-            throw new CustomException(CustomErrorCode.CART_ITEM_TYPE_MISMATCH);
-        }
         //동일 상품 확인
-        Optional<Cart> existingCart = cartRepository.findByUserAndItem(user, item);
-
+        Optional<Cart> existingCart = cartRepository.findByAuthAndItem(auth, item);
         if (existingCart.isPresent()) {
-            if (!item.isReservation()) {
-                //일반 상품인 경우 수량 증가
-                Cart cart = existingCart.get();
-                cart.addCount(requestDto.getCount());
-                return CartResponseDto.builder()
-                        .cart(cart)
-                        .build();
-            }
             throw new CustomException(CustomErrorCode.CART_ITEM_DUPLICATE);
         }
 
-        Cart cart = Cart.builder()
-                .user(user)
-                .item(item)
-                .build();
+        Cart cart;
+        if (item instanceof Tour) {
+            Tour tour = (Tour) item;
 
-        if (!item.isReservation()) {
-            cart.updateCount(requestDto.getCount());
+            Guide guide = tour.getTourGuides().stream()
+                    .findFirst()
+                    .map(TourGuide::getGuide)
+                    .orElse(null);
+
+            cart = Cart.builder()
+                    .auth(auth)
+                    .item(item)
+                    .guide(guide)
+                    .build();
+        } else {
+            cart = Cart.builder()
+                    .auth(auth)
+                    .item(item)
+                    .build();
         }
 
         Cart savedCart = cartRepository.save(cart);
         return CartResponseDto.builder()
                 .cart(savedCart)
+                .requestDto(CartRequestDto.builder()
+                        .itemId(item.getId())
+                        .tourName(item.getItemName())
+                        .tourRegion(item instanceof Tour ? ((Tour) item).getRegion() : null)
+                        .tourPeriod(item instanceof Tour ? ((Tour) item).getPeriod() : null)
+                        .maximum(item instanceof Tour ? ((Tour) item).getMaximum() : 0)
+                        .guideId(savedCart.getGuide() != null ? savedCart.getGuide().getGuideId() : null)
+                        .imgUrl(getItemThumbnailUrl(item))
+                        .build())
                 .build();
     }
 
-    public CartResponseDto updateCartCount(Long cartId, CartUpdateCountDto updateDto) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new CustomException(CustomErrorCode.CART_NOT_FOUND));
-
-        //수량 변경 가능 여부 확인
-        if (cart.getItem().isReservation() != updateDto.isReservation()) {
-            throw new CustomException(CustomErrorCode.CART_ITEM_TYPE_MISMATCH);
-        }
-        if (!cart.isCountModifiable()) {
-            throw new CustomException(CustomErrorCode.CART_ITEM_COUNT_NOT_MODIFIABLE);
-        }
-
-        cart.updateCount(updateDto.getCount());
-        return CartResponseDto.builder()
-                .cart(cart)
-                .build();
+    private String getItemThumbnailUrl(Item item) {
+        return item.getItemImages().stream()
+                .filter(ItemImage::isThumbnail)
+                .findFirst()
+                .map(ItemImage::getStorePath)
+                .orElse(null);
     }
 
     public void removeCart(Long cartId) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new CustomException(CustomErrorCode.CART_NOT_FOUND));
-
-        cartRepository.delete(cart);
+        log.info("카트 삭제 시작 - cartId: {}", cartId);
+        try {
+            Cart cart = cartRepository.findByIdAndAuth(cartId, getCurrentUser())
+                    .orElseThrow(() -> new CustomException(CustomErrorCode.CART_NOT_FOUND));
+            cartRepository.delete(cart);
+            log.info("카트 삭제 완료 - cartId: {}", cartId);
+        } catch (Exception e) {
+            log.error("카트 삭제 실패 - cartId: {}, error: {}", cartId, e.getMessage());
+            throw e;
+        }
     }
 }

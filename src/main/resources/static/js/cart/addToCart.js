@@ -1,65 +1,87 @@
+let isEventListenerAdded = false;
+
 document.addEventListener("DOMContentLoaded", () => {
-    const addToCartBtn = document.querySelector(".btn-secondary");
+    if (!isEventListenerAdded) {
+        const addToCartBtn = document.querySelector(".btn-secondary");
+        addToCartBtn.addEventListener("click", async () => {
+            await addToCart();
+        });
+        isEventListenerAdded = true;
+    }
+});
 
-    addToCartBtn.addEventListener("click", async () => {
-        try {
-            const cartData = {
-                itemId: parseInt(getTourItemIdFromUrl()),
-                itemName: document.getElementById("tourName").textContent,
-                description: document.getElementById("tourDesc").textContent,
-                period: document.getElementById("tourPeriod").textContent,
-                region: document.querySelector(".detail-value").textContent,
-                price: parseInt(document.getElementById("tourPrice").textContent.replace(/[^0-9]/g, '')),
-                count: 1,
-                reservation: true,
-                guideId: null,
-                startDate: null,
-                endDate: null
-            };
+//  실제 상품 데이터로 변경 되면 사용 예정
+async function addToCart() {
+    try {
+        const itemId = parseInt(getTourItemIdFromUrl());
 
-            if (isLoggedIn) {
-                // 로그인 상태: 서버 API 호출
+        const tourResponse = await fetch(`/api/tours/${itemId}`);
+        const tourDetail = await tourResponse.json();
+
+        if (!tourResponse.ok) {
+            throw new Error('상품 정보를 불러올 수 없습니다.');
+        }
+        console.log('tourDetail:', tourDetail);
+
+        const cartData = {
+            itemId: tourDetail.id,
+            tourName: tourDetail.tourName,
+            tourRegion: tourDetail.tourRegion,
+            tourPeriod: tourDetail.tourPeriod,
+            tourPrice: tourDetail.tourPrice,
+            maximum: tourDetail.maximum,
+            guideId: tourDetail.guideInTourResDtos[0]?.id || null,
+            imgUrl: tourDetail.itemImgResDtoList[0]?.storePath || null
+        };
+        console.log('cartData:', cartData);
+        if (isLoggedIn) {
+            try {
                 const response = await fetch('/api/carts', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
+                    credentials: 'include',
                     body: JSON.stringify(cartData)
                 });
 
+                if (response.status === 401) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || '장바구니 담기 실패');
-                }
-            } else {
-                // 비로그인 상태: 로컬 스토리지에 저장
-                const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-                const existingItemIndex = cartItems.findIndex(item => item.itemId === cartData.itemId);
-
-                if (existingItemIndex > -1) {
-                    // 이미 있는 상품이면 수량만 증가
-                    if (!cartItems[existingItemIndex].reservation) {
-                        cartItems[existingItemIndex].count += 1;
-                    }
-                } else {
-                    // 새 상품 추가
-                    cartItems.push(cartData);
+                    throw new Error(`서버 에러: ${response.status}`);
                 }
 
-                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                alert("장바구니에 상품이 담겼습니다.");
+                return;
+            } catch (error) {
+                console.error('서버 장바구니 추가 실패:', error);
+                throw error;
+            }
+        } else {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+
+            if (cartItems.some(item => item.itemId === itemId)) {
+                alert('이미 장바구니에 존재하는 상품입니다.');
+                return;
             }
 
+            cartItems.push(cartData);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
             alert("장바구니에 상품이 담겼습니다.");
-        } catch (error) {
-            console.error('상세 에러:', error);
-            alert(error.message || "장바구니 담기 중 오류가 발생했습니다.");
         }
-    });
-});
-
-function getTourItemIdFromUrl() {
-    const pathSegments = window.location.pathname.split('/');
-    return pathSegments[pathSegments.length - 1];
+    } catch (error) {
+        console.error('장바구니 담기 실패:', error);
+        alert(error.message || "장바구니 담기에 실패했습니다.");
+    }
 }
 
-
+// 상품 Id 추출
+function getTourItemIdFromUrl() {
+    const pathArray = window.location.pathname.split('/');
+    const itemId = parseInt(pathArray[pathArray.length - 1]);
+    return !isNaN(itemId) ? itemId : null;
+}

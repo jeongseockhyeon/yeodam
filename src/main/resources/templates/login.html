@@ -43,6 +43,10 @@
         </div>
 
     </div>
-
+    <script> //로그인 시도 플래그 설정
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            localStorage.setItem('syncCartAfterLogin', 'true');
+        });
+    </script>
 </body>
 </html>

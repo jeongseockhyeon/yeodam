@@ -1,51 +1,119 @@
 package com.hifive.yeodam.cart.dto.query;
 
+import com.hifive.yeodam.cart.dto.command.CartRequestDto;
 import com.hifive.yeodam.cart.entity.Cart;
-import com.hifive.yeodam.item.dto.ItemImgResDto;
-import com.hifive.yeodam.tour.dto.TourItemResDto;
+import com.hifive.yeodam.item.entity.Item;
+import com.hifive.yeodam.item.entity.ItemImage;
+import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.tour.entity.Tour;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartResponseDto {
     private Long cartId;
     private Long itemId;
-    private String itemName;
-    private int price;
-    private int count;
+    private String tourName;
+    private String tourRegion;
+    private String tourPeriod;
+    private int tourPrice;
+    private int maximum;
+    private Long guideId;
+    private String guideName;
+    private String imgUrl;
     private boolean reservation;
-    private boolean countModifiable; //수량 변경 가능 여부
-    private List<ItemImgResDto> images;
-    private TourItemResDto tourItem;
+
+    private int count;
+    private String bookerName;
+    private String phoneNumber;
+    private String orderMessage;
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @Builder
-    private CartResponseDto(Cart cart) {
-        this.cartId = cart.getId();
-        this.itemId = cart.getItem().getId();
-        this.itemName = cart.getItem().getItemName();
-        this.price = cart.getPrice();
-        this.count = cart.getCount();
-        this.reservation = cart.getItem().isReservation();
-        this.countModifiable = !cart.getItem().isReservation(); //일반 상품
-        this.images = cart.getItem().getItemImages().stream()
-                .map(ItemImgResDto::new)
-                .collect(Collectors.toList());
+    public CartResponseDto(Cart cart, CartRequestDto requestDto) {
+        if (cart != null) {
+            this.cartId = cart.getId();
+            Item item = cart.getItem();
+            this.itemId = item.getId();
+            this.tourName = item.getItemName();
+            this.tourPrice = cart.getTourPrice();
 
-        //Tour 상품 추가 정보
-        if (cart.getItem() instanceof Tour tour){
-            this.tourItem = new TourItemResDto(tour);
-            this.startDate = cart.getStartDate();
-            this.endDate = cart.getEndDate();
+            if (item instanceof Tour) {
+                Tour tour = (Tour) item;
+                this.tourRegion = tour.getRegion();
+                this.tourPeriod = tour.getPeriod();
+                this.maximum = tour.getMaximum();
+                this.reservation = true;
+            }
+
+            if (cart.getGuide() != null) {
+                this.guideId = cart.getGuide().getGuideId();
+                this.guideName = cart.getGuide().getName();
+            }
+
+            this.imgUrl = item.getItemImages().stream()
+                    .filter(ItemImage::isThumbnail)
+                    .findFirst()
+                    .map(ItemImage::getStorePath)
+                    .orElse(null);
+
+            this.count = cart.getCount();
         }
+    }
+
+    // 빌더 패턴 정적 내부 클래스 추가
+    public static CartResponseDtoBuilder builder() {
+        return new CartResponseDtoBuilder();
+    }
+
+    public static class CartResponseDtoBuilder {
+        private Cart cart;
+        private CartRequestDto requestDto;
+
+        CartResponseDtoBuilder() {}
+
+        public CartResponseDtoBuilder cart(Cart cart) {
+            this.cart = cart;
+            return this;
+        }
+
+        public CartResponseDtoBuilder requestDto(CartRequestDto requestDto) {
+            this.requestDto = requestDto;
+            return this;
+        }
+
+        public CartResponseDto build() {
+            return new CartResponseDto(cart, requestDto);
+        }
+    }
+
+    public AddOrderRequest.orderRequest toOrderRequest() {
+        return AddOrderRequest.orderRequest.builder()
+                .itemId(this.itemId)
+                .name(this.tourName)
+                .price(this.tourPrice)
+                .guideId(this.guideId)
+                .bookerName(this.bookerName)
+                .phoneNumber(this.phoneNumber)
+                .orderMessage(this.orderMessage)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .count(1)
+                .build();
+    }
+
+    // 주문 정보 설정을 위한 메서드
+    public void setOrderInfo(String bookerName, String phoneNumber,
+                             String orderMessage, LocalDate startDate,
+                             LocalDate endDate) {
+        this.bookerName = bookerName;
+        this.phoneNumber = phoneNumber;
+        this.orderMessage = orderMessage;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }
