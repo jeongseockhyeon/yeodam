@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-//  실제 상품 데이터로 변경 되면 사용 예정
 async function addToCart() {
     try {
         const itemId = parseInt(getTourItemIdFromUrl());
