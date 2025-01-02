@@ -2,9 +2,11 @@ package com.hifive.yeodam.cart.dto.query;
 
 import com.hifive.yeodam.cart.dto.command.CartRequestDto;
 import com.hifive.yeodam.cart.entity.Cart;
+import com.hifive.yeodam.item.entity.Item;
+import com.hifive.yeodam.item.entity.ItemImage;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
+import com.hifive.yeodam.tour.entity.Tour;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,16 +32,58 @@ public class CartResponseDto {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @Builder
     public CartResponseDto(Cart cart, CartRequestDto requestDto) {
-        this.itemId = requestDto.getItemId();
-        this.tourName = requestDto.getTourName();
-        this.tourRegion = requestDto.getTourRegion();
-        this.tourPeriod = requestDto.getTourPeriod();
-        this.tourPrice = cart.getTourPrice();
-        this.maximum = requestDto.getMaximum();
-        this.guideId = requestDto.getGuideId();
-        this.imgUrl = requestDto.getImgUrl();
+        if (cart != null) {
+            Item item = cart.getItem();
+            this.itemId = item.getId();
+            this.tourName = item.getItemName();
+            this.tourPrice = cart.getTourPrice();
+
+            if (item instanceof Tour) {
+                Tour tour = (Tour) item;
+                this.tourRegion = tour.getRegion();
+                this.tourPeriod = tour.getPeriod();
+                this.maximum = tour.getMaximum();
+            }
+
+            if (cart.getGuide() != null) {
+                this.guideId = cart.getGuide().getGuideId();
+            }
+
+            this.imgUrl = item.getItemImages().stream()
+                    .filter(ItemImage::isThumbnail)
+                    .findFirst()
+                    .map(ItemImage::getStorePath)
+                    .orElse(null);
+
+            this.count = cart.getCount();
+        }
+    }
+
+    // 빌더 패턴 정적 내부 클래스 추가
+    public static CartResponseDtoBuilder builder() {
+        return new CartResponseDtoBuilder();
+    }
+
+    public static class CartResponseDtoBuilder {
+        private Cart cart;
+        private CartRequestDto requestDto;
+
+        CartResponseDtoBuilder() {}
+
+        public CartResponseDtoBuilder cart(Cart cart) {
+            this.cart = cart;
+            return this;
+        }
+
+        public CartResponseDtoBuilder requestDto(CartRequestDto requestDto) {
+            this.requestDto = requestDto;
+            return this;
+        }
+
+        public CartResponseDto build() {
+            return new CartResponseDto(cart, requestDto);
+        }
     }
 
     public AddOrderRequest.orderRequest toOrderRequest() {
