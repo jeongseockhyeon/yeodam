@@ -19,4 +19,6 @@ public class ItemImage {
     private String originalName;
 
     private String storePath;
+
+    private boolean isThumbnail;
 }

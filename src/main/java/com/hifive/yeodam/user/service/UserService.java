@@ -78,9 +78,9 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUser(Long id, UserUpdateRequest request) {
+    public UserResponse updateUser(Long authId, UserUpdateRequest request) {
 
-        Optional<User> optionalUser = userRepository.findById(id);
+        Optional<User> optionalUser = userRepository.findByAuthId(authId);
         User user = optionalUser.orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         user.update(request.getName(), request.getNickname(), request.getPhone());

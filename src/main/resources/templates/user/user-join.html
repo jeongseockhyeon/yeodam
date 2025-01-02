@@ -6,6 +6,7 @@
     <title>유저 회원가입</title>
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/style.css">
 
     <style>
         body {
@@ -18,27 +19,30 @@
 
         .error-message {
             color: red;
-            font-size: 16px;
+            font-size: 0.8rem;
         }
 
         .success-message {
             color: green;
-            font-size: 16px;
+            font-size: 0.8rem;
         }
     </style>
 
 </head>
 
-<body class="container mt-5">
 
-    <h2 class="mb-3 text-center">회원 가입</h2>
 
-    <form>
+<body class="container">
+    <div class="header-area">
+        <div th:replace="~{fragments/header-noSearch :: header}"></div>
+    </div>
+
+    <form class="mt-3" id="userJoinForm">
 
         <div class="mb-3">
             <label for="userEmail" class="form-label">이메일</label>
             <div class="input-group">
-                <input type="email" id="userEmail" class="form-control mx-1"  maxlength="50" required />
+                <input type="email" id="userEmail" name="email" class="form-control mx-1" maxlength="50" required />
                 <button type="button" class="btn btn-secondary mx-1 idCheck" onclick="emailCheck()">중복 체크</button>
             </div>
             <p id="email-check-result"></p>
@@ -46,7 +50,7 @@
 
         <div class="mb-3">
             <label for="password" class="form-label">비밀번호</label>
-            <input type="password" class="form-control" id="password" onkeyup="passwordCheck();" minlength="8" maxlength="16" required />
+            <input type="password" class="form-control" id="password" name="password" onkeyup="passwordCheck();" minlength="8" maxlength="16" required />
             <p id="password-check-result"></p>
         </div>
 
@@ -58,14 +62,14 @@
 
         <div class="mb-3">
             <label for="name" class="form-label">이름</label>
-            <input type="text" id="name" class="form-control" maxlength="25" required />
+            <input type="text" id="name" name="name" class="form-control" maxlength="25" required />
             <p id="name-check-result"></p>
         </div>
 
         <div class="mb-3">
             <label for="nickname" class="form-label">닉네임</label>
             <div class="input-group">
-                <input type="text" id="nickname" class="form-control mx-1" maxlength="25" required />
+                <input type="text" id="nickname" name="nickname" class="form-control mx-1" maxlength="25" required />
                 <button type="button" class="btn btn-secondary mx-1 idCheck" onclick="nicknameCheck()">중복 체크</button>
             </div>
             <p id="nickname-check-result"></p>
@@ -73,7 +77,7 @@
 
         <div class="mb-3">
             <label for="phone" class="form-label">전화번호</label>
-            <input type="tel" id="phone" class="form-control" maxlength="11" required />
+            <input type="tel" id="phone" name="phone" class="form-control" maxlength="11" required />
             <p id="phone-check-result"></p>
         </div>
 
@@ -93,14 +97,17 @@
             </div>
         </div>
 
+        <br>
+
         <div class="d-flex justify-content-center">
-            <button type="button" id="submitButton" class="btn btn-primary mx-1" disabled>회원가입</button>
+            <button type="submit" id="submitButton" class="btn btn-primary mx-1" disabled>회원가입</button>
             <button type="button" class="btn btn-secondary mx-1" onclick="checkCancel()">취소</button>
         </div>
     </form>
 
 <script src="/js/user/userRequestCheck.js"></script>
-<script src="/js/user/submitJoin.js"></script>
+<script src="/js/user/showErrorMessages.js"></script>
+<script src="/js/user/userJoin.js"></script>
 <script th:inline="javascript">
 
     const updateSubmitBtn = () => {
@@ -109,7 +116,7 @@
 
     const checkCancel = () => {
         if (window.confirm("회원가입을 취소하시겠습니까?")) {
-            location.href='/login';
+            location.href='/';
         }
     }
 </script>

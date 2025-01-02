@@ -1,8 +1,9 @@
 package com.hifive.yeodam.tour.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -10,16 +11,25 @@ import java.util.List;
 @Getter
 public class TourItemUpdateReqDto {
 
+    @NotBlank(message = "여행 상품명은 입력해주세요")
+    @Size(max = 25)
     private final String tourName;
 
+    @NotBlank(message = "여행 상품의 설명을 입력해주세요.")
     private final String tourDesc;
 
+    @NotBlank(message = "기간을 입력해주세요.")
+    @Size(max = 25)
     private final String tourPeriod;
 
+    @NotBlank(message = "지역을 입력해주세요.")
+    @Size(max = 25)
     private final String tourRegion;
 
+    @NotNull(message = "가격을 입력해주세요.")
     private final String tourPrice;
 
+    @NotNull(message = "최대 인원을 입력해주세요.")
     private final String maximum;
 
 

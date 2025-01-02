@@ -167,11 +167,49 @@ public class AuthServiceTest {
         assertThat(result.getPassword()).isNotNull();
     }
 
+    @Test
+    public void 만료날짜설정실패_인증존재하지않음() throws Exception{
+        //given
+        LocalDate ld = LocalDate.now();
+        doReturn(Optional.empty()).when(authRepository).findById(-1L);
+
+        //when
+        CustomException result = assertThrows(CustomException.class, () -> target.updateExpiration(auth(), ld));
+
+        //then
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.AUTH_NOT_FOUND);
+    }
+
+    @Test
+    public void 만료기간설정되었는지확인실패_인증존재하지않음() throws Exception{
+        //given
+        doReturn(Optional.empty()).when(authRepository).findById(auth().getId());
+
+        //when
+        CustomException result = assertThrows(CustomException.class, () -> target.checkExpired(auth()));
+
+        //then
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.AUTH_NOT_FOUND);
+    }
+
+    @Test
+    public void 만료기간설정되었는지확인성공() throws Exception{
+        //given
+        doReturn(Optional.of(auth())).when(authRepository).findById(auth().getId());
+
+        //when
+        boolean result = target.checkExpired(auth());
+
+        //then
+        assertThat(result).isEqualTo(auth().getExpirationDate() != null);
+    }
+
     private Auth auth() {
         return Auth.builder()
                 .id(-1L)
                 .email(email)
                 .password(password)
+                .expirationDate(null)
                 .build();
     }
 }

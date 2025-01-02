@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>여행 상품 등록</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/tour-add.css">
     <link rel="stylesheet" href="/css/category-check-box.css">
     <link rel="stylesheet" href="/css/guide-list.css">
+    <link rel="stylesheet" href="/css/img-delete-button.css">
     <style>
         #previewContainer {
             display: flex;
@@ -23,12 +27,16 @@
     </style>
 </head>
 <body>
+<!-- 헤더 추가 -->
+<div class="header-area">
+    <div th:replace="~{fragments/header-noSearch :: header}"></div>
+</div>
 <div class="container">
     <!-- 왼쪽 메뉴 -->
     <div class="sidebar">
-        <div class="menu-button active" data-tab="intro" onclick="showTab('intro')">상품 소개</div>
-        <div class="menu-button" data-tab="info" onclick="showTab('info')">필수 정보</div>
-        <div class="menu-button" data-tab="photo" onclick="showTab('photo')">상품 사진</div>
+        <button class="menu-button active" data-tab="intro" onclick="showTab('intro')">상품 소개</button>
+        <button class="menu-button" data-tab="info" onclick="showTab('info')">필수 정보</button>
+        <button class="menu-button" data-tab="photo" onclick="showTab('photo')">상품 사진</button>
     </div>
 
     <!-- 오른쪽 내용 -->
@@ -49,10 +57,12 @@
             <div id="info" class="tab">
                 <h2>필수 정보</h2>
                 <label for="tourPeriod">여행 기간</label>
-                <input type="text" id="tourPeriod" name="tourPeriod" required>
+                <select id="tourPeriod" name="tourPeriod"></select>
+
 
                 <label for="tourRegion">여행 지역</label>
-                <input type="text" id="tourRegion" name="tourRegion" required>
+                <select id="tourRegion" name="tourRegion"></select>
+
 
                 <label for="maximum">최대 인원수</label>
                 <input type="number" id="maximum" name="maximum" required>
@@ -75,7 +85,7 @@
 
 
                 <div id="categoryCheckBox">
-                    <h3>카테고리 선택</h3>
+                    <h4>카테고리 선택</h4>
                 </div>
             </div>
 
@@ -84,96 +94,23 @@
                 <h2>상품 사진</h2>
                 <label>이미지 업로드</label><br>
                 <input type="file" name="images" id="tourImages" accept="image/*" multiple>
-                <p>* 최대 n장 업로드 가능</p>
+                <p>* 최대 5장 업로드 가능</p>
+                <p>* 가장 처음 등록된 사진을 썸네일로 사용</p>
                 <!-- 미리보기 영역 -->
                 <div id="previewContainer"></div>
             </div>
 
             <!-- 버튼 -->
             <button type="button" id="submitBtn">저장</button>
-            <button type="button" onclick="alert('임시 저장 기능 추가')">임시 저장</button>
             <a href="/item/manage">상품 관리로 이동</a> <!-- 추후 상품 관리 페이지 생성 시 연결 -->
         </form>
     </div>
 </div>
 <script src="/js/item/validationFormData.js"></script>
 <script src="/js/item/getCategory.js"></script>
+<script src="/js/item/getGuideByCompany.js"></script>
 <script src="/js/item/submitTour.js"></script>
 <script src="/js/item/showTabs.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const guideSelect = document.getElementById("guideSelect");
-        const selectedGuidesText = document.getElementById("selectedGuidesText");
-
-        // 서버에서 가이드 데이터를 가져옴
-        fetch("/api/sellers/guide-list")
-            .then((response) => response.json())
-            .then((guides) => {
-                guides.forEach((guide) => {
-                    const option = document.createElement("option");
-                    option.value = guide.id;
-                    option.textContent = guide.name;
-                    guideSelect.appendChild(option);
-                });
-            })
-            .catch((error) => {
-                console.error("가이드 데이터를 가져오는 중 오류 발생:", error);
-            });
-
-        // 선택된 가이드들을 저장할 배열
-        let selectedGuides = [];
-
-        // 가이드 선택 시 이벤트 처리
-        guideSelect.addEventListener("change", () => {
-            // 선택된 가이드들의 값을 가져옴
-            const selectedOptions = Array.from(guideSelect.selectedOptions);
-
-            // 선택된 가이드 배열 초기화
-            selectedGuides = selectedOptions.map(option => option.textContent);
-
-            // 선택된 가이드 배열이 비어있지 않으면 쉼표로 구분된 문자열로 표시
-            if (selectedGuides.length > 0) {
-                selectedGuidesText.textContent = selectedGuides.join(", ");
-            } else {
-                selectedGuidesText.textContent = "선택된 가이드가 없습니다.";
-            }
-        });
-    });
-
-</script>
-<script>
-    const tourImagesInput = document.getElementById('tourImages');
-    const previewContainer = document.getElementById('previewContainer');
-    let selectedImages = []; // 업로드된 파일 배열
-
-    tourImagesInput.addEventListener('change', () => {
-        // 새로운 파일 추가
-        const files = Array.from(tourImagesInput.files);
-
-        // 기존 이미지 + 새로 선택된 이미지 처리
-        selectedImages = [...selectedImages, ...files];
-
-        // 중복 제거
-        selectedImages = Array.from(new Set(selectedImages.map(file => file.name)))
-            .map(name => selectedImages.find(file => file.name === name));
-
-        // 미리보기 갱신
-        updatePreview();
-    });
-
-    function updatePreview() {
-        previewContainer.innerHTML = ''; // 기존 미리보기 초기화
-
-        selectedImages.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = document.createElement('img');
-                img.src = reader.result;
-                previewContainer.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-</script>
+<script src="/js/item/filteringList.js"></script>
 </body>
 </html>

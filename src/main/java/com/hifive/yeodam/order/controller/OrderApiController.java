@@ -2,10 +2,11 @@ package com.hifive.yeodam.order.controller;
 
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.order.dto.request.CancelOrderRequest;
-import com.hifive.yeodam.order.dto.response.CancelOrderResponse;
-import com.hifive.yeodam.order.dto.response.CreateOrderResponse;
-import com.hifive.yeodam.order.service.OrderCommandService;
+import com.hifive.yeodam.order.dto.response.CreateOrderPaymentResponse;
+import com.hifive.yeodam.order.facade.OrderFacadeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -14,15 +15,19 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class OrderApiController {
 
-    private final OrderCommandService orderCommandService;
+    private final OrderFacadeService orderFacadeService;
 
     @PatchMapping("/api/orders/{orderUid}")
-    public CancelOrderResponse cancelOrder(@RequestBody CancelOrderRequest request) {
-        return orderCommandService.cancelOrder(request);
+    public ResponseEntity cancelOrder(@RequestBody CancelOrderRequest request) {
+        orderFacadeService.cancelOrderPayment(request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/api/orders")
-    public CreateOrderResponse order(Principal principal, @ModelAttribute(name = "addOrderRequests") AddOrderRequest request) {
-        return orderCommandService.order(request, principal);
+    public CreateOrderPaymentResponse order(
+            Principal principal,
+            @Valid @ModelAttribute(name = "addOrderRequests") AddOrderRequest request) {
+
+        return orderFacadeService.createOrderPayment(request, principal);
     }
 }

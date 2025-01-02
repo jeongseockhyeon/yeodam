@@ -8,12 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static com.hifive.yeodam.order.domain.OrderStatus.PENDING;
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
@@ -60,12 +60,11 @@ public class Order {
     }
 
     private String createOrderUid() {
-        return UUID.randomUUID().toString();
+        return LocalDate.now().toString().replace("-", "") + UUID.randomUUID().toString().substring(0, 8);
     }
 
     private void setOrderDetails(List<OrderDetail> orderDetails) {
-        orderDetails
-                .forEach(this::addOrderDetail);
+        orderDetails.forEach(this::addOrderDetail);
     }
 
     //== 연관관계 메서드 ==//

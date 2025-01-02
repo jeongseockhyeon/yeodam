@@ -4,12 +4,11 @@ import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.order.domain.OrderStatus;
 import com.hifive.yeodam.order.repository.OrderRepository;
+import com.hifive.yeodam.orderdetail.domain.OrderDetailStatus;
 import com.hifive.yeodam.payment.domain.Payment;
 import com.hifive.yeodam.payment.domain.PaymentStatus;
-import com.hifive.yeodam.payment.dto.CancelPaymentRequest;
 import com.hifive.yeodam.payment.dto.PaymentOrderUidResponse;
 import com.hifive.yeodam.payment.dto.PaymentRequestCallBack;
-import com.hifive.yeodam.payment.dto.CreatePaymentResponse;
 import com.hifive.yeodam.payment.repository.PaymentRepository;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.CancelData;
@@ -43,12 +42,9 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public CreatePaymentResponse findRequestPayment(Long paymentId) {
-
-        Payment payment = paymentRepository.findByIdFetchJoin(paymentId)
+    public Payment findRequestPayment(Long paymentId) {
+        return paymentRepository.findByIdFetchJoin(paymentId)
                 .orElseThrow(() -> new CustomException(PAYMENT_NOT_FOUND));
-
-        return buildPaymentResponse(payment);
     }
 
     @Transactional
@@ -69,7 +65,6 @@ public class PaymentService {
                         .build();
             }
         }
-
         payment.paymentFail(iamportResponse.getResponse().getImpUid());
 
         throw new CustomException(PAYMENT_FAILED);
@@ -79,29 +74,30 @@ public class PaymentService {
     public void paymentFail(PaymentRequestCallBack request) {
 
         Order order = findOrderByUid(request.getOrderUid());
-
         order.chanceOrderStatus(OrderStatus.FAILED);
-
         order.getOrderDetails()
-                .forEach(od -> od.getItem().addStock());
+                .forEach(od -> {
+                    od.getItem().addStock();
+                    od.changeStatus(OrderDetailStatus.FAILED);
+                });
 
         order.getPayment().paymentFail(request.getPaymentUid());
     }
 
     @Transactional
-    public void cancel(CancelPaymentRequest request) {
+    public void cancel(String orderUid, int totalPrice) {
 
-        Payment payment = paymentRepository.findByOrderUid(request.getOrderUid())
+        Payment payment = paymentRepository.findByOrderUid(orderUid)
                 .orElseThrow(() -> new CustomException(ORDER_NOT_FOUND));
 
-        if (request.getTotalPrice() == HAS_NO_TOTAL_PRICE) {
+        if (totalPrice == HAS_NO_TOTAL_PRICE) {
             throw new CustomException(PAYMENT_CANCELED);
         }
         if (payment.getPaymentUid().equals(PAYMENT_UID_BEFORE_PAYMENT)) {
             throw new CustomException(PAYMENT_CANCELED);
         }
 
-        cancelPayment(request.getOrderUid(), request.getTotalPrice());
+        cancelPayment(payment.getPaymentUid(), totalPrice);
         payment.cancel();
     }
 
@@ -133,8 +129,8 @@ public class PaymentService {
         if (iamportPrice == orderTotalPrice) {
             return true;
         }
-
         cancelPayment(iamportResponse.getResponse().getImpUid(), iamportPrice);
+
         return false;
     }
 
@@ -149,20 +145,7 @@ public class PaymentService {
     }
 
     private Order findOrderByUid(String orderUid) {
-
         return orderRepository.findByOrderUid(orderUid)
                 .orElseThrow(() -> new CustomException(PAYMENT_NOT_FOUND));
-    }
-
-    private CreatePaymentResponse buildPaymentResponse(Payment payment) {
-
-        return CreatePaymentResponse.builder()
-                .orderUid(payment.getOrder().getOrderUid())
-                .username(payment.getOrder().getUser().getName())
-                .phone(payment.getOrder().getUser().getPhone())
-                .email(payment.getOrder().getUser().getAuth().getEmail())
-                .itemName(payment.getOrder().getItemSummary())
-                .price(payment.getPrice())
-                .build();
     }
 }

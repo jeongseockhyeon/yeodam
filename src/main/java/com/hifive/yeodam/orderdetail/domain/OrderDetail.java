@@ -3,14 +3,15 @@ package com.hifive.yeodam.orderdetail.domain;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.reservation.entity.Reservation;
+import com.hifive.yeodam.review.domain.Review;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.hifive.yeodam.orderdetail.domain.OrderDetailsStatus.*;
-import static jakarta.persistence.EnumType.*;
+import static com.hifive.yeodam.orderdetail.domain.OrderDetailStatus.PENDING;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -41,11 +42,15 @@ public class OrderDetail {
     private String message;
 
     @Enumerated(STRING)
-    private OrderDetailsStatus status;
+    private OrderDetailStatus status;
 
     @JoinColumn(name = "reservation_id")
     @OneToOne(fetch = LAZY)
     private Reservation reservation;
+
+    @Setter
+    @OneToOne(mappedBy = "orderDetail")
+    private Review review;
 
     @Builder
     public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
@@ -67,7 +72,7 @@ public class OrderDetail {
         return getPrice() * getCount();
     }
 
-    public void changeStatus(OrderDetailsStatus status) {
+    public void changeStatus(OrderDetailStatus status) {
         this.status = status;
     }
 }

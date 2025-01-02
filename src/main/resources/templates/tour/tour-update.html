@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>여행 상품 수정</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/tour-add.css">
     <link rel="stylesheet" href="/css/category-check-box.css">
+    <link rel="stylesheet" href="/css/guide-list.css">
+    <link rel="stylesheet" href="/css/img-delete-button.css">
+    <link rel="stylesheet" href="/css/preview-img.css">
     <style>
         #previewContainer {
             display: flex;
@@ -22,12 +28,16 @@
     </style>
 </head>
 <body>
+<!-- 헤더 추가 -->
+<div class="header-area">
+    <div th:replace="~{fragments/header-noSearch :: header}"></div>
+</div>
 <div class="container">
     <!-- 왼쪽 메뉴 -->
     <div class="sidebar">
-        <div class="menu-button active" data-tab="intro" onclick="showTab('intro')">상품 소개</div>
-        <div class="menu-button" data-tab="info" onclick="showTab('info')">필수 정보</div>
-        <div class="menu-button" data-tab="photo" onclick="showTab('photo')">상품 사진</div>
+        <button class="menu-button active" data-tab="intro" onclick="showTab('intro')">상품 소개</button>
+        <button class="menu-button" data-tab="info" onclick="showTab('info')">필수 정보</button>
+        <button class="menu-button" data-tab="photo" onclick="showTab('photo')">상품 사진</button>
     </div>
 
     <!-- 오른쪽 내용 -->
@@ -48,16 +58,29 @@
             <div id="info" class="tab">
                 <h2>필수 정보</h2>
                 <label for="tourPeriod">여행 기간</label>
-                <input type="text" id="tourPeriod" name="tourPeriod" required>
+                <select id="tourPeriod" name="tourPeriod"></select>
 
                 <label for="tourRegion">여행 지역</label>
-                <input type="text" id="tourRegion" name="tourRegion" required>
+                <select id="tourRegion" name="tourRegion"></select>
 
                 <label for="maximum">최대 인원수</label>
                 <input type="number" id="maximum" name="maximum" required>
 
                 <label for="tourPrice">여행 가격</label>
                 <input type="number" id="tourPrice" name="tourPrice" required>
+
+                <!-- 선택된 가이드 표시 영역 -->
+                <div id="selectedGuidesContainer">
+                    <h4>선택된 가이드</h4>
+                    <p id="selectedGuidesText">선택된 가이드가 없습니다.</p>
+                </div>
+
+                <div class="dropdown">
+                    <label for="guideSelect">가이드 선택</label>
+                    <select id="guideSelect" name="guides" multiple>
+                        <!-- 서버에서 동적으로 옵션 추가 -->
+                    </select>
+                </div>
 
                 <div id="categoryCheckBox">
                     <h3>카테고리 선택</h3>
@@ -69,7 +92,8 @@
                 <h2>상품 사진</h2>
                 <label>이미지 업로드</label><br>
                 <input type="file" name="images" id="tourImages" accept="image/*" multiple>
-                <p>* 최대 n장 업로드 가능</p>
+                <p>* 최대 5장 업로드 가능</p>
+                <p>* 가장 처음 등록된 사진을 썸네일로 사용</p>
                 <!-- 미리보기 영역 -->
                 <div id="previewContainer"></div>
             </div>
@@ -82,113 +106,12 @@
     </div>
 </div>
 <script src="/js/item/getCategory.js"></script>
+<script src="/js/item/getGuideByCompany.js"></script>
 <script src="/js/item/getTourDetail.js"></script>
 <script src="/js/item/validationFormData.js"></script>
 <script src="/js/item/showTabs.js"></script>
 <script src="/js/item/updateTourItem.js"></script>
-<script>
-    const tourImagesInput = document.getElementById('tourImages');
-    const previewContainer = document.getElementById('previewContainer');
-    let selectedImages = []; // 업로드된 파일 배열
-    let existingImages = []; // 서버에서 가져온 기존 이미지 배열
-
-    // 기존 이미지를 설정하는 함수
-    function setExistingImages(images) {
-        existingImages = images;
-        updatePreview();
-    }
-
-    // 파일 입력 이벤트
-    tourImagesInput.addEventListener('change', () => {
-        // 새로운 파일 추가
-        const files = Array.from(tourImagesInput.files);
-
-        // 기존 이미지와 새로 선택된 이미지 처리
-        const newFiles = files.filter(file =>
-            !existingImages.some(existingImage => existingImage.imgName === file.name)
-        );
-
-        // 새로 선택된 이미지만 selectedImages에 추가
-        selectedImages = [...selectedImages, ...newFiles];
-
-        // 중복 제거
-        const uniqueFiles = Array.from(new Set(selectedImages.map(file => file.name)))
-            .map(name => selectedImages.find(file => file.name === name));
-
-        selectedImages = uniqueFiles;
-
-        // 미리보기 갱신
-        updatePreview();
-    });
-
-    // 미리보기 업데이트 함수
-    function updatePreview() {
-        previewContainer.innerHTML = ""; // 기존 미리보기 초기화
-
-        // 기존 이미지 미리보기 추가
-        existingImages.forEach(image => {
-            const imgContainer = document.createElement("div");
-            imgContainer.style.position = "relative";
-
-            const img = document.createElement("img");
-            img.src = image.imgUrl;
-            img.alt = image.imgName;
-
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "삭제";
-            deleteButton.className = "remove-image";
-            deleteButton.style.position = "absolute";
-            deleteButton.style.top = "5px";
-            deleteButton.style.right = "5px";
-
-            // 이미지 id를 데이터 속성으로 추가
-            deleteButton.setAttribute("data-image-id", image.id);
-
-            deleteButton.onclick = () => {
-                const imageId = deleteButton.getAttribute("data-image-id");
-                // 삭제 요청 보내기
-                removeImageList.add(parseInt(imageId)); // 삭제 목록에 추가
-                existingImages = existingImages.filter(existingImage => existingImage.id !== Number(imageId));
-                imgContainer.remove(); // 화면에서 삭제
-            };
-
-            imgContainer.appendChild(img);
-            imgContainer.appendChild(deleteButton);
-            previewContainer.appendChild(imgContainer);
-        });
-
-        // 새로 업로드된 파일 미리보기 추가
-        selectedImages.forEach(file => {
-            const imgContainer = document.createElement("div");
-            imgContainer.style.position = "relative";
-
-            const img = document.createElement("img");
-            const reader = new FileReader();
-
-            // FileReader로 파일을 읽어 미리보기 적용
-            reader.onload = () => {
-                img.src = reader.result; // 새로 업로드된 파일
-            };
-            reader.readAsDataURL(file);
-
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "삭제";
-            deleteButton.className = "remove-image";
-            deleteButton.style.position = "absolute";
-            deleteButton.style.top = "5px";
-            deleteButton.style.right = "5px";
-
-            deleteButton.onclick = () => {
-                // 업로드된 파일에서 제거
-                selectedImages = selectedImages.filter(f => f !== file);
-                imgContainer.remove();
-            };
-
-            imgContainer.appendChild(img);
-            imgContainer.appendChild(deleteButton);
-            previewContainer.appendChild(imgContainer);
-        });
-    }
-</script>
+<script src="/js/item/changeActive.js"></script>
+<script src="/js/item/filteringList.js"></script>
 </body>
 </html>

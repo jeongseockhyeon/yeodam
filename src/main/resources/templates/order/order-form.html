@@ -3,101 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>주문 폼</title>
-    <style>
-        .custom-container {
-            width: 70%;
-            height: 95%;
-            background: #F8F8F8;
-            overflow-y: auto;
-            border-radius: 12px;
-            padding: 5%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            justify-content: center;
-            text-align: center;
-            align-items: center
-        }
-
-        .item-title {
-            font-style: italic;
-        }
-
-        .input-field {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .input-field label {
-            flex: 0 0 40%;
-            text-align: left;
-        }
-
-        .input-field input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .input-field textarea {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            resize: none;
-        }
-
-        .section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .back-button {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            padding: 10px 15px;
-            font-size: 30px;
-            font-weight: bold;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .back-button:hover {
-            color: #8c8a8a;
-        }
-
-        #policy {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        #submit-btn {
-            width: 30%;
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff;
-            background-color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #submit-btn:hover {
-            background-color: #8c8a8a;
-        }
-    </style>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../static/css/bootstrap.min.css">
-    <script src="/payment/payment.js"></script>
+    <link rel="stylesheet" href="/css/order-form.css">
+
     <!-- jQuery -->
     <script
             type="text/javascript"
@@ -109,6 +17,8 @@
             type="text/javascript"
             src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"
     ></script>
+    <script src="/js/order/order.js"></script>
+    <script src="/js/payment/payment.js"></script>
 </head>
 <body>
 <div class="custom-container">
@@ -119,10 +29,21 @@
             <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].price}">
             <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].itemId}">
             <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].count}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].guideId}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].startDate}">
+            <input type="hidden" th:field="*{orderRequests[__${requestStat.index}__].endDate}">
 
             <h2 class="text-start item-title" th:text="${request.name}">투어 제목</h2>
+            <div class="text-start mt-3 mb-3">
+                <p>날짜:
+                    <span th:text="${#temporals.format(request.startDate, 'yyyy년 MM월 dd일')}">시작일</span> ~
+                    <span th:text="${#temporals.format(request.endDate, 'yyyy년 MM월 dd일')}">종료일</span>
+                </p>
+            </div>
             <p class="text-start">인원: <span th:text="${request.count} + '명'">2명</span></p>
-            <p class="text-start">비용: <span th:text="${#numbers.formatInteger(request.price, 3, 'COMMA')} + '원'">100원</span></p>
+            <p class="text-start">비용:
+                <span th:text="${#numbers.formatInteger(request.price * request.count, 3, 'COMMA')} + '원'">100원</span>
+            </p>
 
             <!-- 예약자 정보 -->
             <div class="input-field">
@@ -142,7 +63,7 @@
             </div>
         </div>
 
-    <!-- 약관 동의 -->
+        <!-- 약관 동의 -->
         <div id="policy">
             <h5>약관동의</h5>
             <input type="checkbox" id="check1"/>
@@ -151,89 +72,7 @@
             <label for="check2">여담 개인정보 처리 방침에 동의합니다.</label>
         </div>
     </form>
-
     <button id="submit-btn" onclick="submitOrder()">결제하기</button>
 </div>
 </body>
-<script th:inline="javascript">
-
-    const createPaymentURL = "/api/payments?orderUid=";
-    const paymentStatusCheckUrl = "/api/payments/check?orderUid=";
-
-    async function submitOrder() {
-
-        if (!validateCheckBox()) {
-            alert("약관에 동의해주세요");
-            return;
-        }
-
-        const form = document.getElementById('order-form');
-        const data = new FormData(form);
-
-        try {
-            let responseJson = await (await fetch(form.action, {
-                method: "POST",
-                body: data
-            })).json();
-
-            if (responseJson.code === "ITEM_NOT_FOUND") {
-                alert("해당 상품이 존재하지 않습니다.");
-                return;
-            }
-
-            sessionStorage.setItem("orderUid", responseJson.orderUid);
-
-            const paymentData = await (await fetch(createPaymentURL + responseJson.orderUid, {
-                method: "POST",
-            })).json();
-
-
-            var IMP = window.IMP;
-            IMP.init('imp65451236'); // 아임포트 가맹점 식별코드
-
-            requestPay(
-                paymentData.itemName,
-                paymentData.price,
-                paymentData.orderUid,
-                paymentData.username,
-                paymentData.email,
-                paymentData.phone
-            );
-
-        } catch (error) {
-            console.log('에러발생 : ' + error);
-        }
-    }
-
-    function validateCheckBox() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        let allChecked = true;
-
-        checkboxes.forEach((checkbox) => {
-            const label = document.querySelector(`label[for="${checkbox.id}"]`);
-            if (!checkbox.checked) {
-                label.style.color = 'red';
-                allChecked = false;
-            } else {
-                label.style.color = '';
-            }
-        });
-
-        return allChecked;
-    }
-
-    window.addEventListener("load", () => {
-        sessionStorage.removeItem('orderUid');
-    });
-
-    window.addEventListener("beforeunload", () => {
-        if (sessionStorage.getItem("orderUid")) {
-            let orderUid = sessionStorage.getItem("orderUid");
-            fetch(paymentStatusCheckUrl + orderUid, {
-                    method: "POST"
-                }
-            );
-        }
-    });
-</script>
 </html>
