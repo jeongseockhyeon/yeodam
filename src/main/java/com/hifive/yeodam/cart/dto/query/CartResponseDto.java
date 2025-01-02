@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartResponseDto {
+    private Long cartId;
     private Long itemId;
     private String tourName;
     private String tourRegion;
@@ -22,9 +23,10 @@ public class CartResponseDto {
     private int tourPrice;
     private int maximum;
     private Long guideId;
+    private String guideName;
     private String imgUrl;
+    private boolean reservation;
 
-    //주문 정보
     private int count;
     private String bookerName;
     private String phoneNumber;
@@ -34,6 +36,7 @@ public class CartResponseDto {
 
     public CartResponseDto(Cart cart, CartRequestDto requestDto) {
         if (cart != null) {
+            this.cartId = cart.getId();
             Item item = cart.getItem();
             this.itemId = item.getId();
             this.tourName = item.getItemName();
@@ -44,10 +47,12 @@ public class CartResponseDto {
                 this.tourRegion = tour.getRegion();
                 this.tourPeriod = tour.getPeriod();
                 this.maximum = tour.getMaximum();
+                this.reservation = true;
             }
 
             if (cart.getGuide() != null) {
                 this.guideId = cart.getGuide().getGuideId();
+                this.guideName = cart.getGuide().getName();
             }
 
             this.imgUrl = item.getItemImages().stream()
