@@ -10,6 +10,7 @@ public enum RoleType {
     ADMIN("ROLE_ADMIN"),
     USER("ROLE_USER"),
     SELLER("ROLE_SELLER"),
+    NONE("ROLE_NONE");
     ;
 
     private final String value;

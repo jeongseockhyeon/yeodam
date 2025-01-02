@@ -29,7 +29,7 @@ public class User {
 
     private String phone;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "auth_id")
     private Auth auth;
 

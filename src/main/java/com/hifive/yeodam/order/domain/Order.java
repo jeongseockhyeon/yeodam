@@ -95,4 +95,7 @@ public class Order {
         this.status = status;
     }
 
+    public void updateUser(User user) {
+        this.user = user;
+    }
 }
