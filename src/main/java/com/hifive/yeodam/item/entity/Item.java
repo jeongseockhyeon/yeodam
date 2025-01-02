@@ -78,4 +78,8 @@ public abstract class Item {
         this.stock -= 1;
     }
     public abstract void updateSubItem(String region,String period,Integer maximum);
+
+    public void changeSeller(Seller seller) {
+        this.seller = seller;
+    }
 }

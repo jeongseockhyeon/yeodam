@@ -40,4 +40,8 @@ public class Reservation {
     public int getRemainingDay() {
         return (int) ChronoUnit.DAYS.between(LocalDate.now(), startDate);
     }
+
+    public void changeGuide(Guide guide) {
+        this.guide = guide;
+    }
 }

@@ -4,13 +4,23 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
+import com.hifive.yeodam.inquiry.entity.Inquiry;
+import com.hifive.yeodam.inquiry.repository.InquiryRepository;
+import com.hifive.yeodam.inquiry.service.InquiryService;
+import com.hifive.yeodam.item.service.ItemService;
+import com.hifive.yeodam.reservation.entity.Reservation;
+import com.hifive.yeodam.reservation.repository.ReservationRepository;
 import com.hifive.yeodam.seller.dto.SellerJoinRequest;
 import com.hifive.yeodam.seller.dto.SellerUpdateRequest;
+import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.entity.Seller;
+import com.hifive.yeodam.seller.repository.GuideRepository;
 import com.hifive.yeodam.seller.repository.SellerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -18,6 +28,9 @@ public class SellerService {
 
     private final SellerRepository sellerRepository;
     private final AuthRepository authRepository;
+    private final GuideService guideService;
+    private final InquiryService inquiryService;
+    private final ItemService itemService;
 
     // 판매자 등록
     @Transactional(rollbackFor = CustomException.class)
@@ -66,5 +79,16 @@ public class SellerService {
     // Auth로 판매자 조회
     public Seller getSellerByAuth(Auth auth) {
         return sellerRepository.findByAuthId(auth.getId()).orElseThrow(() -> new IllegalArgumentException("해당 Auth에 연결된 Seller가 없습니다."));
+    }
+
+    // 판매자 관련 컨텐츠 분리
+    public void deleteSellerContent(Auth auth) {
+        Seller seller = sellerRepository.findByAuthId(auth.getId()).orElseThrow(() -> new IllegalArgumentException("해당 Auth에 연결된 Seller가 없습니다."));
+
+        guideService.deleteAllGuides(seller);
+        inquiryService.changeAuth(auth);
+        itemService.changeCompany(seller);
+
+        sellerRepository.delete(seller);
     }
 }
