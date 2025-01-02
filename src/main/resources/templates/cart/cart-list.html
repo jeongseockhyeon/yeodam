@@ -4,8 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>장바구니</title>
-<!--    <meta name="_csrf" th:content="${_csrf.token}"/>-->
-<!--    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>-->
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -288,14 +286,11 @@
         .continue-shopping:hover {
             background-color: #f5f5f5;
         }
-
-
-
     </style>
 </head>
 <body>
     <div class="header-area">
-        <div th:replace="fragments/header :: header"></div>
+        <div th:replace="~{fragments/header :: header}"></div>
     </div>
     <div class="cart-container">
         <div class="cart-left">
@@ -315,41 +310,38 @@
                 <div th:if="${!anonymous}" th:each="cart : ${carts}" class="cart-item">
                     <div class="cart-item-header">
                         <div class="header-left">
-                            <input type="checkbox" class="item-checkbox" th:value="${cart.id}">
-                            <h3 th:text="${cart.item.itemName}" class="item-title"></h3>
+                            <input type="checkbox" class="item-checkbox" th:value="${cart.cartId}">
+                            <h3 th:text="${cart.tourName}" class="item-title"></h3>
                         </div>
-                        <button class="delete-btn" th:onclick="'removeCart(' + ${cart.id} + ')'">x</button>
+                        <button class="delete-btn" th:onclick="'removeCart(' + ${cart.cartId} + ')'">x</button>
                     </div>
                     <div class="item-content">
                         <div class="item-details">
                             <div class="item-image">
-                                <img th:if="${!cart.item.itemImages.empty}"
-                                     th:src="${cart.item.itemImages[0].storePath}"
-                                     th:alt="${cart.item.itemName}"
+                                <img th:if="${cart.imgUrl != null}"
+                                     th:src="${cart.imgUrl}"
+                                     th:alt="${cart.tourName}"
                                      class="product-image">
-                                <div th:if="${cart.item.itemImages.empty}" class="no-image">
-                                    <i class="bi bi-image text-secondary"></i>
-                                </div>
                             </div>
                             <div class="item-info">
-                                <div th:if="${cart.item.reservation}" class="tour-info">
-                                    <p th:text="|지역: ${cart.item.region}|"></p>
-                                    <p th:text="|기간: ${cart.item.period}|"></p>
-                                    <p th:text="|가이드: ${cart.guide != null ? cart.guide.name : '선택된 가이드 없음'}|"></p>
+                                <div th:if="${cart.reservation}" class="tour-info">
+                                    <p th:text="|지역: ${cart.tourRegion}|"></p>
+                                    <p th:text="|기간: ${cart.tourPeriod}|"></p>
+                                    <p th:text="|가이드: ${cart.guideName != null ? cart.guideName : '선택된 가이드 없음'}|"></p>
                                     <p th:if="${cart.startDate != null and cart.endDate != null}"
                                        th:text="|예약일: ${#temporals.format(cart.startDate, 'yyyy-MM-dd')} - ${#temporals.format(cart.endDate, 'yyyy-MM-dd')}|">
                                     </p>
                                 </div>
                             </div>
                             <div>
-                                <div th:if="${!cart.item.reservation}" class="quantity-control">
-                                    <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count - 1} + ')'">-</button>
+                                <div th:if="${!cart.reservation}" class="quantity-control">
+                                    <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.cartId} + ', ' + ${cart.count - 1} + ')'">-</button>
                                     <span th:text="${cart.count}">1</span>
-                                    <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.id} + ', ' + ${cart.count + 1} + ')'">+</button>
+                                    <button class="quantity-btn" th:onclick="'updateCartCount(' + ${cart.cartId} + ', ' + ${cart.count + 1} + ')'">+</button>
                                 </div>
-                                <div th:if="${cart.item.reservation}" class="badge-reserved">예약상품</div>
+                                <div th:if="${cart.reservation}" class="badge-reserved">예약상품</div>
                             </div>
-                            <div class="price" th:text="|₩${#numbers.formatInteger(cart.price, 0, 'COMMA')}|"></div>
+                            <div class="price" th:text="|₩${#numbers.formatInteger(cart.tourPrice, 0, 'COMMA')}|"></div>
                         </div>
                     </div>
                 </div>
@@ -391,6 +383,8 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-    <script src="/js/cart/localCart.js" defer></script>
+    <script th:if="${!anonymous}" src="/js/cart/dbCart.js"></script>
+    <script th:if="${anonymous}" src="/js/cart/localCart.js"></script>
+    <script src="/js/cart/commonCart.js"></script>
 </body>
 </html>
