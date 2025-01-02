@@ -2,6 +2,8 @@ package com.hifive.yeodam;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.entity.RoleType;
+import com.hifive.yeodam.seller.entity.Guide;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.user.entity.User;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
@@ -40,6 +42,18 @@ public class InitData {
                     .build();
 
             em.persist(user);
+
+            Seller seller = Seller.builder()
+                    .companyName("알수없음")
+                    .auth(auth)
+                    .build();
+
+            em.persist(seller);
+
+            Guide guide = Guide.builder()
+                    .name("알수없음")
+                    .seller(seller)
+                    .build();
         }
     }
 
