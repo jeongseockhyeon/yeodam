@@ -2,7 +2,7 @@ let isEventListenerAdded = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     if (!isEventListenerAdded) {
-        const addToCartBtn = document.querySelector(".btn-secondary");
+        const addToCartBtn = document.querySelector("#addToCartBtn");
         addToCartBtn.addEventListener("click", async () => {
             await addToCart();
         });
