@@ -93,24 +93,25 @@ function formatLocalDate(date) {
 let calendar;
 
 function fetchAndDisplayReservations(guideId) {
-    // 예약 데이터를 가져오기
     fetch(`/api/tours/${guideId}/reservation`)
         .then(response => response.json())
         .then(reservations => {
+            if (!reservations || reservations.length === 0) {
+                console.warn('예약 데이터가 비어 있습니다.');
+                return;
+            }
             const events = reservations.map(reservation => ({
                 title: '예약 불가',
                 start: reservation.startDate,
-                end: new Date(new Date(reservation.endDate).getTime() + 24 * 60 * 60 * 1000), // FullCalendar는 end 날짜를 포함하지 않으므로 하루 추가
+                end: new Date(new Date(reservation.endDate).getTime() + 24 * 60 * 60 * 1000),
                 backgroundColor: '#dc3545',
                 borderColor: '#dc3545',
-                rendering: 'background', // 배경으로 표시
-                overlap: false, // 다른 이벤트와 겹치지 않음
+                rendering: 'background',
+                overlap: false,
             }));
 
-            // 기존 이벤트 제거
+            // 기존 이벤트 제거 및 새 이벤트 추가
             calendar.getEvents().forEach(event => event.remove());
-
-            // 새 이벤트 추가
             events.forEach(event => calendar.addEvent(event));
         })
         .catch(error => console.error('예약 데이터를 가져오는 중 오류 발생:', error));
@@ -128,12 +129,17 @@ function initializeCalendar(data) {
             const selectedEndDate = new Date(selectedStartDate);
             selectedEndDate.setDate(selectedStartDate.getDate() + days - 1);
 
-            // 예약 선택 가능 여부 확인
-            const isUnavailable = calendar.getEvents().some(event =>
-                event.rendering === 'background' &&
-                event.start <= selectedEndDate &&
-                event.end >= selectedStartDate
-            );
+            // 예약 불가 여부 확인
+            const isUnavailable = calendar.getEvents().some(event => {
+                const eventStart = new Date(event.start);
+                const eventEnd = new Date(event.end);
+                return (
+                    (selectedStartDate >= eventStart && selectedStartDate < eventEnd) || // 시작 날짜 겹침
+                    (selectedEndDate >= eventStart && selectedEndDate < eventEnd) ||    // 종료 날짜 겹침
+                    (selectedStartDate <= eventStart && selectedEndDate >= eventEnd)   // 전체 포함
+                );
+            });
+
             if (isUnavailable) {
                 alert('선택한 날짜에 예약이 불가능합니다.');
                 return;

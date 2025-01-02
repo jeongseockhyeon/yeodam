@@ -31,11 +31,8 @@ function handleReserveButtonClick() {
     // 상품 ID 가져오기
     const itemId = getTourItemIdFromUrl();
 
-    // URL 구성 (상품 이름과 가이드 ID를 포함)
-    const url = `/order-test?itemId=${itemId}&name=${encodeURIComponent(tourName)}&guideId=${encodeURIComponent(selectedGuideId)}&startDate=${startDate}&endDate=${endDate}&tourPrice=${tourPrice}&count=${count}`;
-
     // 예약하기 버튼 클릭 시 해당 URL로 이동
-    window.location.href = url;
+    window.location.href = `/order-test?itemId=${itemId}&name=${encodeURIComponent(tourName)}&guideId=${encodeURIComponent(selectedGuideId)}&startDate=${startDate}&endDate=${endDate}&tourPrice=${tourPrice}&count=${count}`;
 }
 
 // 예약하기 버튼에 클릭 이벤트 등록
