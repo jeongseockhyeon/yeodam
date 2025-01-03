@@ -1,6 +1,7 @@
 package com.hifive.yeodam.cart.controller;
 
 import com.hifive.yeodam.cart.dto.query.CartResponseDto;
+import com.hifive.yeodam.cart.dto.query.CartTotalPriceDto;
 import com.hifive.yeodam.cart.service.CartCommandService;
 import com.hifive.yeodam.cart.service.CartQueryService;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
@@ -59,14 +60,13 @@ public class CartViewController {
 
     @GetMapping("/selected-price")
     @ResponseBody
-    public int selectedPrice(@RequestParam List<Long> cartIds) {
+    public CartTotalPriceDto selectedPrice(@RequestParam List<Long> cartIds) {
         if (isAnonymous()) {
-            return 0;
+            return CartTotalPriceDto.builder()
+                    .tourPrice(0)
+                    .build();
         }
-        List<CartResponseDto> cartList = cartQueryService.getSelectedCarts(cartIds);
-        return cartList.stream()
-                .mapToInt(CartResponseDto::getTourPrice)
-                .sum();
+        return cartQueryService.calculateSelectedTotal(cartIds);
     }
 
     //장바구니 - 주문 페이지 연결
