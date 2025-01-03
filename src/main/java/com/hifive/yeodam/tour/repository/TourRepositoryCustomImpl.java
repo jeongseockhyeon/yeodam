@@ -8,6 +8,7 @@ import com.hifive.yeodam.tour.entity.QTourCategory;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -24,15 +25,17 @@ import static org.springframework.util.StringUtils.hasText;
 public class TourRepositoryCustomImpl implements TourRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
+    QTour tour = QTour.tour;
+    QTourCategory tourCategory = QTourCategory.tourCategory;
+    QCategory category = QCategory.category;
+
     @Override
     public Slice<Tour> searchByFilterAndActive(SearchFilterDto searchFilterDto) {
 
         Long cursorId = searchFilterDto.getCursorId();
         int pageSize = searchFilterDto.getPageSize();
 
-        QTour tour = QTour.tour;
-        QTourCategory tourCategory = QTourCategory.tourCategory;
-        QCategory category = QCategory.category;
+
 
         BooleanBuilder builder = new BooleanBuilder();
         if (searchFilterDto.getCategories() != null && !searchFilterDto.getCategories().isEmpty()) {
@@ -53,48 +56,19 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (searchFilterDto.getMaxPrice() != null) {
             builder.and(tour.price.loe(Integer.parseInt(searchFilterDto.getMaxPrice())));
         }
-
+        NumberPath<Integer> pricePath = tour.price;
+        NumberPath<Double> ratePath = tour.rate;
         Integer cursorPrice = searchFilterDto.getCursorPrice();
+        Double cursorRate = searchFilterDto.getCursorRate();
         //정렬 조건
         OrderSpecifier<?> sortOrder = null;
-        // id 순 정렬
-        if(searchFilterDto.getSortBy() == null){
-            sortOrder = tour.id.desc();
+        if ("price".equals(searchFilterDto.getSortBy())) {
+            sortOrder = setSortOrderAndConditions(builder, pricePath, cursorPrice, searchFilterDto.getCursorId(), searchFilterDto.getOrder());
+        } else if ("rate".equals(searchFilterDto.getSortBy())) {
+            sortOrder = setSortOrderAndConditions(builder, ratePath, cursorRate, searchFilterDto.getCursorId(), searchFilterDto.getOrder());
         } else {
-            //가격 순 정렬 오름차순
-            if ("asc".equals(searchFilterDto.getOrder())) {
-                sortOrder = tour.price.asc();
-                // 동일 가격 id 순 정렬
-                if (cursorPrice != null) {
-                    if (cursorId != null) {
-                        builder.and(
-                                tour.price.gt(cursorPrice)
-                                        .or(tour.price.eq(cursorPrice).and(tour.id.gt(cursorId)))
-                        );
-                    } else {
-                        // cursorId가 없을 때는 price만 비교
-                        builder.and(tour.price.gt(cursorPrice));
-                    }
-                }
-                //가격 순 정렬 내림차순
-            } else {
-                // 동일 가격 id 순 정렬
-                sortOrder = tour.price.desc();
-                if (cursorPrice != null) {
-                    if (cursorId != null) {
-                        builder.and(
-                                tour.price.lt(cursorPrice)
-                                        .or(tour.price.eq(cursorPrice).and(tour.id.lt(cursorId)))
-                        );
-                    } else {
-                        // cursorId가 없을 때는 price만 비교
-                        builder.and(tour.price.lt(cursorPrice));
-                    }
-                }
-            }
+            sortOrder = tour.id.desc();
         }
-
-
 
         List<Tour> results = jpaQueryFactory.select(tour)
                 .from(tour)
@@ -117,7 +91,6 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
 
     @Override
     public Slice<Tour> findBySeller(Long cursorId, int pageSize, Seller targetSeller) {
-        QTour tour = QTour.tour;
         BooleanBuilder builder = new BooleanBuilder();
         if (targetSeller != null) {
             builder.and(tour.seller.eq(targetSeller));
@@ -134,4 +107,35 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         }
         return new SliceImpl<>(result, PageRequest.of(0, pageSize), hasNext);
     }
+
+    public <T extends Number & Comparable<?>> OrderSpecifier<?> setSortOrderAndConditions(
+            BooleanBuilder builder, NumberPath<T> sortField, T cursorValue, Long cursorId, String order) {
+        OrderSpecifier<?> sortOrder;
+        if ("asc".equals(order)) {
+            sortOrder = sortField.asc();
+            if (cursorValue != null) {
+                if (cursorId != null) {
+                    builder.and(
+                            sortField.gt(cursorValue)
+                                    .or(sortField.eq(cursorValue).and(tour.id.gt(cursorId)))
+                    );
+                } else {
+                    builder.and(sortField.gt(cursorValue));
+                }
+            }
+        } else {
+            sortOrder = sortField.desc();
+            if (cursorValue != null) {
+                if (cursorId != null) {
+                    builder.and(
+                            sortField.lt(cursorValue)
+                                    .or(sortField.eq(cursorValue).and(tour.id.lt(cursorId)))
+                    );
+                } else {
+                    builder.and(sortField.lt(cursorValue));
+                }
+            }
+        }
+        return sortOrder;
+        }
 }

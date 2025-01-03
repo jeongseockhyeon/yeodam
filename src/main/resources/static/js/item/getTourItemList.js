@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isFetching = false; // 중복 요청 방지
     let cursorId = null; // 현재 커서 ID
     let cursorPrice = null;
+    let cursorRate = null;
     const tourList = document.getElementById("tourList");
 
     const params = new URLSearchParams(window.location.search);
@@ -60,6 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // 정렬 방식에 따라 커서 설정
         if (sortBy === "price" && cursorPrice !== null) {
             params.append("cursorPrice", cursorPrice);
+        } else if(sortBy === "rate" && cursorRate !== null){
+            params.append("cursorRate", cursorRate);
         } else if (cursorId !== null) {
             params.append("cursorId", cursorId);
         }
@@ -73,9 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     // 정렬 방식에 따라 커서 업데이트
                     if (sortBy === "price") {
                         cursorPrice = data.content[data.content.length - 1].tourPrice; // 마지막 요소의 가격 저장
+                    } else if (sortBy === "rate") {
+                        cursorRate = data.content[data.content.length - 1].rate; //마지막 요소의 평점 저장
                     }
                     cursorId = data.content[data.content.length - 1].id; // 마지막 요소의 ID 저장
-                } else {
+                }
+                else {
                     // 더 이상 데이터가 없으면 이벤트 제거
                     window.removeEventListener("scroll", handleScroll);
                 }
