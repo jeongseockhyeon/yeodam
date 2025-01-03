@@ -1,14 +1,11 @@
 package com.hifive.yeodam.cart.controller;
 
-import com.hifive.yeodam.cart.dto.query.CartTotalPriceDto;
-import com.hifive.yeodam.cart.entity.Cart;
+import com.hifive.yeodam.cart.dto.query.CartResponseDto;
 import com.hifive.yeodam.cart.service.CartCommandService;
 import com.hifive.yeodam.cart.service.CartQueryService;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
-import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
-import com.hifive.yeodam.seller.entity.Guide;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -16,13 +13,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -45,10 +39,13 @@ public class CartViewController {
             log.info("로그인 상태: {}", !anonymous);
 
             if (!anonymous){
-                List<Cart> cartList = cartQueryService.getCartList();
+                List<CartResponseDto> cartList = cartQueryService.getCarts();
                 log.info("장바구니 목록 조회 결과: {}", cartList != null ? cartList.size() : "null");
 
-                CartTotalPriceDto totalPrice = cartQueryService.getTotalPrice();
+                int totalPrice = cartList.stream()
+                        .mapToInt(CartResponseDto::getTourPrice)
+                        .sum();
+
                 model.addAttribute("carts", cartList);
                 model.addAttribute("totalPrice", totalPrice);
             }
@@ -61,15 +58,15 @@ public class CartViewController {
     }
 
     @GetMapping("/selected-price")
-    public String selectedPrice(@RequestParam List<Long> cartIds, Model model) {
-        boolean anonymous = isAnonymous();
-
-        if (!anonymous){
-            CartTotalPriceDto selectedPrice = cartQueryService.getSelectedPrice(cartIds);
-            model.addAttribute("selectedPrice", selectedPrice);
+    @ResponseBody
+    public int selectedPrice(@RequestParam List<Long> cartIds) {
+        if (isAnonymous()) {
+            return 0;
         }
-        model.addAttribute("anonymous", anonymous);
-        return "cart/selectedPrice";
+        List<CartResponseDto> cartList = cartQueryService.getSelectedCarts(cartIds);
+        return cartList.stream()
+                .mapToInt(CartResponseDto::getTourPrice)
+                .sum();
     }
 
     //장바구니 - 주문 페이지 연결
@@ -81,24 +78,10 @@ public class CartViewController {
         }
 
         // 선택 상품 주문 dto 변환
-        List<Cart> selectedCarts = cartQueryService.findByCartIds(cartIds);
+        List<CartResponseDto> selectedCarts = cartQueryService.getSelectedCarts(cartIds);
         List<AddOrderRequest.orderRequest> orderRequests = selectedCarts.stream()
-                .map(cart -> {
-                    Item item = cart.getItem();
-                    return AddOrderRequest.orderRequest.builder()
-                            .itemId(item.getId())
-                            .name(item.getItemName())
-                            .count(cart.getCount())
-                            .price(item.getPrice())
-                            .bookerName("")
-                            .phoneNumber("")
-                            .orderMessage("")
-                            .guideId(Optional.ofNullable(cart.getGuide()).map(Guide::getGuideId).orElse(null))
-                            .startDate(cart.getStartDate())
-                            .endDate(cart.getEndDate())
-                            .build();
-                })
-                .toList();
+                .map(cart -> cart.toOrderRequest())
+                .collect(Collectors.toList());
 
         AddOrderRequest addOrderRequest = new AddOrderRequest(orderRequests);
         model.addAttribute("addOrderRequest", addOrderRequest);
