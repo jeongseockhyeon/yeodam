@@ -8,6 +8,7 @@ import com.hifive.yeodam.tour.entity.QTourCategory;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -24,12 +25,17 @@ import static org.springframework.util.StringUtils.hasText;
 public class TourRepositoryCustomImpl implements TourRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
-    @Override
-    public Slice<Tour> searchByFilterAndActive(Long cursorId, int pageSize, SearchFilterDto searchFilterDto) {
+    QTour tour = QTour.tour;
+    QTourCategory tourCategory = QTourCategory.tourCategory;
+    QCategory category = QCategory.category;
 
-        QTour tour = QTour.tour;
-        QTourCategory tourCategory = QTourCategory.tourCategory;
-        QCategory category = QCategory.category;
+    @Override
+    public Slice<Tour> searchByFilterAndActive(SearchFilterDto searchFilterDto) {
+
+        Long cursorId = searchFilterDto.getCursorId();
+        int pageSize = searchFilterDto.getPageSize();
+
+
 
         BooleanBuilder builder = new BooleanBuilder();
         if (searchFilterDto.getCategories() != null && !searchFilterDto.getCategories().isEmpty()) {
@@ -50,22 +56,19 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (searchFilterDto.getMaxPrice() != null) {
             builder.and(tour.price.loe(Integer.parseInt(searchFilterDto.getMaxPrice())));
         }
-
+        NumberPath<Integer> pricePath = tour.price;
+        NumberPath<Double> ratePath = tour.rate;
+        Integer cursorPrice = searchFilterDto.getCursorPrice();
+        Double cursorRate = searchFilterDto.getCursorRate();
         //정렬 조건
         OrderSpecifier<?> sortOrder = null;
-        if(searchFilterDto.getSortBy() == null){
-            sortOrder = tour.id.desc();
+        if ("price".equals(searchFilterDto.getSortBy())) {
+            sortOrder = setSortOrderAndConditions(builder, pricePath, cursorPrice, searchFilterDto.getCursorId(), searchFilterDto.getOrder());
+        } else if ("rate".equals(searchFilterDto.getSortBy())) {
+            sortOrder = setSortOrderAndConditions(builder, ratePath, cursorRate, searchFilterDto.getCursorId(), searchFilterDto.getOrder());
         } else {
-            if ("price".equals(searchFilterDto.getSortBy())) {
-                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.price.asc() : tour.price.desc();
-            }/*else if ("rating".equals(searchFilterDto.getSortBy())) {
-                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.rating.asc() : tour.rating.desc();
-            } else if ("reviews".equals(searchFilterDto.getSortBy())) {
-                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.reviews.asc() : tour.reviews.desc();
-            }*/
+            sortOrder = tour.id.desc();
         }
-
-
 
         List<Tour> results = jpaQueryFactory.select(tour)
                 .from(tour)
@@ -88,7 +91,6 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
 
     @Override
     public Slice<Tour> findBySeller(Long cursorId, int pageSize, Seller targetSeller) {
-        QTour tour = QTour.tour;
         BooleanBuilder builder = new BooleanBuilder();
         if (targetSeller != null) {
             builder.and(tour.seller.eq(targetSeller));
@@ -105,4 +107,35 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         }
         return new SliceImpl<>(result, PageRequest.of(0, pageSize), hasNext);
     }
+
+    public <T extends Number & Comparable<?>> OrderSpecifier<?> setSortOrderAndConditions(
+            BooleanBuilder builder, NumberPath<T> sortField, T cursorValue, Long cursorId, String order) {
+        OrderSpecifier<?> sortOrder;
+        if ("asc".equals(order)) {
+            sortOrder = sortField.asc();
+            if (cursorValue != null) {
+                if (cursorId != null) {
+                    builder.and(
+                            sortField.gt(cursorValue)
+                                    .or(sortField.eq(cursorValue).and(tour.id.gt(cursorId)))
+                    );
+                } else {
+                    builder.and(sortField.gt(cursorValue));
+                }
+            }
+        } else {
+            sortOrder = sortField.desc();
+            if (cursorValue != null) {
+                if (cursorId != null) {
+                    builder.and(
+                            sortField.lt(cursorValue)
+                                    .or(sortField.eq(cursorValue).and(tour.id.lt(cursorId)))
+                    );
+                } else {
+                    builder.and(sortField.lt(cursorValue));
+                }
+            }
+        }
+        return sortOrder;
+        }
 }
