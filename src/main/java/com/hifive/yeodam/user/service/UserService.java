@@ -125,7 +125,7 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         // 장바구니 삭제
-        List<Cart> deleteCarts = cartRepository.findByUserId(deleteUser.getId());
+        List<Cart> deleteCarts = cartRepository.findByAuthWithItemsAndImages(auth);
         cartRepository.deleteAll(deleteCarts);
 
         // 리뷰 삭제, 리뷰 이미지는 자동 삭제
