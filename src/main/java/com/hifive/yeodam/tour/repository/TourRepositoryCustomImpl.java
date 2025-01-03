@@ -54,13 +54,43 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
             builder.and(tour.price.loe(Integer.parseInt(searchFilterDto.getMaxPrice())));
         }
 
+        Integer cursorPrice = searchFilterDto.getCursorPrice();
         //정렬 조건
         OrderSpecifier<?> sortOrder = null;
+        // id 순 정렬
         if(searchFilterDto.getSortBy() == null){
             sortOrder = tour.id.desc();
         } else {
-            if ("price".equals(searchFilterDto.getSortBy())) {
-                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.price.asc() : tour.price.desc();
+            //가격 순 정렬 오름차순
+            if ("asc".equals(searchFilterDto.getOrder())) {
+                sortOrder = tour.price.asc();
+                // 동일 가격 id 순 정렬
+                if (cursorPrice != null) {
+                    if (cursorId != null) {
+                        builder.and(
+                                tour.price.gt(cursorPrice)
+                                        .or(tour.price.eq(cursorPrice).and(tour.id.gt(cursorId)))
+                        );
+                    } else {
+                        // cursorId가 없을 때는 price만 비교
+                        builder.and(tour.price.gt(cursorPrice));
+                    }
+                }
+                //가격 순 정렬 내림차순
+            } else {
+                // 동일 가격 id 순 정렬
+                sortOrder = tour.price.desc();
+                if (cursorPrice != null) {
+                    if (cursorId != null) {
+                        builder.and(
+                                tour.price.lt(cursorPrice)
+                                        .or(tour.price.eq(cursorPrice).and(tour.id.lt(cursorId)))
+                        );
+                    } else {
+                        // cursorId가 없을 때는 price만 비교
+                        builder.and(tour.price.lt(cursorPrice));
+                    }
+                }
             }
         }
 

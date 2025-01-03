@@ -16,7 +16,7 @@ public class SearchFilterDto {
 
     /*정렬 및 페이지네이션 파라미터*/
     private final Long cursorId;
-    private final int cursorPrice;
+    private final Integer cursorPrice;
     private final int pageSize;
     private final String sortBy;
     private final String order;
@@ -30,7 +30,7 @@ public class SearchFilterDto {
                            String sortBy,
                            String order,
                            Long cursorId,
-                           int cursorPrice,
+                           Integer cursorPrice,
                            int pageSize) {
 
         this.categories = categories;

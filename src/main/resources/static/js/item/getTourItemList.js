@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     let isFetching = false; // 중복 요청 방지
     let cursorId = null; // 현재 커서 ID
+    let cursorPrice = null;
     const tourList = document.getElementById("tourList");
 
     const params = new URLSearchParams(window.location.search);
@@ -15,11 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (reset) {
             tourList.innerHTML = ""; // 기존 데이터 비우기
             cursorId = null; // 커서 초기화
+            cursorPrice = null; // 가격 커서 초기화
         }
 
         const params = new URLSearchParams();
-        if (cursorId) params.append("cursorId", cursorId);
-        params.append("pageSize", 10); // 한 페이지에 가져올 데이터 수 (예: 10)
+        params.append("pageSize", 6); // 한 페이지에 가져올 데이터 수
 
         // 검색어를 표시하거나 유지
         const searchInput = document.querySelector('input[name="keyword"]');
@@ -27,23 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
             searchInput.value = keyword;
         }
 
-        if(keyword) params.append("keyword",keyword)
+        if (keyword) params.append("keyword", keyword);
 
-        // 로컬 스토리지에서 필터 값 가져오기
-        const regionParam = localStorage.getItem("selectedRegion");
-        const themeParam = localStorage.getItem("selectedThemes");
-        const periodParam = localStorage.getItem("selectedPeriod");
-
-        if (regionParam) params.append("region", regionParam);
-        if (themeParam) params.append("categories", themeParam);
-        if (periodParam) params.append("period", periodParam);
-
-        // 로컬스토리지에서 가져온 값을 삭제
-        localStorage.removeItem("selectedRegion");
-        localStorage.removeItem("selectedThemes");
-        localStorage.removeItem("selectedPeriod");
-
-        // 카테고리 필터
+        // 필터 조건 추가
         const selectedCategories = [];
         const checkboxes = document.querySelectorAll("#categoryCheckBox input[type='checkbox']:checked");
         checkboxes.forEach((checkbox) => {
@@ -52,15 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (selectedCategories.length > 0) params.append("categories", selectedCategories.join(","));
 
-        // 기간 필터
         const period = document.getElementById("tourPeriod").value;
         if (period) params.append("period", period);
 
-        // 지역 필터
         const region = document.getElementById("tourRegion").value;
         if (region) params.append("region", region);
 
-        // 가격 필터
         const minPrice = document.getElementById("minPrice").value;
         const maxPrice = document.getElementById("maxPrice").value;
         if (minPrice || maxPrice) {
@@ -68,11 +52,17 @@ document.addEventListener("DOMContentLoaded", () => {
             params.append("maxPrice", maxPrice || 9999999);
         }
 
-        // 정렬 기준 및 순서
         const sortBy = document.querySelector("#sortBy").value;
         const order = document.querySelector("#sortOrder").value;
         if (sortBy) params.append("sortBy", sortBy);
         if (order) params.append("order", order);
+
+        // 정렬 방식에 따라 커서 설정
+        if (sortBy === "price" && cursorPrice !== null) {
+            params.append("cursorPrice", cursorPrice);
+        } else if (cursorId !== null) {
+            params.append("cursorId", cursorId);
+        }
 
         fetch(`/api/tours?${params.toString()}`)
             .then((response) => response.json())
@@ -80,6 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderTours(data.content);
 
                 if (data.content.length > 0) {
+                    // 정렬 방식에 따라 커서 업데이트
+                    if (sortBy === "price") {
+                        cursorPrice = data.content[data.content.length - 1].tourPrice; // 마지막 요소의 가격 저장
+                    }
                     cursorId = data.content[data.content.length - 1].id; // 마지막 요소의 ID 저장
                 } else {
                     // 더 이상 데이터가 없으면 이벤트 제거
