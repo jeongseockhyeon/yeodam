@@ -321,7 +321,11 @@
                                 <img th:if="${cart.imgUrl != null}"
                                      th:src="${cart.imgUrl}"
                                      th:alt="${cart.tourName}"
-                                     class="product-image">
+                                     class="product-image"
+                                     onerror="this.onerror=null; this.classList.add('no-image'); this.parentElement.innerHTML='<i class=\'bi bi-image text-secondary\'></i>'">
+                                <div th:unless="${cart.imgUrl != null}" class="no-image">
+                                    <i class="bi bi-image text-secondary"></i>
+                                </div>
                             </div>
                             <div class="item-info">
                                 <div th:if="${cart.reservation}" class="tour-info">
