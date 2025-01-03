@@ -25,7 +25,10 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<Tour> searchByFilterAndActive(Long cursorId, int pageSize, SearchFilterDto searchFilterDto) {
+    public Slice<Tour> searchByFilterAndActive(SearchFilterDto searchFilterDto) {
+
+        Long cursorId = searchFilterDto.getCursorId();
+        int pageSize = searchFilterDto.getPageSize();
 
         QTour tour = QTour.tour;
         QTourCategory tourCategory = QTourCategory.tourCategory;
@@ -58,11 +61,7 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         } else {
             if ("price".equals(searchFilterDto.getSortBy())) {
                 sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.price.asc() : tour.price.desc();
-            }/*else if ("rating".equals(searchFilterDto.getSortBy())) {
-                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.rating.asc() : tour.rating.desc();
-            } else if ("reviews".equals(searchFilterDto.getSortBy())) {
-                sortOrder = "asc".equals(searchFilterDto.getOrder()) ? tour.reviews.asc() : tour.reviews.desc();
-            }*/
+            }
         }
 
 

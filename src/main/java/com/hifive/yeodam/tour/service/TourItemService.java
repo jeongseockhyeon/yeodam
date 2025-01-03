@@ -117,8 +117,8 @@ public class TourItemService {
 
     /*필터링 적용, 커서 페이지네이션 조회*/
     @Transactional(readOnly = true)
-    public Slice<TourItemResDto> getSearchFilterTour(Long cursorId, int pageSize, SearchFilterDto searchFilterDto) {
-        Slice<Tour> filterTours = tourRepository.searchByFilterAndActive(cursorId, pageSize, searchFilterDto);
+    public Slice<TourItemResDto> getSearchFilterTour(SearchFilterDto searchFilterDto) {
+        Slice<Tour> filterTours = tourRepository.searchByFilterAndActive(searchFilterDto);
         List<TourItemResDto> tourItemResDtoList = filterTours.getContent().stream()
                 .map(TourItemResDto::new)
                 .toList();

@@ -6,6 +6,6 @@ import com.hifive.yeodam.tour.entity.Tour;
 import org.springframework.data.domain.Slice;
 
 public  interface TourRepositoryCustom {
-    Slice<Tour> searchByFilterAndActive(Long cursorId, int pageSize, SearchFilterDto searchFilterDto);
+    Slice<Tour> searchByFilterAndActive(SearchFilterDto searchFilterDto);
     Slice<Tour> findBySeller(Long cursorId, int pageSize,Seller seller);
 }

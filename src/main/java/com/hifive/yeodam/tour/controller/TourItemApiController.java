@@ -28,10 +28,8 @@ public class TourItemApiController {
 
     /*여행 상품 조회 + 필터링*/
     @GetMapping
-    public ResponseEntity<Slice<TourItemResDto>> findAll(@RequestParam(required = false) Long cursorId,
-                                                         @RequestParam int pageSize,
-                                                         @ModelAttribute SearchFilterDto searchFilterDto) {
-        return ResponseEntity.ok(tourItemService.getSearchFilterTour(cursorId, pageSize, searchFilterDto));
+    public ResponseEntity<Slice<TourItemResDto>> findAll(@ModelAttribute SearchFilterDto searchFilterDto) {
+        return ResponseEntity.ok(tourItemService.getSearchFilterTour(searchFilterDto));
     }
 
     /*업체별 여행 상품 조회*/
