@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -58,9 +59,11 @@
                 <div th:text="${#authentication.principal.Username}" class="mt-1 text-secondary">이메일</div>
             </div>
         </div>
-        <div class="d-flex align-items-center">
-            <button type="button" id="cancelDeleteBtn" class="btn btn-outline-success mx-3">계정 복구</button>
-        </div>
+        <th:block sec:authorize="${#authentication.principal.expirationDate != null}">
+            <div class="d-flex align-items-center" >
+                <button type="button" id="cancelDeleteBtn" class="btn btn-outline-success mx-3" data-bs-toggle="modal" data-bs-target="#recoverModal">계정 복구</button>
+            </div>
+        </th:block>
     </div>
     <div class="custom-links">
         <div class="link-box"><a href="/orders" class="text-decoration-none">예약 내역 확인</a></div>
@@ -68,9 +71,12 @@
         <div class="link-box"><a href="/inquiries/user" class="text-decoration-none">문의 내역</a></div>
         <div class="link-box"><a href="/users/edit" class="text-decoration-none">수정하기</a></div>
     </div>
-    <div class="d-flex justify-content-center mt-3">
-        <button type="button" id="showDeleteBtn" class="btn btn-link text-muted p-0" data-bs-toggle="modal" data-bs-target="#exampleModal">계정 탈퇴</button>
-    </div>
+
+    <th:block sec:authorize="${#authentication.principal.expirationDate == null}">
+        <div class="d-flex justify-content-center mt-3" >
+            <button type="button" class="btn btn-link text-muted p-0" data-bs-toggle="modal" data-bs-target="#exampleModal">계정 탈퇴</button>
+        </div>
+    </th:block>
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -97,8 +103,26 @@
         </div>
     </div>
 
+    <!-- Recover Modal -->
+    <div class="modal fade" id="recoverModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="recoverModalLabel">복구 성공</h1>
+                </div>
+                <div class="modal-body">
+                    계정을 <b>복구</b>하였습니다.
+                    <br>
+                    다시 로그인해주세요.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script src="/js/bootstrap.min.js"></script>
-<script src="/js/auth/showBtn.js"></script>
 <script src="/js/auth/deleteAuth.js"></script>
 <script src="/js/auth/cancelDeleteAuth.js"></script>
 

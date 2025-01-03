@@ -23,6 +23,8 @@ public class AuthApiController {
 
     private final AuthService authService;
 
+    private static final LocalDate deleteDate = LocalDate.now().plusDays(30);
+
     @PostMapping("/email-check")
     public ResponseEntity<Void> emailCheck(@RequestBody String userEmail) {
 
@@ -36,21 +38,12 @@ public class AuthApiController {
     }
 
     @PostMapping("/expiration")
-    public ResponseEntity<Void> addExpirationDate(@RequestBody LocalDate expiredDate, @AuthenticationPrincipal Auth auth) {
+    public ResponseEntity<Void> addExpirationDate(@AuthenticationPrincipal Auth auth) {
 
-        authService.updateExpiration(auth, expiredDate);
-        log.info("인증 만료 날짜 설정: {}", expiredDate);
+        authService.updateExpiration(auth, deleteDate);
+        log.info("인증 만료 날짜 설정: {}", deleteDate);
 
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    @GetMapping("/expiration")
-    public ResponseEntity<Boolean> isExpired(@AuthenticationPrincipal Auth auth) {
-
-        boolean isExpired = authService.checkExpired(auth);
-        log.info("탈퇴 상태: {}", isExpired);
-
-        return ResponseEntity.ok(isExpired);
     }
 
     @PutMapping("/expiration")
@@ -64,9 +57,6 @@ public class AuthApiController {
 
     @GetMapping("/get-date")
     public ResponseEntity<Map<String,Integer>> getExpirationDate() {
-
-        LocalDate now = LocalDate.now();
-        LocalDate deleteDate = now.plusDays(30);
 
         Map<String, Integer> deleteDateValues = new HashMap<>();
         deleteDateValues.put("year", deleteDate.getYear());
