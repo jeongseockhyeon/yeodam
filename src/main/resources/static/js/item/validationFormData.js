@@ -8,7 +8,7 @@ function validationFormData() {
         const fieldId = requiredFields[i];
         const field = document.getElementById(fieldId);
         if (!field.value.trim()) {
-            displayValidationError(field, `"${koFieldName[i]}"를 입력해주세요.`);
+            displayValidationError(field, `${koFieldName[i]}를 입력해주세요.`);
             hasError = true;
         }
     }
