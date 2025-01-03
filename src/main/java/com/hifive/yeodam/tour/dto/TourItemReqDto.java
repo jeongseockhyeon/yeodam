@@ -29,10 +29,12 @@ public class TourItemReqDto {
     @Size(max = 25)
     private final String tourRegion;
 
-    @NotNull(message = "가격을 입력해주세요.")
+    @NotBlank(message = "가격을 입력해주세요.")
+    @Size(max = 25)
     private final String tourPrice;
 
-    @NotNull(message = "최대 인원을 입력해주세요.")
+    @NotBlank(message = "최대 인원을 입력해주세요.")
+    @Size(max = 25)
     private final String maximum;
 
     @NotNull(message="테마를 1개 이상 선택해주세요.")

@@ -249,6 +249,8 @@ public class TourItemService {
                 .toList();
     }
 
+    public boolean checkDuplicateGuide(Long id){return tourGuideRepository.existsById(id);}
+
     //formData로 인해 문자열로 들어오는 id들을 리스트 List<Long>으로 변환
     public List<Long> convertToList(String arg) {
         if (arg == null || arg.trim().equals("[]")) {

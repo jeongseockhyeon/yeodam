@@ -129,17 +129,54 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "POST",
             body: formData,
         })
-            .then(response => {
-                if (!response.ok) throw new Error("HTTP error " + response.status);
+            .then(async response => {
+                if (!response.ok) {
+                    throw await response.json(); // 에러 메시지 JSON 객체 반환
+                }
                 return response.json();
             })
             .then(data => {
                 alert("상품이 성공적으로 등록되었습니다!");
                 window.location.href = "/item/manage";
             })
-            .catch(error => {
-                alert("등록 중 오류가 발생했습니다.");
-                console.error("Error:", error);
+            .catch(errorMessages => {
+                // 에러 메시지가 객체 형태인지 확인
+                if (errorMessages && typeof errorMessages === "object") {
+                    // 기존 에러 메시지 초기화
+                    document.querySelectorAll(".error-message").forEach(el => el.remove());
+
+                    // 에러 메시지 동적 표시 로직
+                    Object.entries(errorMessages).forEach(([field, errorMessage]) => {
+                        const inputField = document.querySelector(`[name="${field}"], #${field}`);
+                        if (inputField) {
+                            const errorElement = document.createElement("p");
+
+                            // 에러 메시지 스타일 및 내용 설정
+                            errorElement.textContent = errorMessage;
+                            errorElement.classList.add("error-message");
+                            errorElement.style.color = "red";
+
+                            // 기존 에러 메시지가 있는 경우 제거
+                            const existingError = inputField.nextElementSibling;
+                            if (existingError && existingError.classList.contains("error-message")) {
+                                existingError.remove();
+                            }
+
+                            // 파일 업로드 필드의 경우, 미리보기 영역 아래에 에러 메시지 삽입
+                            if (inputField.type === "file") {
+                                const previewContainer = document.getElementById("previewContainer");
+                                previewContainer.appendChild(errorElement);
+                            } else {
+                                // 필드 바로 아래에 에러 메시지 삽입
+                                inputField.insertAdjacentElement("afterend", errorElement);
+                            }
+                        } else {
+                            console.warn(`Field "${field}" not found in the form.`);
+                        }
+                    });
+                } else {
+                    console.error("Unexpected error response:", errorMessages);
+                }
             });
     });
 });
