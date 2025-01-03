@@ -5,24 +5,41 @@ import com.hifive.yeodam.tour.dto.*;
 import com.hifive.yeodam.tour.service.TourItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/tours")
 @RestController
+@Slf4j
 public class TourItemApiController {
     private final TourItemService tourItemService;
 
     /*여행 상품 등록*/
     @PostMapping
-    public ResponseEntity<TourItemResDto> save(@Valid @ModelAttribute TourItemReqDto tourItemReqDto, @AuthenticationPrincipal Auth auth) {
+    public ResponseEntity<?> save(@Valid @ModelAttribute TourItemReqDto tourItemReqDto,BindingResult result, @AuthenticationPrincipal Auth auth) {
+        if (result.hasErrors()) {
+            Map<String, String> errorMessages = new HashMap<>();
+
+            result.getFieldErrors().forEach(error -> {
+                log.error(error.getDefaultMessage());
+                errorMessages.put(error.getField(), error.getDefaultMessage());
+            });
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(errorMessages);
+        }
         return ResponseEntity.status(CREATED).body(tourItemService.saveTourItem(tourItemReqDto,auth));
     }
 
@@ -63,4 +80,15 @@ public class TourItemApiController {
     public ResponseEntity<List<ReservationInTourResDto>> findReservationByGuide(@PathVariable Long id) {
         return ResponseEntity.ok(tourItemService.findReservationByGuide(id));
     }
+
+    /*여행 상품 등록 시 이미 다른 여행 상품에 등록되어 있는 가이드인지 검사*/
+    @PostMapping("/{id}/guide-check")
+    public ResponseEntity<Void> checkGuide(@PathVariable Long id) {
+        boolean isDuplicatedGuide = tourItemService.checkDuplicateGuide(id);
+        if (isDuplicatedGuide) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
 }
