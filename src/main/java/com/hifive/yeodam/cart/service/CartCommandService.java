@@ -130,6 +130,8 @@ public class CartCommandService {
                     .auth(auth)
                     .item(item)
                     .guide(guide)
+                    .startDate(requestDto.getStartDate())
+                    .endDate(requestDto.getEndDate())
                     .build();
         } else {
             cart = Cart.builder()
@@ -149,13 +151,14 @@ public class CartCommandService {
                         .maximum(item instanceof Tour ? ((Tour) item).getMaximum() : 0)
                         .guideId(savedCart.getGuide() != null ? savedCart.getGuide().getGuideId() : null)
                         .imgUrl(getItemThumbnailUrl(item))
+                        .startDate(requestDto.getStartDate())
+                        .endDate(requestDto.getEndDate())
                         .build())
                 .build();
     }
 
     private String getItemThumbnailUrl(Item item) {
         return item.getItemImages().stream()
-                .filter(ItemImage::isThumbnail)
                 .findFirst()
                 .map(ItemImage::getStorePath)
                 .orElse(null);
