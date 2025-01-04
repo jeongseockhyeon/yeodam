@@ -68,6 +68,7 @@ public class CartQueryService {
                             .tourPeriod(cart.getItem() instanceof Tour ? ((Tour) cart.getItem()).getPeriod() : null)
                             .maximum(cart.getItem() instanceof Tour ? ((Tour) cart.getItem()).getMaximum() : 0)
                             .guideId(cart.getGuide() != null ? cart.getGuide().getGuideId() : null)
+                            .guideName(cart.getGuide() != null ? cart.getGuide().getName() : null) // guideName 추가
                             .imgUrl(cart.getItem().getItemImages().stream()
                                     .findFirst()
                                     .map(ItemImage::getStorePath)

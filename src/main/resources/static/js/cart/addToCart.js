@@ -14,6 +14,22 @@ async function addToCart() {
     try {
         const itemId = parseInt(getTourItemIdFromUrl());
 
+        // 선택된 가이드 정보 가져오기
+        const selectedGuideElement = document.getElementById('selectedGuide');
+        const selectedGuideId = selectedGuideElement.getAttribute('data-guide-id');
+        const selectedGuideName = selectedGuideElement.innerText.replace('선택된 가이드: ', '');
+
+        console.log('장바구니 담기 시도:', {
+            selectedGuideId,
+            selectedGuideName,
+            fullElement: selectedGuideElement.outerHTML
+        });
+
+        if (!selectedGuideId) {
+            alert('가이드를 선택해주세요.');
+            return;
+        }
+
         const tourResponse = await fetch(`/api/tours/${itemId}`);
         const tourDetail = await tourResponse.json();
 
@@ -45,7 +61,8 @@ async function addToCart() {
             tourPeriod: tourDetail.tourPeriod,
             tourPrice: tourDetail.tourPrice,
             maximum: tourDetail.maximum,
-            guideId: tourDetail.guideInTourResDtos[0]?.id || null,
+            guideId: parseInt(selectedGuideId),
+            guideName: selectedGuideName,
             imgUrl: tourDetail.itemImgResDtoList.length > 0
                 ? (tourDetail.itemImgResDtoList.find(img => img.isThumbnail)?.imgUrl || tourDetail.itemImgResDtoList[0].imgUrl)
                 : null,
@@ -60,6 +77,8 @@ async function addToCart() {
 
         if (isLoggedIn) {
             try {
+                console.log('서버로 전송할 cartData:', cartData);
+
                 const response = await fetch('/api/carts', {
                     method: 'POST',
                     headers: {

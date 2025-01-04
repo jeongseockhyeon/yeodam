@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartResponseDto {
@@ -52,7 +51,10 @@ public class CartResponseDto {
                 this.endDate = cart.getEndDate();
             }
 
-            if (cart.getGuide() != null) {
+            if (requestDto != null && requestDto.getGuideId() != null) {
+                this.guideId = requestDto.getGuideId();
+                this.guideName = requestDto.getGuideName();
+            } else if (cart.getGuide() != null) {
                 this.guideId = cart.getGuide().getGuideId();
                 this.guideName = cart.getGuide().getName();
             }
