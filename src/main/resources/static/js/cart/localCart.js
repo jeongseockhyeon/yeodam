@@ -37,7 +37,7 @@ function renderLocalCart(items) {
                     <div class="tour-info">
                         <p>지역: ${item.tourRegion || ''}</p>
                         <p>기간: ${item.tourPeriod || ''}</p>
-                        <p>가이드: ${item.guideId ? '선택됨' : '선택된 가이드 없음'}</p>
+                        <p>가이드: ${item.guideName || '선택된 가이드 없음'}</p>
                         ${item.startDate && item.endDate ?
             `<p>예약일: ${item.startDate} - ${item.endDate}</p>`
             : ''}

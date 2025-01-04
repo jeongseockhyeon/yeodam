@@ -121,10 +121,15 @@ public class CartCommandService {
         if (item instanceof Tour) {
             Tour tour = (Tour) item;
 
-            Guide guide = tour.getTourGuides().stream()
-                    .findFirst()
-                    .map(TourGuide::getGuide)
-                    .orElse(null);
+            // requestDto에서 전달받은 guideId로 해당 가이드 찾기
+            Guide guide = null;
+            if (requestDto.getGuideId() != null) {
+                guide = tour.getTourGuides().stream()
+                        .filter(tg -> tg.getGuide().getGuideId().equals(requestDto.getGuideId()))
+                        .map(TourGuide::getGuide)
+                        .findFirst()
+                        .orElse(null);
+            }
 
             cart = Cart.builder()
                     .auth(auth)

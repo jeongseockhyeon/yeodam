@@ -15,6 +15,7 @@ public class CartRequestDto {
     private int tourPrice;
     private int maximum;
     private Long guideId;
+    private String guideName;
     private String imgUrl;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -22,7 +23,7 @@ public class CartRequestDto {
     @Builder
     public CartRequestDto(Long itemId, String tourName, String tourRegion,
                           String tourPeriod, int tourPrice, int maximum,
-                          Long guideId, String imgUrl,
+                          Long guideId, String guideName, String imgUrl,
                           LocalDate startDate, LocalDate endDate) {
         this.itemId = itemId;
         this.tourName = tourName;
@@ -31,6 +32,7 @@ public class CartRequestDto {
         this.tourPrice = tourPrice;
         this.maximum = maximum;
         this.guideId = guideId;
+        this.guideName = guideName;
         this.imgUrl = imgUrl;
         this.startDate = startDate;
         this.endDate = endDate;

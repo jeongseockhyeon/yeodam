@@ -26,6 +26,7 @@ async function syncLocalCartToServer() {
                 tourPrice: item.tourPrice,
                 maximum: item.maximum,
                 guideId: item.guideId,
+                guideName: item.guideName,
                 imgUrl: item.imgUrl,
                 startDate: item.startDate,
                 endDate: item.endDate
