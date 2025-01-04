@@ -17,34 +17,38 @@ public class WishDto {
     private boolean reservation;
     private String imgUrl;
 
-    public WishDto(Long itemId, String itemName, String description, int price, boolean wished, boolean reservation) {
+    public WishDto(Long itemId, String itemName, String description, int price, boolean wished, boolean reservation, String imgUrl) {
         this.itemId = itemId;
         this.itemName = itemName;
         this.description = description;
         this.price = price;
         this.wished = wished;
         this.reservation = reservation;
+        this.imgUrl = imgUrl;
     }
 
     // 찜 목록 페이지용
     public static WishDto from(Wish wish) {
         Item item = wish.getItem();
-        WishDto wishDto = new WishDto(
+
+        // 이미지 URL 가져오기
+        String imageUrl = null;
+        if (!item.getItemImages().isEmpty()) {
+            imageUrl = item.getItemImages().stream()
+                    .filter(ItemImage::isThumbnail)
+                    .findFirst()
+                    .map(ItemImage::getStorePath)
+                    .orElseGet(() -> item.getItemImages().get(0).getStorePath());
+        }
+
+        return new WishDto(
                 item.getId(),
                 item.getItemName(),
                 item.getDescription(),
                 item.getPrice(),
                 true,
-                item.isReservation()
+                item.isReservation(),
+                imageUrl
         );
-
-        // 썸네일 이미지 URL 설정
-        wishDto.imgUrl = item.getItemImages().stream()
-                .filter(ItemImage::isThumbnail)
-                .findFirst()
-                .map(ItemImage::getStorePath)
-                .orElse(null);
-
-        return wishDto;
     }
 }
