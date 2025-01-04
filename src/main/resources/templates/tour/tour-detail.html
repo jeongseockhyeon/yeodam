@@ -71,8 +71,8 @@
                     <button class="btn btn-primary w-100 mb-1">예약하기</button>
                     <button id="addToCartBtn" class="btn btn-secondary w-100 mb-1">장바구니 담기</button>
                     <button id="inquiryButton" class="btn btn-secondary w-100 mb-1">문의하기</button>
-                    <button id="likeButton" class="btn-like btn btn-outline-danger w-100">
-                        ❤️ 찜하기
+                    <button id="likeButton" class="btn-like btn btn-outline-danger w-100" onclick="toggleWishlist()">
+                        <i class="bi" id="heartIcon"></i> 찜하기
                     </button>
                 </div>
             </div>
@@ -115,5 +115,6 @@
 
 <script src="/js/cart/addToCart.js"></script>
 <script src="/js/inquiry/addInquiry.js"></script>
+<script src="/js/wish/toggleWishlist.js"></script>
 </body>
 </html>
