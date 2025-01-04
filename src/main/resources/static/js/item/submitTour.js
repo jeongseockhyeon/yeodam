@@ -62,9 +62,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 이미지 선택 이벤트
+// 이미지 선택 이벤트
     tourImagesInput.addEventListener("change", () => {
         const files = Array.from(tourImagesInput.files);
+
+        // 업로드된 이미지 수 체크
+        if (selectedImages.length + files.length > 5) {
+            alert("최대 5개의 이미지만 업로드할 수 있습니다.");
+            return;
+        }
+
         selectedImages = [...selectedImages, ...files].filter((file, index, self) =>
             index === self.findIndex(f => f.name === file.name)
         );
