@@ -1,4 +1,3 @@
-
 // 로컬 스토리지 장바구니 초기화
 function initializeLocalCart() {
     if (!isLoggedIn) {
@@ -39,14 +38,19 @@ function renderLocalCart(items) {
                         <p>지역: ${item.tourRegion || ''}</p>
                         <p>기간: ${item.tourPeriod || ''}</p>
                         <p>가이드: ${item.guideId ? '선택됨' : '선택된 가이드 없음'}</p>
+                        ${item.startDate && item.endDate ?
+            `<p>예약일: ${item.startDate} - ${item.endDate}</p>`
+            : ''}
                     </div>
                 </div>
                 <div>
-                    <div class="quantity-control">
+                    ${item.reservation ?
+            `<div class="badge-reserved">예약상품</div>` :
+            `<div class="quantity-control">
                         <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${(item.count || 1) - 1})">-</button>
                         <span>${item.count || 1}</span>
                         <button class="quantity-btn" onclick="updateLocalCount(${item.itemId}, ${(item.count || 1) + 1})">+</button>
-                    </div>
+                    </div>`}
                 </div>
                 <div class="price">₩${(item.tourPrice * (item.count || 1)).toLocaleString()}</div>
             </div>

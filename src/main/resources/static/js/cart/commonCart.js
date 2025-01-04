@@ -26,8 +26,12 @@ async function syncLocalCartToServer() {
                 tourPrice: item.tourPrice,
                 maximum: item.maximum,
                 guideId: item.guideId,
-                imgUrl: item.imgUrl
+                imgUrl: item.imgUrl,
+                startDate: item.startDate,
+                endDate: item.endDate
             }));
+
+            console.log('Sending to server:', cartData);
 
             const response = await fetch('/api/carts/sync', {
                 method: 'POST',
@@ -42,10 +46,25 @@ async function syncLocalCartToServer() {
                 throw new Error(`동기화 실패: ${response.status}`);
             }
 
+            // response.json() 제거하고 텍스트 확인
+            const responseText = await response.text();
+            console.log('Server response text:', responseText);
+
+            // 응답이 있는 경우에만 JSON 파싱 시도
+            if (responseText) {
+                try {
+                    const responseData = JSON.parse(responseText);
+                    console.log('Server response data:', responseData);
+                } catch (e) {
+                    console.log('JSON 파싱 불필요 (빈 응답)');
+                }
+            }
+
             localStorage.removeItem('cartItems');
             location.reload();
         } catch (error) {
             console.error('장바구니 동기화 실패:', error);
+            console.log('Error details:', error.message);
             throw error;
         }
     }
@@ -107,10 +126,7 @@ function calculateSelectedPrice() {
     if (checkedItems.length > 0) {
         if (isLoggedIn) {
             const queryString = cartIds.map(id => `cartIds=${id}`).join('&');
-            fetch(`/carts/selected-price?${queryString}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            })
+            fetch(`/carts/selected-price?${queryString}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('totalPrice').textContent = data.tourPrice.toLocaleString();
