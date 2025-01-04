@@ -108,7 +108,7 @@ public class CartResponseDto {
                 .orderMessage(this.orderMessage)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
-                .count(1)
+                .count(this.maximum) //상품 최대 인원수
                 .build();
     }
 
