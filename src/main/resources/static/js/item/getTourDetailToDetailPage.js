@@ -1,5 +1,5 @@
 const id = getTourItemIdFromUrl();
-
+let guideId = null;
 async function fetchTourData() {
     try {
         const response = await fetch(`/api/tours/${id}`);
@@ -53,7 +53,7 @@ function toggleGuideDropdown() {
     dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
 }
 function selectGuide(button) {
-    const guideId = button.getAttribute('data-id'); // 클릭한 버튼의 가이드 ID
+    guideId = button.getAttribute('data-id'); // 클릭한 버튼의 가이드 ID
     const guideName = button.getAttribute('data-name'); // 클릭한 버튼의 가이드 이름
 
     if (!guideId || !guideName) {

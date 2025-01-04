@@ -32,6 +32,8 @@ function fetchAndDisplayReservations(guideId) {
         .catch(error => console.error('예약 데이터를 가져오는 중 오류 발생:', error));
 }
 
+
+// 달력 초기화 함수
 function initializeCalendar(data) {
     const calendarEl = document.getElementById('calendar');
     const today = new Date();
@@ -58,6 +60,13 @@ function initializeCalendar(data) {
             right: 'dayGridMonth',    // 월 보기만 허용
         },
         dateClick: function (info) {
+            console.log(guideId)
+            // 가이드 선택 여부 확인
+            if (!guideId) {
+                alert('가이드를 선택해주세요.');  // 가이드가 선택되지 않으면 알림
+                return; // 가이드가 선택되지 않으면 날짜 클릭 이벤트 종료
+            }
+
             const clickedDate = new Date(info.date);
             clickedDate.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정하여 날짜만 비교
 
