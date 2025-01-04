@@ -2,6 +2,8 @@ package com.hifive.yeodam.cart.dto.command;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,11 +16,14 @@ public class CartRequestDto {
     private int maximum;
     private Long guideId;
     private String imgUrl;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @Builder
     public CartRequestDto(Long itemId, String tourName, String tourRegion,
                           String tourPeriod, int tourPrice, int maximum,
-                          Long guideId, String imgUrl) {
+                          Long guideId, String imgUrl,
+                          LocalDate startDate, LocalDate endDate) {
         this.itemId = itemId;
         this.tourName = tourName;
         this.tourRegion = tourRegion;
@@ -27,5 +32,7 @@ public class CartRequestDto {
         this.maximum = maximum;
         this.guideId = guideId;
         this.imgUrl = imgUrl;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }

@@ -48,6 +48,8 @@ public class CartResponseDto {
                 this.tourPeriod = tour.getPeriod();
                 this.maximum = tour.getMaximum();
                 this.reservation = true;
+                this.startDate = cart.getStartDate();
+                this.endDate = cart.getEndDate();
             }
 
             if (cart.getGuide() != null) {
@@ -55,11 +57,15 @@ public class CartResponseDto {
                 this.guideName = cart.getGuide().getName();
             }
 
-            this.imgUrl = item.getItemImages().stream()
-                    .filter(ItemImage::isThumbnail)
-                    .findFirst()
-                    .map(ItemImage::getStorePath)
-                    .orElse(null);
+            if (requestDto != null && requestDto.getImgUrl() != null) {
+                this.imgUrl = requestDto.getImgUrl();
+            } else {
+                this.imgUrl = cart.getItem().getItemImages().stream()
+                        .filter(ItemImage::isThumbnail)
+                        .findFirst()
+                        .map(ItemImage::getStorePath)
+                        .orElse(null);
+            }
 
             this.count = cart.getCount();
         }

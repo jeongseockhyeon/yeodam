@@ -5,10 +5,9 @@ import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.seller.entity.Guide;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -35,12 +34,22 @@ public class Cart {
     @Column(nullable = false)
     private int count = 1;
 
+    @Getter @Setter
+    @Column
+    private LocalDate startDate;
+
+    @Getter @Setter
+    @Column
+    private LocalDate endDate;
+
     @Builder
-    public Cart(Auth auth, Item item, Guide guide) {
+    public Cart(Auth auth, Item item, Guide guide, LocalDate startDate, LocalDate endDate) {
         this.auth = auth;
         this.item = item;
         this.guide = guide;
         this.count = 1;
+        this.startDate = startDate;
+        this.endDate = endDate;
 
         // Tour 상품만 가이드 정보 설정
 //        if (item instanceof Tour) {

@@ -69,10 +69,11 @@ public class CartQueryService {
                             .maximum(cart.getItem() instanceof Tour ? ((Tour) cart.getItem()).getMaximum() : 0)
                             .guideId(cart.getGuide() != null ? cart.getGuide().getGuideId() : null)
                             .imgUrl(cart.getItem().getItemImages().stream()
-                                    .filter(ItemImage::isThumbnail)
                                     .findFirst()
                                     .map(ItemImage::getStorePath)
                                     .orElse(null))
+                            .startDate(cart.getStartDate())
+                            .endDate(cart.getEndDate())
                             .build();
 
                     return new CartResponseDto(cart, requestDto);
@@ -101,6 +102,8 @@ public class CartQueryService {
                                         .findFirst()
                                         .map(ItemImage::getStorePath)
                                         .orElse(null))
+                                .startDate(cart.getStartDate())
+                                .endDate(cart.getEndDate())
                                 .build())
                         .build())
                 .collect(Collectors.toList());
