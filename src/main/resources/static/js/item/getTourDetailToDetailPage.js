@@ -30,7 +30,7 @@ function renderTourData(data) {
     categoryContainer.textContent = data.categoryResDtoList.map(category => category.name).join(', ');
 
     document.getElementById('tourDesc').textContent = data.tourDesc;
-    document.getElementById('tourPrice').textContent = `가격: ${data.tourPrice}원`;
+    document.getElementById('tourPrice').textContent = `가격: ${data.tourPrice.toLocaleString()}원`;
 
     const guideList = document.getElementById('guideList');
     guideList.innerHTML = ''; // 기존 가이드를 초기화
