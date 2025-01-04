@@ -22,6 +22,22 @@ async function addToCart() {
         }
         console.log('tourDetail:', tourDetail);
 
+
+        console.log('localStorage 값:', {
+            selectedStartDate: localStorage.getItem('selectedStartDate'),
+            selectedEndDate: localStorage.getItem('selectedEndDate')
+        });
+
+        // cartData 생성 직전에 날짜 정보 가져오기
+        const startDate = localStorage.getItem('selectedStartDate');
+        const endDate = localStorage.getItem('selectedEndDate');
+
+        if (!startDate || !endDate) {
+            console.log('날짜 확인:', { startDate, endDate });
+            alert('날짜를 선택해주세요.');
+            return;
+        }
+
         const cartData = {
             itemId: tourDetail.id,
             tourName: tourDetail.tourName,
@@ -30,9 +46,18 @@ async function addToCart() {
             tourPrice: tourDetail.tourPrice,
             maximum: tourDetail.maximum,
             guideId: tourDetail.guideInTourResDtos[0]?.id || null,
-            imgUrl: tourDetail.itemImgResDtoList[0]?.storePath || null
+            imgUrl: tourDetail.itemImgResDtoList.length > 0
+                ? (tourDetail.itemImgResDtoList.find(img => img.isThumbnail)?.imgUrl || tourDetail.itemImgResDtoList[0].imgUrl)
+                : null,
+            reservation: true,
+            startDate: startDate,
+            endDate: endDate
         };
-        console.log('cartData:', cartData);
+        console.log('cartData의 날짜 정보:', {
+            startDate: cartData.startDate,
+            endDate: cartData.endDate
+        });
+
         if (isLoggedIn) {
             try {
                 const response = await fetch('/api/carts', {
@@ -55,6 +80,8 @@ async function addToCart() {
                 }
 
                 alert("장바구니에 상품이 담겼습니다.");
+                localStorage.removeItem('selectedStartDate');
+                localStorage.removeItem('selectedEndDate');
                 return;
             } catch (error) {
                 console.error('서버 장바구니 추가 실패:', error);
@@ -71,6 +98,8 @@ async function addToCart() {
             cartItems.push(cartData);
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
             alert("장바구니에 상품이 담겼습니다.");
+            localStorage.removeItem('selectedStartDate');
+            localStorage.removeItem('selectedEndDate');
         }
     } catch (error) {
         console.error('장바구니 담기 실패:', error);
