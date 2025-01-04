@@ -1,24 +1,29 @@
+let selectedGuides = [];
+let selectedGuideNames = [];
+let selectedImages = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     const guideSelect = document.getElementById("guideSelect");
     const selectedGuidesText = document.getElementById("selectedGuidesText");
     const tourImagesInput = document.getElementById("tourImages");
     const previewContainer = document.getElementById("previewContainer");
 
-    let selectedGuides = [];
-    let selectedGuideNames = [];
-    let selectedImages = [];
+
 
     // 가이드 선택 이벤트
     guideSelect.addEventListener("change", () => {
         const selectedOptions = Array.from(guideSelect.selectedOptions);
         const newGuideIds = selectedOptions.map(option => parseInt(option.value));
-        const newGuideNames = selectedOptions.map(option => option.textContent);
 
-        newGuideIds.forEach((id, index) => {
+        newGuideIds.forEach(id => {
             if (!selectedGuides.includes(id)) {
                 selectedGuides.push(id);
-                selectedGuideNames.push(newGuideNames[index]);
             }
+        });
+
+        selectedGuideNames = selectedGuides.map(id => {
+            const option = guideSelect.querySelector(`option[value="${id}"]`);
+            return option ? option.textContent : "";
         });
 
         updateSelectedGuidesText();
@@ -100,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // FormData 생성 및 전송
     document.getElementById("submitBtn").addEventListener("click", () => {
+        console.log(selectedGuides);
         if (!validationFormData()) return;
 
         const selectedCategories = Array.from(

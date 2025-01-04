@@ -8,30 +8,45 @@ function validationFormData() {
         const fieldId = requiredFields[i];
         const field = document.getElementById(fieldId);
         if (!field.value.trim()) {
-            displayValidationError(field, `${koFieldName[i]}를 입력해주세요.`);
-            hasError = true;
+            const errorMessage = `${koFieldName[i]}를 입력해주세요.`;
+            displayValidationError(field, errorMessage);
+            alert(errorMessage);
+            field.focus();
+            return false; // 즉시 반환
         }
     }
 
     // 최대 인원 및 가격 값 검사
-    const maximum = parseInt(document.getElementById("maximum").value, 10);
-    const tourPrice = parseInt(document.getElementById("tourPrice").value, 10);
+    const maximumField = document.getElementById("maximum");
+    const tourPriceField = document.getElementById("tourPrice");
+    const maximum = parseInt(maximumField.value, 10);
+    const tourPrice = parseInt(tourPriceField.value, 10);
+
     if (isNaN(maximum) || maximum <= 0) {
-        displayValidationError(document.getElementById("maximum"), "최대 인원은 양수로 입력해주세요.");
-        hasError = true;
+        const errorMessage = "최대 인원은 양수로 입력해주세요.";
+        displayValidationError(maximumField, errorMessage);
+        alert(errorMessage);
+        maximumField.focus();
+        return false;
     }
     if (isNaN(tourPrice) || tourPrice < 0) {
-        displayValidationError(document.getElementById("tourPrice"), "가격은 양수로 입력해주세요.");
-        hasError = true;
+        const errorMessage = "가격은 양수로 입력해주세요.";
+        displayValidationError(tourPriceField, errorMessage);
+        alert(errorMessage);
+        tourPriceField.focus();
+        return false;
     }
 
     // 이미지 파일 이름 유효성 검증
     const tourImagesInput = document.getElementById("tourImages");
     const files = Array.from(tourImagesInput.files);
     const invalidFileNames = files.filter(file => /[%<>:"/\\|?*]/.test(file.name));
+
     if (invalidFileNames.length > 0) {
-        alert(`다음 파일의 이름에 허용되지 않는 특수문자가 포함되어 있습니다:\n${invalidFileNames.map(file => file.name).join("\n")}\n파일 이름을 수정해주세요.`);
-        hasError = true;
+        const errorMessage = `다음 파일의 이름에 허용되지 않는 특수문자가 포함되어 있습니다:\n${invalidFileNames.map(file => file.name).join("\n")}\n파일 이름을 수정해주세요.`;
+        alert(errorMessage);
+        tourImagesInput.focus();
+        return false;
     }
 
     // 선택된 카테고리 검사
@@ -40,31 +55,34 @@ function validationFormData() {
     ).map(checkbox => parseInt(checkbox.value));
 
     if (selectedCategories.length === 0) {
+        const errorMessage = "카테고리를 선택해주세요.";
         const categoryField = document.getElementById("categoryCheckBox");
-        displayValidationError(categoryField, "카테고리를 선택해주세요.");
-        hasError = true;
+        displayValidationError(categoryField, errorMessage);
+        alert(errorMessage);
+        categoryField.focus();
+        return false;
     }
 
-    // 선택된 가이드 검사
-    const selectedGuides = Array.from(
-        document.querySelectorAll('input[name="guideIdList"]:checked')
-    ).map(checkbox => parseInt(checkbox.value));
-
     if (selectedGuides.length === 0) {
+        const errorMessage = "가이드를 선택해주세요.";
         const guideField = document.getElementById("guideSelect");
-        displayValidationError(guideField, "가이드를 선택해주세요.");
-        hasError = true;
+        displayValidationError(guideField, errorMessage);
+        alert(errorMessage);
+        guideField.focus();
+        return false;
     }
 
     // 선택된 이미지 검사
     const selectedImages = Array.from(tourImagesInput.files);
     if (selectedImages.length === 0) {
-        const imageField = document.getElementById("tourImages");
-        displayValidationError(imageField, "이미지를 업로드해주세요.");
-        hasError = true;
+        const errorMessage = "이미지를 업로드해주세요.";
+        displayValidationError(tourImagesInput, errorMessage);
+        alert(errorMessage);
+        tourImagesInput.focus();
+        return false;
     }
 
-    return !hasError;
+    return true;
 }
 
 function displayValidationError(field, message) {
@@ -82,3 +100,4 @@ function displayValidationError(field, message) {
     // 필드 바로 아래에 에러 메시지 삽입
     field.insertAdjacentElement("afterend", errorElement);
 }
+
