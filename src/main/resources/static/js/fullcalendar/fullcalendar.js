@@ -51,8 +51,8 @@ function initializeCalendar(tourData) {
                 start: startDateStr,
                 end: isHalfDay ? startDateStr :
                     new Date(new Date(endDateStr).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                backgroundColor: '#28a745',
-                borderColor: '#28a745',
+                backgroundColor: '#25c3d8',
+                borderColor: '#25c3d8',
             });
 
             console.log('선택된 날짜가 저장되었습니다:', {
