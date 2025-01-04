@@ -34,11 +34,45 @@ function fetchAndDisplayReservations(guideId) {
 
 function initializeCalendar(data) {
     const calendarEl = document.getElementById('calendar');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정하여 날짜만 비교
+
+    // 현재 날짜 기준으로 2개월 전, 후 범위 설정
+    const twoMonthsBefore = new Date(today);
+    twoMonthsBefore.setMonth(today.getMonth() - 2);
+
+    const twoMonthsAfter = new Date(today);
+    twoMonthsAfter.setMonth(today.getMonth() + 2);
+
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
         selectable: true,
+        validRange: {
+            start: formatLocalDate(twoMonthsBefore),  // 2개월 전부터
+            end: formatLocalDate(twoMonthsAfter),     // 2개월 후까지
+        },
+        headerToolbar: {
+            left: 'prev,next today',  // 이전, 다음, 오늘 버튼
+            center: 'title',          // 월 제목
+            right: 'dayGridMonth',    // 월 보기만 허용
+        },
         dateClick: function (info) {
+            const clickedDate = new Date(info.date);
+            clickedDate.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정하여 날짜만 비교
+
+            // 과거 날짜 선택 차단
+            if (clickedDate < today) {
+                alert('과거 날짜는 선택할 수 없습니다.');
+                return; // 클릭 이벤트 처리하지 않음
+            }
+
+            // 오늘 날짜 클릭 시 알림
+            if (clickedDate.toDateString() === today.toDateString()) {
+                alert('당일 예약은 불가능합니다.');
+                return; // 클릭 이벤트 처리하지 않음
+            }
+
             const selectedStartDate = new Date(info.date);
             const days = parseInt(data.tourPeriod.replace("일", "").trim());
             const selectedEndDate = new Date(selectedStartDate);
@@ -78,6 +112,41 @@ function initializeCalendar(data) {
             });
         },
         events: [], // 초기 이벤트 비워둠
+        dayCellDidMount: function(info) {
+            // 과거 날짜를 회색으로 처리하고 클릭을 비활성화
+            if (info.date < today) {
+                info.el.style.backgroundColor = '#d6d6d6'; // 회색 배경
+                info.el.style.pointerEvents = 'none'; // 클릭 비활성화
+                info.el.style.opacity = '0.5'; // 시각적으로 클릭 불가능함을 강조
+            }
+
+            // 오늘 날짜를 황색으로 처리하고 클릭 비활성화
+            if (info.date.toDateString() === today.toDateString()) {
+                info.el.style.backgroundColor = '#ffcc00'; // 황색 배경
+                info.el.style.pointerEvents = 'none'; // 클릭 비활성화
+                info.el.style.opacity = '0.5'; // 시각적으로 클릭 불가능함을 강조
+            }
+        },
     });
+
+    // 스타일 적용 (과거 날짜 회색 처리, 오늘 날짜 황색 처리)
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .fc-day {
+            cursor: pointer;
+        }
+        .fc-day.fc-day-disabled {
+            background-color: #d6d6d6 !important; /* 과거 날짜 회색 배경 */
+            pointer-events: none !important;
+            opacity: 0.5 !important;
+        }
+        .fc-day.fc-day-today {
+            background-color: #ffcc00 !important; /* 오늘 날짜 황색 배경 */
+            pointer-events: none !important;
+            opacity: 0.5 !important;
+        }
+    `;
+    document.head.appendChild(style);
+
     calendar.render();
 }
