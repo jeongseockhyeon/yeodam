@@ -21,6 +21,9 @@
 
         <div class="login-container mb-4">
             <form th:action="@{/login}" method="post">
+                <!-- 장바구니 redirectUrl용-->
+                <input type="hidden" name="redirectUrl" th:value="${param.redirectUrl}" />
+
                 <div class="mb-4">
                     <input type="email" class="form-control" name="email" placeholder="이메일을 입력하세요" required />
                 </div>
