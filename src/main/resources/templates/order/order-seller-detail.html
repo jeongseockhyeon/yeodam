@@ -47,29 +47,31 @@
         </tbody>
     </table>
 </div>
-<nav class="d-flex justify-content-center">
-    <ul class="pagination">
-        <!-- 이전 페이지 -->
-        <li class="page-item" th:classappend="${response.first} ? 'disabled'">
-            <a class="page-link"
-               th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?offset=${response.number - 1}|}">이전</a>
-        </li>
+<div class="d-flex justify-content-center mt-4" th:if="${response.content.size() > 0}">
+    <nav>
+        <ul class="pagination">
+            <!-- 이전 페이지 -->
+            <li class="page-item" th:classappend="${response.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?offset=${response.number - 1}|}">이전</a>
+            </li>
 
-        <!-- 페이지 번호 -->
-        <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, response.totalPages - 1)}"
-            th:classappend="${pageNum == response.number} ? 'active'">
-            <a class="page-link"
-               th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?offset=${pageNum}|}"
-               th:text="${pageNum + 1}"></a>
-        </li>
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, response.totalPages - 1)}"
+                th:classappend="${pageNum == response.number} ? 'active'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?offset=${pageNum}|}"
+                   th:text="${pageNum + 1}"></a>
+            </li>
 
-        <!-- 다음 페이지 -->
-        <li class="page-item" th:classappend="${response.last} ? 'disabled'">
-            <a class="page-link"
-               th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?osffet=${response.number + 1}|}">다음</a>
-        </li>
-    </ul>
-</nav>
+            <!-- 다음 페이지 -->
+            <li class="page-item" th:classappend="${response.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?osffet=${response.number + 1}|}">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 <script>
     function cancelOrder(btn) {
 
@@ -80,10 +82,10 @@
         let orderUid = btn.getAttribute('data-order-uid');
 
         const request = {
-            orderUid : orderUid
+            orderUid: orderUid
         }
 
-        fetch(`/api/orders/${orderUid}`,{
+        fetch(`/api/orders/${orderUid}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'

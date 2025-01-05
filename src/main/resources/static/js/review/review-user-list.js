@@ -130,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 nextBtn = document.createElement('button');
                 nextBtn.id = 'next-btn';
+                nextBtn.classList.add('next-btn');
                 nextBtn.textContent = "다음 리뷰";
                 nextBtn.addEventListener('click', () => nextLoadReview());
                 reviewsContainer.appendChild(nextBtn);

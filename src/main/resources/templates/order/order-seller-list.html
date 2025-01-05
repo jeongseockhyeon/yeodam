@@ -11,8 +11,8 @@
 <div class="header-area">
     <div th:replace="~{fragments/header-noSearch :: header}"></div>
 </div>
-<h1 class="text-center">주문상품 목록</h1>
-<div class="container mt-5">
+<h2 class="text-center mt-5" th:text="${response.content.size() > 0 ? '주문내역' : '주문내역이 없습니다.'}">주문 내역</h2>
+<div class="container mt-5" th:if="${response.content.size() > 0}">
     <table class="table table-hover table-bordered">
         <thead class="table-header table-light">
         <tr>
@@ -27,13 +27,38 @@
             <td th:text="${orderStat.count}"></td>
             <td>
                 <a th:href="@{/sellers/items/{itemId}/orders(itemId=${order.itemId})}" class="text-decoration-none"
-                th:text="${order.itemName}"></a>
+                   th:text="${order.itemName}"></a>
             </td>
             <td th:text="${order.reservationCnt}"></td>
             <td th:text="${order.cancelCnt}"></td>
         </tr>
         </tbody>
     </table>
+</div>
+<div class="d-flex justify-content-center mt-4" th:if="${response.content.size() > 0}">
+    <nav>
+        <ul class="pagination">
+            <!-- 이전 페이지 -->
+            <li class="page-item" th:classappend="${response.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/orders?offset=${response.number - 1}|}">이전</a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, response.totalPages - 1)}"
+                th:classappend="${pageNum == response.number} ? 'active'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/orders?offset=${pageNum}|}"
+                   th:text="${pageNum + 1}"></a>
+            </li>
+
+            <!-- 다음 페이지 -->
+            <li class="page-item" th:classappend="${response.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/orders?osffet=${response.number + 1}|}">다음</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 </body>
 </html>

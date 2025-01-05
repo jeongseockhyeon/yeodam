@@ -90,7 +90,7 @@
         </div>
     </div>
 </div>
-<nav class="d-flex justify-content-center">
+<nav class="d-flex justify-content-center" th:if="${response.content.size() > 0}">
     <ul class="pagination">
         <!-- 이전 페이지 -->
         <li class="page-item" th:classappend="${response.first} ? 'disabled'">
