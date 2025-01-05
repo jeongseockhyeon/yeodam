@@ -5,7 +5,8 @@ function formatLocalDate(date) {
     return `${year}-${month}-${day}`;
 }
 let calendar;
-
+let selectedStartDate;
+let selectedEndDate;
 function fetchAndDisplayReservations(guideId) {
     fetch(`/api/tours/${guideId}/reservation`)
         .then(response => response.json())
@@ -24,6 +25,9 @@ function fetchAndDisplayReservations(guideId) {
                 overlap: false,
                 allDay: true,
             }));
+            // 이전 선택이 남은 경우 저장된 날짜 정보 삭제
+            localStorage.removeItem('selectedStartDate');
+            localStorage.removeItem('selectedEndDate');
 
             // 기존 이벤트 제거 및 새 이벤트 추가
             calendar.getEvents().forEach(event => event.remove());
@@ -46,6 +50,10 @@ function initializeCalendar(data) {
     const twoMonthsAfter = new Date(today);
     twoMonthsAfter.setMonth(today.getMonth() + 2);
 
+
+
+
+
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
@@ -59,6 +67,8 @@ function initializeCalendar(data) {
             center: 'title',          // 월 제목
             right: '',
         },
+
+
         dateClick: function (info) {
             console.log(guideId)
             // 가이드 선택 여부 확인
@@ -82,10 +92,22 @@ function initializeCalendar(data) {
                 return; // 클릭 이벤트 처리하지 않음
             }
 
-            const selectedStartDate = new Date(info.date);
+
+
+            selectedStartDate = new Date(info.date);
             const days = parseInt(data.tourPeriod.replace("일", "").trim());
-            const selectedEndDate = new Date(selectedStartDate);
+            selectedEndDate = new Date(selectedStartDate);
             selectedEndDate.setDate(selectedStartDate.getDate() + days - 1);
+
+            // localStorage에 날짜 저장
+            localStorage.setItem('selectedStartDate', formatLocalDate(selectedStartDate),);
+            localStorage.setItem('selectedEndDate', formatLocalDate(new Date(selectedEndDate.getTime() + 24 * 60 * 60 * 1000)));
+
+
+            console.log('localStorage 저장 직후 확인:', {
+                savedStart: localStorage.getItem('selectedStartDate'),
+                savedEnd: localStorage.getItem('selectedEndDate')
+            });
 
             // 예약 불가 여부 확인 (title이 '예약 불가'인 경우에만 확인)
             const isUnavailable = calendar.getEvents().some(event => {
