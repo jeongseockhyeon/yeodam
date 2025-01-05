@@ -11,6 +11,47 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/review-list.css">
     <link rel="stylesheet" href="/css/inquiry-modal.css">
+    <link rel="stylesheet" href="/css/fullcalendar.css">
+    <link rel="stylesheet" href="/css/item-detail.css">
+    <style>
+        .slider {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* 원하는 크기로 설정 */
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slides img {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        button.prev, button.next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        button.prev {
+            left: 10px;
+        }
+
+        button.next {
+            right: 10px;
+        }
+    </style>
 
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
@@ -27,9 +68,12 @@
     <div class="row d-flex">
         <!-- 왼쪽 섹션 -->
         <div class="col-lg-8 left-section" style="padding-left: 0;">
-            <div class="images">
-                <img id="mainImage" alt="Main Image">
-                <img id="additionalImage" alt="Additional Image" style="display: none;">
+            <div class="slider">
+                <div class="slides">
+                    <!-- 이미지들이 동적으로 추가될 영역 -->
+                </div>
+                <button class="prev">❮</button>
+                <button class="next">❯</button>
             </div>
             <h2 id="tourName"></h2>
             <div class="detail-container">

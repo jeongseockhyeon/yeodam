@@ -1,4 +1,4 @@
-function validationFormData() {
+function updateValidationFormData() {
     const requiredFields = ["tourName", "tourDesc", "tourPeriod", "tourRegion", "maximum", "tourPrice"];
     const koFieldName = ["여행 상품명", "설명", "기간", "지역", "최대 인원", "가격"];
     let hasError = false;
@@ -63,7 +63,8 @@ function validationFormData() {
         return false;
     }
 
-    if (selectedGuides.length === 0) {
+    // 가이드 선택 검사
+    if (existingGuides.length === 0 && selectedGuides.length === 0) {
         const errorMessage = "가이드를 선택해주세요.";
         const guideField = document.getElementById("guideSelect");
         displayValidationError(guideField, errorMessage);
@@ -72,9 +73,8 @@ function validationFormData() {
         return false;
     }
 
-    // 선택된 이미지 검사
-    const selectedImages = Array.from(tourImagesInput.files);
-    if (selectedImages.length === 0) {
+    // 이미지 업로드 검사
+    if (existingImages.length === 0 && selectedImages.length === 0) {
         const errorMessage = "이미지를 업로드해주세요.";
         displayValidationError(tourImagesInput, errorMessage);
         alert(errorMessage);
@@ -100,4 +100,3 @@ function displayValidationError(field, message) {
     // 필드 바로 아래에 에러 메시지 삽입
     field.insertAdjacentElement("afterend", errorElement);
 }
-

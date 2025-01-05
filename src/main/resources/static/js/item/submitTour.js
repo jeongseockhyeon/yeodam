@@ -1,24 +1,29 @@
+let selectedGuides = [];
+let selectedGuideNames = [];
+let selectedImages = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     const guideSelect = document.getElementById("guideSelect");
     const selectedGuidesText = document.getElementById("selectedGuidesText");
     const tourImagesInput = document.getElementById("tourImages");
     const previewContainer = document.getElementById("previewContainer");
 
-    let selectedGuides = [];
-    let selectedGuideNames = [];
-    let selectedImages = [];
+
 
     // 가이드 선택 이벤트
     guideSelect.addEventListener("change", () => {
         const selectedOptions = Array.from(guideSelect.selectedOptions);
         const newGuideIds = selectedOptions.map(option => parseInt(option.value));
-        const newGuideNames = selectedOptions.map(option => option.textContent);
 
-        newGuideIds.forEach((id, index) => {
+        newGuideIds.forEach(id => {
             if (!selectedGuides.includes(id)) {
                 selectedGuides.push(id);
-                selectedGuideNames.push(newGuideNames[index]);
             }
+        });
+
+        selectedGuideNames = selectedGuides.map(id => {
+            const option = guideSelect.querySelector(`option[value="${id}"]`);
+            return option ? option.textContent : "";
         });
 
         updateSelectedGuidesText();
@@ -57,9 +62,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 이미지 선택 이벤트
+// 이미지 선택 이벤트
     tourImagesInput.addEventListener("change", () => {
         const files = Array.from(tourImagesInput.files);
+
+        // 업로드된 이미지 수 체크
+        if (selectedImages.length + files.length > 5) {
+            alert("최대 5개의 이미지만 업로드할 수 있습니다.");
+            return;
+        }
+
         selectedImages = [...selectedImages, ...files].filter((file, index, self) =>
             index === self.findIndex(f => f.name === file.name)
         );
@@ -100,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // FormData 생성 및 전송
     document.getElementById("submitBtn").addEventListener("click", () => {
+        console.log(selectedGuides);
         if (!validationFormData()) return;
 
         const selectedCategories = Array.from(
