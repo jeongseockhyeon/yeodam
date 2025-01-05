@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class ReviewResponse {
+public class ItemDetailReviewResponse {
 
     List<Review> reviews;
     private double totalRate;

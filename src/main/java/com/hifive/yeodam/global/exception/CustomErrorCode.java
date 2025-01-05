@@ -30,6 +30,9 @@ public enum CustomErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
     DUPLICATED_NICKNAME_JOIN(HttpStatus.BAD_REQUEST, "이미 등록된 닉네임입니다"),
 
+    //Seller 관련 ERROR
+    SELLER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다"),
+
     // Auth 관련 ERROR
     DUPLICATED_EMAIL_JOIN(HttpStatus.BAD_REQUEST, "이미 등록된 이메일입니다"),
     AUTH_NOT_FOUND(HttpStatus.NOT_FOUND, "인증정보를 찾을 수 없습니다"),
@@ -41,6 +44,7 @@ public enum CustomErrorCode {
     WISH_ITEM_DELETE_FAILED(HttpStatus.BAD_REQUEST, "찜한 상품 삭제에 실패했습니다"),
 
     // Cart 관련 ERROR
+    UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "USER 권한이 필요합니다."),
     LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다"),
     CART_FULL(HttpStatus.BAD_REQUEST, "장바구니에는 최대 20개의 상품만 담을 수 있습니다"),
     CART_NOT_FOUND(HttpStatus.NOT_FOUND, "장바구니를 찾을 수 없습니다"),
@@ -65,6 +69,7 @@ public enum CustomErrorCode {
 
     //리뷰 관련 ERROR
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰가 없습니다."),
+    REVIEW_NOT_DELETE(HttpStatus.BAD_REQUEST, "리뷰를 삭제할 수 없습니다."),
     REVIEW_NOT_CREATE(HttpStatus.BAD_REQUEST, "해당 리뷰를 등록할 수 없습니다."),
     ;
 

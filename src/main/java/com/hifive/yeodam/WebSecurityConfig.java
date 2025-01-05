@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @RequiredArgsConstructor
 @Configuration
@@ -43,7 +44,7 @@ public class WebSecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login") // 커스텀 로그인 페이지
                         .usernameParameter("email")
-                        .defaultSuccessUrl("/", true)
+                        .successHandler(loginSuccessHandler())
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
@@ -72,6 +73,19 @@ public class WebSecurityConfig {
                 .passwordEncoder(passwordEncoder);
 
         return authenticationManagerBuilder.build();
+    }
+
+    //비로그인 장바구니 이용 시 인증 성공 후 장바구니로 리다이렉트
+    @Bean
+    public AuthenticationSuccessHandler loginSuccessHandler() {
+        return (request, response, authentication) -> {
+            String redirectUrl = request.getParameter("redirectUrl");
+            if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                response.sendRedirect(redirectUrl); // 장바구니 페이지로 이동
+            } else {
+                response.sendRedirect("/"); // 기본 리다이렉트 URL
+            }
+        };
     }
 
 

@@ -114,10 +114,11 @@ function initializeCalendar(data) {
             // 새로운 예약 선택 추가
             calendar.addEvent({
                 title: '예약 선택',
-                start: formatLocalDate(selectedStartDate),
-                end: formatLocalDate(new Date(selectedEndDate.getTime() + 24 * 60 * 60 * 1000)),
-                backgroundColor: '#28a745',
-                borderColor: '#28a745',
+                start: startDateStr,
+                end: isHalfDay ? startDateStr :
+                    new Date(new Date(endDateStr).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                backgroundColor: '#25c3d8',
+                borderColor: '#25c3d8',
             });
         },
         events: [], // 초기 이벤트 비워둠

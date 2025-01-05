@@ -26,6 +26,7 @@ async function syncLocalCartToServer() {
                 tourPrice: item.tourPrice,
                 maximum: item.maximum,
                 guideId: item.guideId,
+                guideName: item.guideName,
                 imgUrl: item.imgUrl,
                 startDate: item.startDate,
                 endDate: item.endDate
@@ -222,7 +223,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         //비로그인 시 로그인 페이지로 이동
         if (!isLoggedIn) {
-            window.location.href = '/login';
+            // 로그인 후 장바구니 페이지로 이동하도록 redirectUrl 설정
+            const cartPageUrl = '/carts';
+            window.location.href = `/login?redirectUrl=${encodeURIComponent(cartPageUrl)}`;
             return;
         }
 

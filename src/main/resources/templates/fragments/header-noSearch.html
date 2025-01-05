@@ -15,6 +15,12 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
         <a th:href="@{/}"><img class="custom-logo" src="/images/logo.png" alt="로고"></a>
     </div>
     <div class="user-menu">
+        <!-- 장바구니 -->
+        <th:block sec:authorize="isAnonymous() or hasRole('ROLE_USER')">
+            <a href="/carts" class="cart-icon">
+                <i class="bi bi-cart2"></i>
+            </a>
+        </th:block>
 
         <th:block sec:authorize="isAnonymous()">
             <!-- 비로그인 상태 -->
@@ -24,19 +30,17 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
         <!-- 로그인 상태 -->
         <th:block sec:authorize="isAuthenticated()">
-            <!-- 장바구니 -->
-            <a href="/carts" class="cart-icon">
-                <i class="bi bi-cart2"></i>
-            </a>
+            <!-- 일반 유저일 경우 장바구니와 찜 목록 모두 표시 -->
+            <th:block sec:authorize="hasRole('ROLE_USER')">
+                <a href="/wishes" class="wish-icon">
+                    <i class="bi bi-heart"></i>
+                </a>
+                <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
+            </th:block>
 
             <!-- 판매자일 경우 -->
             <th:block sec:authorize="hasRole('ROLE_SELLER')">
                 <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
-            </th:block>
-
-            <!-- 유저일 경우 -->
-            <th:block sec:authorize="hasRole('ROLE_USER')">
-                <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
             </th:block>
 
             <!-- 관리자일 경우 -->
