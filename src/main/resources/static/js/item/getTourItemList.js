@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div>
                         <span>가이드: ${primaryGuide ? primaryGuide.name : "정보 없음"}</span>
                         <span> | 평점: ${tour.rate}⭐</span>
-                        <span> (${primaryGuide ? primaryGuide.reviews : 0}명)</span>
+                        <span> (${tour.reviewCount}명)</span>
                     </div>
                     <div class="price">${tour.tourPrice.toLocaleString()}원</div>
                     <div>최대 인원: ${tour.maximum}명</div>
