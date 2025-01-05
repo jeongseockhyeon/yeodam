@@ -1,4 +1,4 @@
-package com.hifive.yeodam;
+package com.hifive.yeodam.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -36,10 +36,14 @@ public class WebSecurityConfig {
                         .requestMatchers("/users/join", "/users/email-check", "/users/nickname-check", "/users/password-check").permitAll()
                         .requestMatchers("/sellers", "/sellers/join", "/sellers/check-email").permitAll()
                         .requestMatchers("/inquiries/**").permitAll()
+                        .requestMatchers("/admins/**").hasRole("ADMIN")
                         .requestMatchers("/api/carts/sync").authenticated()
                         .requestMatchers("/api/carts/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(auth -> auth
+                        .accessDeniedPage("/access-denied")
                 )
                 .formLogin(form -> form
                         .loginPage("/login") // 커스텀 로그인 페이지

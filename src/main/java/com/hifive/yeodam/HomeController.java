@@ -16,7 +16,7 @@ public class HomeController {
     @GetMapping("/join")
     public String joinView() {
 
-        return "joinSelect";
+        return "join-select";
     }
 
     // 로그인 페이지 보기
@@ -42,5 +42,10 @@ public class HomeController {
     @GetMapping("/survey")
     public String survey() {
         return "survey";
+    }
+
+    @GetMapping("/access-denied")
+    public String accessDeniedPage() {
+        return "error/access-denied";
     }
 }
