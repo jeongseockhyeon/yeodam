@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
     <script src="/js/review/review-list.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="detail-body">
 <!-- 헤더 추가 -->
@@ -55,7 +56,9 @@
             <div class="reserve-section">
                 <h2>가이드</h2>
                 <div>
-                    <button id="guideDropdownButton" onclick="toggleGuideDropdown()" class="btn btn-outline-secondary w-100 mb-2">가이드 선택</button>
+                    <button id="guideDropdownButton" onclick="toggleGuideDropdown()"
+                            class="btn btn-outline-secondary w-100 mb-2">가이드 선택
+                    </button>
                     <div id="guideDropdown"
                          style="display: none; border: 1px solid #ddd; padding: 10px; max-height: 200px; overflow-y: auto;">
                         <ul id="guideList"></ul>
@@ -78,13 +81,12 @@
 <div class="review-container">
     <h1>
         <span class="stars">★ </span>
-        <span id="totalRate">4.8</span> · 후기
-        <span id="totalCount">8753</span>개</h1>
-    </div>
+        <span id="totalRate">0</span> · 후기
+        <span id="totalCount">0</span>개</h1>
 </div>
 
 <div class="modal" id="all-reviews-modal">
-    <div class="modal-content">
+    <div class="custom-modal-content">
         <h2 style="margin-top: 5px">모든 후기</h2>
         <span class="close-btn">&times;</span>
         <div class="modal-reviews-content" id="all-reviews-content">
