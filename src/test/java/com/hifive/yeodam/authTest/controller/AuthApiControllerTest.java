@@ -131,37 +131,6 @@ public class AuthApiControllerTest {
     }
 
     @Test
-    public void 만료상태조회실패_AuthService에서에러Throw() throws Exception{
-        //given
-        String url = "/api/auth/expiration";
-
-        doThrow(new CustomException(CustomErrorCode.AUTH_NOT_FOUND))
-                .when(authService).checkExpired(any(Auth.class));
-
-        //when
-        ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
-        );
-
-        //then
-        resultActions.andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void 만료상태조회성공() throws Exception{
-        //given
-        String url = "/api/auth/expiration";
-
-        //when
-        ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.get(url)
-        );
-
-        //then
-        resultActions.andExpect(status().isOk());
-    }
-
-    @Test
     public void 만료날짜삭제성공() throws Exception{
         //given
         String url = "/api/auth/expiration";

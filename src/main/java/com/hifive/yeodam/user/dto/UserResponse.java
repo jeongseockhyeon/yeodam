@@ -2,7 +2,6 @@ package com.hifive.yeodam.user.dto;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.user.entity.User;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

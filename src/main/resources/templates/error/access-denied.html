@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="icon" href="/images/favicon.png" />
+    <title>Access Denied</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container text-center mt-5">
+    <h2 class="text-danger">403 FORBIDDEN</h2>
+    <p>해당 페이지에 접근할 권한이 없습니다</p>
+    <a th:href="@{/static}" class="btn btn-primary mt-3">홈 페이지로 돌아가기</a>
+</div>
+</body>
+</html>
