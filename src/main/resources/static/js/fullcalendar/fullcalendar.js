@@ -57,7 +57,7 @@ function initializeCalendar(data) {
         headerToolbar: {
             left: 'prev,next today',  // 이전, 다음, 오늘 버튼
             center: 'title',          // 월 제목
-            right: 'dayGridMonth',    // 월 보기만 허용
+            right: '',
         },
         dateClick: function (info) {
             console.log(guideId)
