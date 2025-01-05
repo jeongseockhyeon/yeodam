@@ -1,6 +1,8 @@
 package com.hifive.yeodam.item.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hifive.yeodam.orderdetail.domain.OrderDetail;
+import com.hifive.yeodam.review.domain.Review;
 import com.hifive.yeodam.seller.entity.Seller;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,6 +42,12 @@ public abstract class Item {
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ItemImage> itemImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item")
+    private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item")
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 
     public Item(Seller seller,
                 String itemName,

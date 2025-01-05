@@ -4,6 +4,7 @@ import com.hifive.yeodam.order.domain.OrderStatus;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
 import com.hifive.yeodam.orderdetail.domain.OrderDetailStatus;
 import com.hifive.yeodam.user.entity.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,4 +42,13 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "where i.id = :itemId " +
             "and od.order.orderUid = :orderUid")
     Optional<OrderDetail> findByItemOrderUid(Long itemId, String orderUid);
+
+    @Query("select od " +
+            "from OrderDetail od " +
+            "join fetch od.order o " +
+            "join fetch od.reservation r " +
+            "where od.status != :status " +
+            "and od.item.id = :itemId " +
+            "and od.item.seller.companyId = :sellerId")
+    Page<OrderDetail> findAllBySeller(OrderDetailStatus status,Long sellerId, Long itemId, Pageable pageable);
 }
