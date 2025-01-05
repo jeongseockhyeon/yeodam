@@ -3,9 +3,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.toggle-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
+            let card = btn.closest('.card');
             let info = btn.closest('.card').nextElementSibling;
             if (info && info.classList.contains('info')) {
-                info.classList.toggle('info-close');
+                if (info.classList.contains('info-close')) {
+                    info.classList.remove('info-close');
+                    card.style.marginBottom = '0';
+                } else {
+                    info.classList.add('info-close');
+                    card.style.marginBottom = '10px';
+                }
             }
         });
     });

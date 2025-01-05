@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../static/css/style.css">
+    <title>주문내역</title>
+</head>
+<body>
+<div class="header-area">
+    <div th:replace="~{fragments/header-noSearch :: header}"></div>
+</div>
+<h1 class="text-center">주문상품 목록</h1>
+<div class="container mt-5">
+    <table class="table table-hover table-bordered">
+        <thead class="table-header table-light">
+        <tr>
+            <th>NO</th>
+            <th>상품명</th>
+            <th>예약내역</th>
+            <th>취소내역</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order, orderStat : ${response.content}">
+            <td th:text="${orderStat.count}"></td>
+            <td>
+                <a th:href="@{/sellers/items/{itemId}/orders(itemId=${order.itemId})}" class="text-decoration-none"
+                th:text="${order.itemName}"></a>
+            </td>
+            <td th:text="${order.reservationCnt}"></td>
+            <td th:text="${order.cancelCnt}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -54,7 +54,7 @@ public class OrderDetail {
 
     @Builder
     public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
-        this.item = item;
+        setItem(item);
         this.count = count;
         this.price = price;
         this.bookerName = bookerName;
@@ -62,6 +62,11 @@ public class OrderDetail {
         this.message = message;
         this.status = PENDING;
         this.reservation = reservation;
+    }
+
+    private void setItem(Item item) {
+        this.item = item;
+        item.getOrderDetails().add(this);
     }
 
     public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {

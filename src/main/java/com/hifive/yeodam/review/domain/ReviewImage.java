@@ -1,5 +1,6 @@
 package com.hifive.yeodam.review.domain;
 
+import com.hifive.yeodam.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class ReviewImage {
+public class ReviewImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

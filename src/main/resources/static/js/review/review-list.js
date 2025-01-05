@@ -128,6 +128,57 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function addReviews(reviews) {
+        reviews.forEach((review, reviewIndex) => {
+            const { nickName, rate, description, imgPaths } = review;
+
+            // 캐러셀 요소 생성
+            let carousel = '';
+            if (imgPaths && imgPaths.length > 0) {
+                const carouselId = `carousel-review-${reviewIndex}`;
+                const carouselItems = imgPaths.map((img, imgIndex) => `
+                <div class="carousel-item ${imgIndex === 0 ? 'active' : ''}">
+                    <img src="${img}" class="d-block w-100" alt="Review Image">
+                </div>
+            `).join('');
+
+                const carouselControls = imgPaths.length > 1 ? `
+                <button class="carousel-control-prev" type="button" data-bs-target="#${carouselId}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#${carouselId}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            ` : '';
+
+                carousel = `
+                <div id="${carouselId}" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">
+                        ${carouselItems}
+                    </div>
+                    ${carouselControls}
+                </div>
+            `;
+            }
+
+            // 리뷰 카드 생성
+            const reviewDiv = document.createElement('div');
+            reviewDiv.innerHTML = `
+            <h3>${nickName}</h3>
+            <div class="modal-rating">${renderStars(rate)} (${rate})</div>
+            <p>${description}</p>
+            ${carousel}
+            <hr>
+        `;
+
+            // 부모 컨테이너에 추가
+            allReviewsContent.appendChild(reviewDiv);
+        });
+    }
+
+
+    /*function addReviews(reviews) {
         reviews.forEach(review => {
             const {nickName, rate, description, imageUrl} = review;
             const imageTag = imageUrl ? `<img src="${imageUrl}" alt="리뷰 이미지">` : '';
@@ -141,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             allReviewsContent.appendChild(reviewDiv);
         });
-    }
+    }*/
 
     function addNextButton() {
         const existingButton = allReviewsContent.querySelector('.next-btn');

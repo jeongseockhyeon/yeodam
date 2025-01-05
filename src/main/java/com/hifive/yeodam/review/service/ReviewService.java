@@ -3,23 +3,30 @@ package com.hifive.yeodam.review.service;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.image.service.ImageService;
 import com.hifive.yeodam.item.entity.Item;
+import com.hifive.yeodam.item.repository.ItemRepository;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
 import com.hifive.yeodam.orderdetail.repository.OrderDetailRepository;
 import com.hifive.yeodam.review.domain.Review;
 import com.hifive.yeodam.review.domain.ReviewImage;
 import com.hifive.yeodam.review.dto.CreateReviewRequest;
-import com.hifive.yeodam.review.dto.ReviewResponse;
+import com.hifive.yeodam.review.dto.ItemDetailReviewResponse;
+import com.hifive.yeodam.review.dto.SellerReviewResponse;
+import com.hifive.yeodam.review.dto.UserReviewResponse;
 import com.hifive.yeodam.review.repository.ReviewRepository;
+import com.hifive.yeodam.seller.entity.Seller;
+import com.hifive.yeodam.seller.repository.SellerRepository;
 import com.hifive.yeodam.user.entity.User;
 import com.hifive.yeodam.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +38,10 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
-    private final ImageService imageService;
+    private final SellerRepository sellerRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final ItemRepository itemRepository;
+    private final ImageService imageService;
 
     @Transactional
     public void createReview(Principal principal, String orderUid, Long itemId,
@@ -41,7 +50,8 @@ public class ReviewService {
         OrderDetail orderDetail = getOrderDetail(itemId, orderUid);
         User user = getUser(principal);
 
-        updateItemRating(orderDetail.getItem(), rate);
+        Item item = orderDetail.getItem();
+        item.updateRate(rate, reviewRepository.countReviewsByItemId(item.getId()));
 
         Review review = Review.builder()
                 .item(orderDetail.getItem())
@@ -67,6 +77,76 @@ public class ReviewService {
     }
 
     @Transactional
+    public void deleteReview(Principal principal, Long reviewId) {
+        User user = getUser(principal);
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(REVIEW_NOT_FOUND));
+
+        if (user.equals(review.getUser())) {
+            reviewRepository.deleteById(reviewId);
+        }
+
+        throw new CustomException(REVIEW_NOT_DELETE);
+    }
+
+
+    @Transactional(readOnly = true)
+    public ItemDetailReviewResponse findAllByItemId(Long itemId, int limit) {
+
+        PageRequest pageRequest = PageRequest.ofSize(limit);
+        Page<Review> findReviews = reviewRepository.findAllByItemId(itemId, pageRequest);
+
+        return getItemDetailReviewResponse(findReviews);
+    }
+
+    @Transactional(readOnly = true)
+    public UserReviewResponse findReviewsByUser(Principal principal, int size) {
+        User user = getUser(principal);
+        PageRequest pageRequest = PageRequest.ofSize(size);
+        Slice<Review> findReviews = reviewRepository.findByItemAndUserIdPage(user.getId(), pageRequest);
+
+        List<UserReviewResponse.Review> reviews = getUserReviews(findReviews);
+
+        return UserReviewResponse.builder()
+                .hasNext(findReviews.hasNext())
+                .reviews(reviews)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SellerReviewResponse> findAllBySellerId(Principal principal, int offset, int limit) {
+
+        Seller seller = sellerRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new CustomException(SELLER_NOT_FOUND));
+
+        return itemRepository.findBySellerCompanyId(seller.getCompanyId(), PageRequest.of(offset, limit))
+                .map(item -> SellerReviewResponse.builder()
+                        .itemId(item.getId())
+                        .itemName(item.getItemName())
+                        .rate(item.getRate())
+                        .count(item.getReviews().size())
+                        .build()
+                );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SellerReviewResponse> findDetailsBySellerAndItem(Principal principal, Long itemId, int offset, int limit) {
+
+        Seller seller = sellerRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new CustomException(SELLER_NOT_FOUND));
+
+        Page<Review> reviews = reviewRepository
+                .findAllBySellerIdAndItemId(seller.getCompanyId(), itemId, PageRequest.of(offset, limit));
+
+        return reviews.map(r -> SellerReviewResponse.builder()
+                .itemId(r.getItem().getId())
+                .imgPaths(getReviewImgPaths(r))
+                .rate(r.getRate())
+                .createAt(LocalDate.from(r.getCreateAt()))
+                .description(r.getDescription())
+                .build());
+    }
+
     public CreateReviewRequest getCreateReviewRequest(Long itemId, String orderUid) {
         OrderDetail orderDetail = getOrderDetail(itemId, orderUid);
 
@@ -81,50 +161,27 @@ public class ReviewService {
                 .build();
     }
 
-    @Transactional
-    public void updateContent(Principal principal, Long reviewId, Long itemId, double rate, String description) {
-
-        User user = getUser(principal);
-        Review review = reviewRepository.findByReviewUserItemId(reviewId, itemId, user.getId())
-                .orElseThrow(() -> new CustomException(RESERVATION_NOT_FOUND));
-
-        review.updateContent(rate, description);
-    }
-
-    @Transactional
-    public void deleteReview(Principal principal, Long itemId) {
-        User user = getUser(principal);
-        reviewRepository.delete(itemId, user.getId());
-    }
-
-    @Transactional(readOnly = true)
-    public ReviewResponse findAllByItemId(Long itemId, int limit) {
-
-        PageRequest pageRequest = PageRequest.ofSize(limit);
-        Page<Review> findReviews = reviewRepository.findAllByItemId(itemId, pageRequest);
-
-        return getReviewResponse(findReviews);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<Review> findReviewsByUser(Principal principal, Long itemId, int page, int size) {
-        User user = getUser(principal);
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return reviewRepository.findByItemAndUserIdPage(itemId, user.getId(), pageRequest);
-    }
-
     private User getUser(Principal principal) {
         return userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
     }
 
+    private List<UserReviewResponse.Review> getUserReviews(Slice<Review> findReviews) {
+        return findReviews.stream()
+                .map(r -> UserReviewResponse.Review.builder()
+                        .reviewId(r.getId())
+                        .itemName(r.getItem().getItemName())
+                        .createAt(LocalDate.from(r.getCreateAt()))
+                        .rate(r.getRate())
+                        .description(r.getDescription())
+                        .reviewImgPath(getReviewImgPaths(r))
+                        .build())
+                .toList();
+    }
+
     private OrderDetail getOrderDetail(Long itemId, String orderUid) {
         return orderDetailRepository.findByItemOrderUid(itemId, orderUid)
                 .orElseThrow(() -> new CustomException(ORDER_DETAIL_NOT_FOUND));
-    }
-
-    private void updateItemRating(Item item, double rate) {
-        item.updateRate(rate, reviewRepository.countReviewsByItemId(item.getId()));
     }
 
     private String getItemImgPath(Item item) {
@@ -134,11 +191,11 @@ public class ReviewService {
         return item.getItemImages().getFirst().getStorePath();
     }
 
-    private ReviewResponse getReviewResponse(Page<Review> findReviews) {
+    private ItemDetailReviewResponse getItemDetailReviewResponse(Page<Review> findReviews) {
 
-        List<ReviewResponse.Review> reviews = findReviews.stream()
+        List<ItemDetailReviewResponse.Review> reviews = findReviews.stream()
                 .map(review ->
-                        ReviewResponse.Review.builder()
+                        ItemDetailReviewResponse.Review.builder()
                                 .rate(review.getRate())
                                 .nickName(review.getUser().getNickname())
                                 .description(review.getDescription())
@@ -147,7 +204,7 @@ public class ReviewService {
                 )
                 .toList();
 
-        return ReviewResponse.builder()
+        return ItemDetailReviewResponse.builder()
                 .reviews(reviews)
                 .totalCount(findReviews.getTotalElements())
                 .totalRate(findReviews.getContent().getFirst().getItem().getRate())
@@ -159,6 +216,7 @@ public class ReviewService {
         if (review.getReviewImages().isEmpty()) {
             return new ArrayList<>();
         }
+
         return review.getReviewImages().stream()
                 .map(ReviewImage::getStorePath)
                 .toList();

@@ -57,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
     imageUpload.addEventListener('change', (event) => {
         const files = event.target.files;
 
-        if (files.length > 5) {
-            alert(`최대 5개의 파일만 업로드할 수 있습니다.`);
+        if (files.length > 2) {
+            alert(`최대 2개의 파일만 업로드할 수 있습니다.`);
             imageUpload.value = '';
             imagePreview.innerHTML = '';
             return;
