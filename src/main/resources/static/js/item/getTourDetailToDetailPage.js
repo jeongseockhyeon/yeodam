@@ -1,5 +1,8 @@
 const id = getTourItemIdFromUrl();
 let guideId = null;
+const slider = document.querySelector(".slides");
+const prevButton = document.querySelector(".prev");
+const nextButton = document.querySelector(".next");
 async function fetchTourData() {
     try {
         const response = await fetch(`/api/tours/${id}`);
@@ -15,14 +18,48 @@ async function fetchTourData() {
 }
 
 function renderTourData(data) {
-    document.getElementById('tourName').textContent = data.tourName;
-    document.getElementById('mainImage').src = data.itemImgResDtoList[0]?.imgUrl || "/images/default-thumbnail.jpg";
-    document.getElementById('additionalImage').style.display = data.itemImgResDtoList.length > 1 ? 'block' : 'none';
-    if (data.itemImgResDtoList[1]) {
-        document.getElementById('additionalImage').src = data.itemImgResDtoList[1].imgUrl;
-    }
+    // 최대 5개의 이미지를 추가
+    data.itemImgResDtoList.slice(0, 5).forEach(image => {
+        const imgElement = document.createElement("img");
+        imgElement.src = image.imgUrl || "/images/default-thumbnail.jpg";
+        slider.appendChild(imgElement);
+    });
 
-    document.getElementById('guideName').textContent = data.guideInTourResDtos.length > 0 ? data.guideInTourResDtos[0].name : '없음';
+    let currentIndex = 0;
+
+    // 슬라이드 이동 업데이트 함수
+    const updateSlidePosition = () => {
+        const width = slider.querySelector("img").clientWidth;
+        slider.style.transform = `translateX(-${currentIndex * width}px)`;
+
+        // 버튼 표시 상태 업데이트
+        prevButton.style.display = currentIndex === 0 ? "none" : "block";
+        nextButton.style.display = currentIndex === data.itemImgResDtoList.length - 1 ? "none" : "block";
+    };
+
+    // 초기 버튼 상태 업데이트
+    updateSlidePosition();
+
+    // 이전 버튼 클릭 이벤트
+    prevButton.addEventListener("click", () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateSlidePosition();
+        }
+    });
+
+    // 다음 버튼 클릭 이벤트
+    nextButton.addEventListener("click", () => {
+        if (currentIndex < data.itemImgResDtoList.length - 1) {
+            currentIndex++;
+            updateSlidePosition();
+        }
+    });
+
+    document.getElementById('tourName').textContent = data.tourName;
+
+    document.getElementById('guideName').textContent =
+        data.guideInTourResDtos.length > 0 ? data.guideInTourResDtos[0].name : '없음';
     document.getElementById('tourPeriod').textContent = data.tourPeriod;
     document.getElementById('maximum').textContent = data.maximum;
 
@@ -38,14 +75,17 @@ function renderTourData(data) {
         const listItem = document.createElement('li');
         const button = document.createElement('button');
         button.textContent = guide.name;
-        button.setAttribute('data-name', guide.name);  // 가이드 이름
-        button.setAttribute('data-id', guide.id);  // 가이드 ID
+        button.setAttribute('data-name', guide.name); // 가이드 이름
+        button.setAttribute('data-id', guide.id); // 가이드 ID
         button.classList.add('guide-option');
         button.style.cssText = 'display: block; width: 100%; text-align: left; padding: 5px;';
-        button.onclick = () => selectGuide(button);  // 클릭 시 selectGuide 호출
+        button.onclick = () => selectGuide(button); // 클릭 시 selectGuide 호출
         listItem.appendChild(button);
         guideList.appendChild(listItem);
     });
+
+    // 슬라이더 이미지가 로드되었을 때 크기 업데이트
+    window.addEventListener("resize", updateSlidePosition);
 }
 
 function toggleGuideDropdown() {
