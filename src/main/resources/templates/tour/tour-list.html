@@ -42,21 +42,33 @@
         <!-- 카테고리 -->
         <div class="dropdown">
             <button class="dropdown-btn">테마</button>
-            <div class="dropdown-content" id="categoryCheckBox">
-                <!--카테고리 체크박스 렌더링-->
+            <div class="dropdown-content" >
+                <div id="categoryCheckBox">
+                </div>
             </div>
         </div>
 
         <!-- 기간 -->
-        <label for="tourPeriod">기간:</label>
-        <select id="tourPeriod" name="period">
-            <option value="">전체</option>
-        </select>
-        <br>
-        <label for="tourRegion">지역:</label>
-        <select id="tourRegion" name="region">
-            <option value="">전체</option>
-        </select>
+        <div class="dropdown">
+            <button class="dropdown-btn">기간</button>
+            <div class="dropdown-content">
+                <label for="tourPeriod"></label>
+                <select id="tourPeriod" name="period">
+                    <option value="">전체</option>
+                </select>
+            </div>
+        </div>
+        <!--지역-->
+        <div class="dropdown">
+            <button class="dropdown-btn">지역</button>
+            <div class="dropdown-content">
+                <label for="tourRegion"></label>
+                <select id="tourRegion" name="region">
+                    <option value="">전체</option>
+                </select>
+            </div>
+        </div>
+
 
         <!-- 가격 -->
         <div class="dropdown">
