@@ -1,9 +1,6 @@
 package com.hifive.yeodam;
 
-import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.entity.RoleType;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

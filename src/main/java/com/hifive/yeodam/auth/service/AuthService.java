@@ -63,7 +63,7 @@ public class AuthService {
         Optional<Auth> optionalAuth = authRepository.findById(id);
         Auth auth = optionalAuth.orElseThrow(() -> new CustomException(CustomErrorCode.AUTH_NOT_FOUND));
 
-        auth.setPassword(passwordEncoder.encode(request.getPassword()));
+        auth.update(passwordEncoder.encode(request.getPassword()));
 
         return auth;
     }
