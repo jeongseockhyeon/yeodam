@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let cursorId = null; // 현재 커서 ID
     let cursorPrice = null;
     let cursorRate = null;
+    let cursorReviewCount = null;
     const tourList = document.getElementById("tourList");
 
     const params = new URLSearchParams(window.location.search);
@@ -102,6 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
             params.append("cursorPrice", cursorPrice);
         } else if (sortBy === "rate" && cursorRate !== null) {
             params.append("cursorRate", cursorRate);
+        } else if (sortBy === "reviews" && cursorReviewCount !== null){
+            params.append("cursorReviewCount", cursorReviewCount)
         } else if (cursorId !== null) {
             params.append("cursorId", cursorId);
         }
@@ -113,12 +116,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderTours(data.content);
 
                 if (data.content.length > 0) {
+                    // cursorId 및 정렬 기준에 따라 값 갱신
                     if (sortBy === "price") {
                         cursorPrice = data.content[data.content.length - 1].tourPrice;
                     } else if (sortBy === "rate") {
                         cursorRate = data.content[data.content.length - 1].rate;
+                    } else if (sortBy === "reviews") {
+                        cursorReviewCount = data.content[data.content.length - 1].reviewCount;
                     }
                     cursorId = data.content[data.content.length - 1].id;
+
+                    // hasNext 값이 false인 경우 스크롤 이벤트를 제거하여 더 이상 조회하지 않음
+                    if (!data.hasNext) {
+                        window.removeEventListener("scroll", handleScroll);
+                    }
                 } else {
                     window.removeEventListener("scroll", handleScroll);
                 }

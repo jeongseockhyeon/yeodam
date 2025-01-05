@@ -18,6 +18,7 @@ public class SearchFilterDto {
     private final Long cursorId;
     private final Integer cursorPrice;
     private final Double cursorRate;
+    private final Integer cursorReviewsCount;
     private final int pageSize;
     private final String sortBy;
     private final String order;
@@ -34,6 +35,7 @@ public class SearchFilterDto {
                            Long cursorId,
                            Integer cursorPrice,
                            Double cursorRate,
+                           Integer cursorReviewsCount,
                            int pageSize) {
 
         this.categories = categories;
@@ -47,6 +49,7 @@ public class SearchFilterDto {
         this.cursorId = cursorId;
         this.cursorPrice = cursorPrice;
         this.cursorRate = cursorRate;
+        this.cursorReviewsCount = cursorReviewsCount;
         this.pageSize = pageSize;
     }
 }
