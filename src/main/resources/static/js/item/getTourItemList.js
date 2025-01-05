@@ -8,22 +8,63 @@ document.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const keyword = params.get("keyword") || "";
 
+    // 로딩 중 표시
+    function showLoadingIndicator() {
+        const loadingIndicator = document.createElement("div");
+        loadingIndicator.className = "loading-indicator";
+        loadingIndicator.textContent = "로딩 중...";
+        tourList.appendChild(loadingIndicator);
+    }
+
+    // 로딩 중 표시 제거
+    function hideLoadingIndicator() {
+        const loadingIndicator = document.querySelector(".loading-indicator");
+        if (loadingIndicator) loadingIndicator.remove();
+    }
+
+    // 필터 상태 저장
+    function saveFilterState() {
+        const filters = {
+            period: document.getElementById("tourPeriod").value,
+            region: document.getElementById("tourRegion").value,
+            sortBy: document.getElementById("sortBy").value,
+            order: document.getElementById("sortOrder").value,
+            minPrice: document.getElementById("minPrice").value,
+            maxPrice: document.getElementById("maxPrice").value,
+        };
+        localStorage.setItem("filters", JSON.stringify(filters));
+    }
+
+    // 필터 상태 복원
+    function restoreFilterState() {
+        const savedFilters = JSON.parse(localStorage.getItem("filters")) || {};
+        document.getElementById("tourPeriod").value = savedFilters.period || "";
+        document.getElementById("tourRegion").value = savedFilters.region || "";
+        document.getElementById("sortBy").value = savedFilters.sortBy || "";
+        document.getElementById("sortOrder").value = savedFilters.order || "";
+
+        const minPrice = savedFilters.minPrice || "";
+        const maxPrice = savedFilters.maxPrice || "";
+        document.getElementById("minPrice").value = minPrice;
+        document.getElementById("maxPrice").value = maxPrice;
+    }
 
     function fetchToursWithPagination(reset = false) {
         if (isFetching) return; // 이미 요청 중이면 종료
         isFetching = true;
 
-        // 필터가 변경되면 기존 데이터를 초기화
         if (reset) {
             tourList.innerHTML = ""; // 기존 데이터 비우기
             cursorId = null; // 커서 초기화
-            cursorPrice = null; // 가격 커서 초기화
+            cursorPrice = null;
         }
 
-        const params = new URLSearchParams();
-        params.append("pageSize", 6); // 한 페이지에 가져올 데이터 수
+        // 로딩 중 표시
+        showLoadingIndicator();
 
-        // 검색어를 표시하거나 유지
+        const params = new URLSearchParams();
+        params.append("pageSize", 6);
+
         const searchInput = document.querySelector('input[name="keyword"]');
         if (searchInput) {
             searchInput.value = keyword;
@@ -31,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (keyword) params.append("keyword", keyword);
 
-        // 필터 조건 추가
         const selectedCategories = [];
         const checkboxes = document.querySelectorAll("#categoryCheckBox input[type='checkbox']:checked");
         checkboxes.forEach((checkbox) => {
@@ -58,10 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sortBy) params.append("sortBy", sortBy);
         if (order) params.append("order", order);
 
-        // 정렬 방식에 따라 커서 설정
         if (sortBy === "price" && cursorPrice !== null) {
             params.append("cursorPrice", cursorPrice);
-        } else if(sortBy === "rate" && cursorRate !== null){
+        } else if (sortBy === "rate" && cursorRate !== null) {
             params.append("cursorRate", cursorRate);
         } else if (cursorId !== null) {
             params.append("cursorId", cursorId);
@@ -70,24 +109,23 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`/api/tours?${params.toString()}`)
             .then((response) => response.json())
             .then((data) => {
+                hideLoadingIndicator(); // 로딩 중 표시 제거
                 renderTours(data.content);
 
                 if (data.content.length > 0) {
-                    // 정렬 방식에 따라 커서 업데이트
                     if (sortBy === "price") {
-                        cursorPrice = data.content[data.content.length - 1].tourPrice; // 마지막 요소의 가격 저장
+                        cursorPrice = data.content[data.content.length - 1].tourPrice;
                     } else if (sortBy === "rate") {
-                        cursorRate = data.content[data.content.length - 1].rate; //마지막 요소의 평점 저장
+                        cursorRate = data.content[data.content.length - 1].rate;
                     }
-                    cursorId = data.content[data.content.length - 1].id; // 마지막 요소의 ID 저장
-                }
-                else {
-                    // 더 이상 데이터가 없으면 이벤트 제거
+                    cursorId = data.content[data.content.length - 1].id;
+                } else {
                     window.removeEventListener("scroll", handleScroll);
                 }
                 isFetching = false;
             })
             .catch((error) => {
+                hideLoadingIndicator(); // 로딩 중 표시 제거
                 console.error("상품 데이터 불러오기 실패:", error);
                 isFetching = false;
             });
@@ -99,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const tourCard = document.createElement("div");
             tourCard.className = "tour-card";
             const primaryGuide = tour.guideInTourResDtos[0];
-
             const thumbnail = tour.itemImgResDtoList?.[0]?.imgUrl || "/images/default-thumbnail.jpg";
             tourCard.addEventListener("click", () => {
                 window.location.href = `/tours/${tour.id}`;
@@ -117,9 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span> | 지역: ${tour.tourRegion}</span>
                     </div>
                     <div>
-                        <span>가이드: ${
-                primaryGuide ? primaryGuide.name : "정보 없음"
-            }</span>
+                        <span>가이드: ${primaryGuide ? primaryGuide.name : "정보 없음"}</span>
                         <span> | 평점: ${tour.rate}⭐</span>
                         <span> (${primaryGuide ? primaryGuide.reviews : 0}명)</span>
                     </div>
@@ -138,19 +173,16 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleScroll() {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
         if (scrollTop + clientHeight >= scrollHeight - 10) {
-            // 스크롤이 끝에 도달하면 다음 데이터를 요청
             fetchToursWithPagination();
         }
     }
 
-    // 필터 적용 버튼 클릭 이벤트
-    document.getElementById("applyFiltersBtn").addEventListener("click", () => {
-        fetchToursWithPagination(true); // 필터가 변경되었으므로 데이터 초기화
-    });
-
-    // 초기 데이터 로드
+    restoreFilterState(); // 필터 상태 복원
     fetchToursWithPagination();
-
-    // 스크롤 이벤트 등록
     window.addEventListener("scroll", handleScroll);
+
+    document.getElementById("applyFiltersBtn").addEventListener("click", () => {
+        saveFilterState(); // 필터 상태 저장
+        fetchToursWithPagination(true);
+    });
 });

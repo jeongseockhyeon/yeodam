@@ -1,9 +1,15 @@
 .container {
     display: flex;
+    gap: 0; /* 간격 없애기 */
+    align-items: flex-start; /* 상단 정렬 */
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    padding: 0; /* 여백 없애기 */
+    margin-left: 0; /* 왼쪽 여백 제거 */
 }
 
+/* 사이드바: 왼쪽에 고정 */
 .sidebar {
-    position: fixed;
+    position: sticky; /* 스크롤 시 고정 */
     top: 0;
     left: 0;
     height: 100vh;
@@ -12,6 +18,7 @@
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
+    flex-shrink: 0; /* 사이드바 너비 고정 */
 }
 .sidebar h3 {
     margin-top: 20px;
@@ -34,13 +41,14 @@
     background-color: #f0f0f0;
 }
 
+/* 상품 목록: 사이드바 오른쪽 */
 .tour-list {
-    width: calc(100% - 40px);
-    margin-left: 27px;
+    flex-grow: 1; /* 남은 공간 채우기 */
+    display: grid; /* 그리드 레이아웃 */
+    grid-template-columns: repeat(2, 1fr); /* 2열 */
+    gap: 20px; /* 카드 간 간격 */
     padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    box-sizing: border-box; /* 패딩 포함 크기 계산 */
 }
 
 .tour-card {
@@ -66,6 +74,7 @@
     width: 350px;
     height: 350px;
     object-fit: cover;
+    border-radius: 8px 8px 0 0;
 }
 
 .tour-card .content {
@@ -143,4 +152,36 @@
 /* Active dropdown */
 .dropdown.active .dropdown-content {
     display: block;
+}
+/* 반응형 설정 */
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column; /* 세로 레이아웃 */
+    }
+
+    .sidebar {
+        width: 100%; /* 전체 너비 */
+        order: 2; /* 아래로 이동 */
+    }
+
+    .tour-list {
+        order: 1; /* 위로 이동 */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dropdown {
+        width: 100%; /* 드롭다운 버튼 전체 너비 */
+        margin-bottom: 8px;
+    }
+
+    .tour-list {
+        grid-template-columns: 1fr; /* 한 열에 하나의 카드 */
+    }
 }
