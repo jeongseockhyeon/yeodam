@@ -22,7 +22,7 @@ public class ReviewController {
     public String createReviewForm(@PathVariable Long itemId, @RequestParam String orderUid, Model model) {
 
         model.addAttribute("request", reviewService.getCreateReviewRequest(itemId, orderUid));
-        return "/review/review-form";
+        return "review/review-form";
     }
 
     @PostMapping("/items/{itemId}/reviews/new")
@@ -48,7 +48,7 @@ public class ReviewController {
             Principal principal, Model model) {
 
         model.addAttribute("response", reviewService.findAllBySellerId(principal, offset, limit));
-        return "/review/review-seller-list";
+        return "review/review-seller-list";
     }
 
     @GetMapping("/sellers/items/{itemId}/reviews")
@@ -60,7 +60,7 @@ public class ReviewController {
 
         model.addAttribute("response", reviewService.findDetailsBySellerAndItem(principal, itemId, offset, limit));
 
-        return "/review/review-seller-detail";
+        return "review/review-seller-detail";
     }
 
     @ResponseBody

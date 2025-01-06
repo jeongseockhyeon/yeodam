@@ -1,8 +1,6 @@
 package com.hifive.yeodam.order.controller;
 
 import com.hifive.yeodam.item.service.ItemService;
-import com.hifive.yeodam.order.dto.request.AddOrderRequest;
-import com.hifive.yeodam.order.service.OrderQueryService;
 import com.hifive.yeodam.orderdetail.service.OrderDetailQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +39,7 @@ public class OrderFormController {
             Principal principal, Model model) {
 
         model.addAttribute("response", itemService.findItemsWithOrderCountBySeller(principal, offset, limit));
-        return "/order/order-seller-list";
+        return "order/order-seller-list";
     }
 
     @GetMapping("/sellers/items/{itemId}/orders")
@@ -53,6 +51,6 @@ public class OrderFormController {
 
         model.addAttribute("response", orderDetailQueryService.findOrderDetailsBySeller(principal, itemId, offset, limit));
 
-        return "/order/order-seller-detail";
+        return "order/order-seller-detail";
     }
 }
