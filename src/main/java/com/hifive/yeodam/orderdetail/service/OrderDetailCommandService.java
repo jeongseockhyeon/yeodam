@@ -3,6 +3,7 @@ package com.hifive.yeodam.orderdetail.service;
 import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.item.repository.ItemRepository;
+import com.hifive.yeodam.order.domain.OrderStatus;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.orderdetail.domain.OrderDetail;
 import com.hifive.yeodam.orderdetail.domain.OrderDetailStatus;
@@ -12,10 +13,12 @@ import com.hifive.yeodam.reservation.repository.ReservationRepository;
 import com.hifive.yeodam.seller.entity.Guide;
 import com.hifive.yeodam.seller.repository.GuideRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +52,20 @@ public class OrderDetailCommandService {
         });
 
         return orderDetails;
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void processPastReservation() {
+
+        List<Long> ids = orderDetailRepository.findPastReservationDetails(
+                        OrderStatus.COMPLETED,
+                        OrderDetailStatus.PENDING,
+                        LocalDate.now()).stream()
+                .map(OrderDetail::getId)
+                .toList();
+
+        orderDetailRepository.updateStatusBulk(OrderStatus.COMPLETED, ids);
     }
 
     private OrderDetail buildOrderDetail(orderRequest request, Reservation reservation) {
@@ -95,7 +112,7 @@ public class OrderDetailCommandService {
     }
 
     private void checkGuideAvailability(orderRequest request, Guide guide) {
-        if (orderDetailRepository.isGuideAvailable(guide.getGuideId(), OrderDetailStatus.PENDING,request.getStartDate(), request.getEndDate())) {
+        if (orderDetailRepository.isGuideAvailable(guide.getGuideId(), OrderDetailStatus.PENDING, request.getStartDate(), request.getEndDate())) {
             throw new CustomException(RESERVED_GUIDE);
         }
     }
