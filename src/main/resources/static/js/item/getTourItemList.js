@@ -75,6 +75,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (keyword) params.append("keyword", keyword);
 
+        // 로컬스토리지에서 필터 값 가져오기
+        const regionParam = localStorage.getItem("selectedRegion");
+        const themeParam = localStorage.getItem("selectedThemes");
+        const periodParam = localStorage.getItem("selectedPeriod");
+
+        // 로컬스토리지에서 가져온 값을 파라미터로 추가
+        if (regionParam) {
+            params.append("region", regionParam);
+        }
+        if (themeParam) {
+            params.append("categories", themeParam);
+        }
+        if (periodParam) {
+            params.append("period", periodParam);
+        }
+
         const selectedCategories = [];
         const checkboxes = document.querySelectorAll("#categoryCheckBox input[type='checkbox']:checked");
         checkboxes.forEach((checkbox) => {
@@ -96,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
             params.append("maxPrice", maxPrice || 9999999);
         }
 
+
         const sortBy = document.querySelector("#sortBy").value;
         const order = document.querySelector("#sortOrder").value;
         if (sortBy) params.append("sortBy", sortBy);
@@ -116,6 +133,12 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((data) => {
                 hideLoadingIndicator(); // 로딩 중 표시 제거
                 renderTours(data.content);
+
+                // 로컬 스토리지 비우기
+                localStorage.removeItem("selectedRegion");
+                localStorage.removeItem("selectedThemes");
+                localStorage.removeItem("selectedPeriod");
+
 
                 if (data.content.length > 0) {
                     // cursorId 및 정렬 기준에 따라 값 갱신
