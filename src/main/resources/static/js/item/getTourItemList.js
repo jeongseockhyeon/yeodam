@@ -122,11 +122,11 @@ document.addEventListener("DOMContentLoaded", () => {
             params.append("cursorPrice", cursorPrice);
         } else if (sortBy === "rate" && cursorRate !== null) {
             params.append("cursorRate", cursorRate);
-        } else if (sortBy === "reviews" && cursorReviewCount !== null){
-            params.append("cursorReviewCount", cursorReviewCount)
-        } else if (cursorId !== null) {
-            params.append("cursorId", cursorId);
+        } else if (sortBy === "reviews" && cursorReviewCount !== null) {
+            params.append("cursorReviewCount", cursorReviewCount);
         }
+        if (cursorId !== null) params.append("cursorId", cursorId);
+
 
         fetch(`/api/tours?${params.toString()}`)
             .then((response) => response.json())
@@ -146,9 +146,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         cursorPrice = data.content[data.content.length - 1].tourPrice;
                     } else if (sortBy === "rate") {
                         cursorRate = data.content[data.content.length - 1].rate;
-                    } else if (sortBy === "reviews") {
+                    } /*else if (sortBy === "reviews") {
                         cursorReviewCount = data.content[data.content.length - 1].reviewCount;
-                    }
+                    }*/
                     cursorId = data.content[data.content.length - 1].id;
 
                     // last 값이 true 인 경우 스크롤 이벤트를 제거하여 더 이상 조회하지 않음

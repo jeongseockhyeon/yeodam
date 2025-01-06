@@ -1,8 +1,6 @@
 package com.hifive.yeodam.tour.repository;
 
 import com.hifive.yeodam.category.entity.QCategory;
-import com.hifive.yeodam.item.entity.QItem;
-import com.hifive.yeodam.review.domain.QReview;
 import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.tour.dto.SearchFilterDto;
 import com.hifive.yeodam.tour.entity.QTour;
@@ -10,13 +8,9 @@ import com.hifive.yeodam.tour.entity.QTourCategory;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
-import com.querydsl.core.types.dsl.NumberPath;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -28,18 +22,16 @@ import static org.springframework.util.StringUtils.hasText;
 
 @RequiredArgsConstructor
 @Repository
+@Slf4j
 public class TourRepositoryCustomImpl implements TourRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     QTour tour = QTour.tour;
     QTourCategory tourCategory = QTourCategory.tourCategory;
     QCategory category = QCategory.category;
-    QReview review = QReview.review;
-    QItem item = QItem.item;
 
     @Override
     public Slice<Tour> searchByFilterAndActive(SearchFilterDto searchFilterDto) {
-
         Long cursorId = searchFilterDto.getCursorId();
         int pageSize = searchFilterDto.getPageSize();
 
@@ -47,13 +39,13 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (searchFilterDto.getCategories() != null && !searchFilterDto.getCategories().isEmpty()) {
             builder.and(category.name.in(searchFilterDto.getCategories()));
         }
-        if (hasText(searchFilterDto.getRegion())){
+        if (hasText(searchFilterDto.getRegion())) {
             builder.and(tour.region.eq(searchFilterDto.getRegion()));
         }
-        if (hasText(searchFilterDto.getKeyword())){
+        if (hasText(searchFilterDto.getKeyword())) {
             builder.and(tour.itemName.containsIgnoreCase(searchFilterDto.getKeyword()));
         }
-        if (hasText(searchFilterDto.getPeriod())){
+        if (hasText(searchFilterDto.getPeriod())) {
             builder.and(tour.period.eq(searchFilterDto.getPeriod()));
         }
         if (searchFilterDto.getMinPrice() != null) {
@@ -62,44 +54,69 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         if (searchFilterDto.getMaxPrice() != null) {
             builder.and(tour.price.loe(Integer.parseInt(searchFilterDto.getMaxPrice())));
         }
-        NumberPath<Integer> pricePath = tour.price;
-        NumberPath<Double> ratePath = tour.rate;
-        NumberExpression<Integer> reviewCountEx = tour.reviews.size();
 
+        String sortBy = searchFilterDto.getSortBy();
+        String order = searchFilterDto.getOrder();
 
         Integer cursorPrice = searchFilterDto.getCursorPrice();
         Double cursorRate = searchFilterDto.getCursorRate();
-        Integer cursorReviewsCount = searchFilterDto.getCursorReviewsCount();
-        //정렬 조건
-        OrderSpecifier<?> sortOrder = null;
-        if ("price".equals(searchFilterDto.getSortBy())) {
-            sortOrder = setSortOrderAndConditions(builder, pricePath, cursorPrice, searchFilterDto.getCursorId(), searchFilterDto.getOrder());
-        } else if ("rate".equals(searchFilterDto.getSortBy())) {
-            sortOrder = setSortOrderAndConditions(builder, ratePath, cursorRate, searchFilterDto.getCursorId(), searchFilterDto.getOrder());
-        }else if ("reviews".equals(searchFilterDto.getSortBy())) {
-            sortOrder = setSortOrderAndConditions(builder,reviewCountEx, cursorReviewsCount, searchFilterDto.getCursorId(), searchFilterDto.getOrder());
-        }
-        else {
-            sortOrder = tour.id.desc();
+        OrderSpecifier<?> primarySort = null;
+        OrderSpecifier<?> secondarySort = tour.id.desc();
+
+        if ("price".equals(sortBy)) {
+            primarySort = "asc".equals(order) ? tour.price.asc() : tour.price.desc();
+            if (cursorPrice != null && cursorId != null) {
+                if ("asc".equals(order)) {
+                    builder.and(
+                            tour.price.gt(cursorPrice)
+                                    .or(tour.price.eq(cursorPrice).and(tour.id.lt(cursorId)))
+                    );
+                } else {
+                    builder.and(
+                            tour.price.lt(cursorPrice)
+                                    .or(tour.price.eq(cursorPrice).and(tour.id.lt(cursorId)))
+                    );
+                }
+            }
+        } else if ("rate".equals(sortBy)) {
+            primarySort = "asc".equals(order) ? tour.rate.asc() : tour.rate.desc();
+
+            if (cursorRate != null && cursorId != null) {
+                if ("asc".equals(order)) {
+                    builder.and(
+                            tour.rate.gt(cursorRate)
+                                    .or(tour.rate.eq(cursorRate).and(tour.id.lt(cursorId)))
+                    );
+                } else {
+                    builder.and(
+                            tour.rate.lt(cursorRate)
+                                    .or(tour.rate.eq(cursorRate).and(tour.id.lt(cursorId)))
+                    );
+                }
+            }
+        } else {
+            primarySort = tour.id.desc();
+            if (cursorId != null) {
+                builder.and(tour.id.lt(cursorId));
+            }
         }
 
         List<Tour> results = jpaQueryFactory.select(tour)
                 .from(tour)
                 .leftJoin(tour.tourCategories, tourCategory)
                 .leftJoin(tourCategory.category, category)
-                .leftJoin(tour.reviews, review) // reviews 테이블과 조인
                 .where(tour.active.isTrue()
-                        .and(builder)
-                        .and(cursorId != null ? tour.id.lt(cursorId) : null))
-                .groupBy(tour) // GROUP BY tour 추가
-                .orderBy(sortOrder)
+                        .and(builder))
+                .orderBy(primarySort, secondarySort)
                 .limit(pageSize + 1)
+                .distinct()
                 .fetch();
 
-        boolean hasNext = results.size() > pageSize; //이후 데이터 여부 확인
-        if(hasNext){
-            results.removeLast();
+        boolean hasNext = results.size() > pageSize;
+        if (hasNext) {
+            results.remove(results.size() - 1);
         }
+
         return new SliceImpl<>(results, PageRequest.of(0, pageSize), hasNext);
     }
 
@@ -116,32 +133,9 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
                 .limit(pageSize + 1)
                 .fetch();
         boolean hasNext = result.size() > pageSize;
-        if(hasNext){
+        if (hasNext) {
             result.removeLast();
         }
         return new SliceImpl<>(result, PageRequest.of(0, pageSize), hasNext);
-    }
-
-    public <T extends Number & Comparable<?>> OrderSpecifier<?> setSortOrderAndConditions(
-            BooleanBuilder builder, NumberExpression<T> sortField, T cursorValue, Long cursorId, String order) {
-        OrderSpecifier<?> sortOrder;
-        if ("asc".equals(order)) {
-            sortOrder = sortField.asc();
-            if (cursorValue != null) {
-                builder.and(
-                        sortField.gt(cursorValue)
-                                .or(sortField.eq(cursorValue).and(cursorId != null ? tour.id.gt(cursorId) : null))
-                );
-            }
-        } else {
-            sortOrder = sortField.desc();
-            if (cursorValue != null) {
-                builder.and(
-                        sortField.lt(cursorValue)
-                                .or(sortField.eq(cursorValue).and(cursorId != null ? tour.id.lt(cursorId) : null))
-                );
-            }
-        }
-        return sortOrder;
     }
 }
