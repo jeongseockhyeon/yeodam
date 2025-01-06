@@ -196,36 +196,32 @@
         <div th:if="${#lists.isEmpty(wishes)}" class="empty-wishlist">
             <i class="bi bi-heart" style="font-size: 48px; margin-bottom: 20px;"></i>
             <p>찜한 상품이 없습니다.</p>
-            <a href="/" class="btn btn-primary">쇼핑하러 가기</a>
+            <a href="/" class="btn btn-primary">찜하러 가기</a>
         </div>
     </div>
-<script>
-    function removeFromWishlist(itemId) {
-        fetch(`/api/wishes/${itemId}`, {
-            method: 'DELETE',
-        })
-            .then(() => window.location.reload());
-    }
 
-    function addToCart(itemId) {
-        // 장바구니 추가 로직
-        fetch(`/api/cart/add/${itemId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                count: 1
+    <div class="container-fluid">
+        <footer class="d-flex flex-wrap justify-content-around align-items-center py-3 my-4 border-top">
+            <div class="col-md-4 d-flex align-items-center">
+                <span class="mb-3 mb-md-0 text-body-secondary">&copy; 2024 Elice Cloud Track5, Team 6</span>
+            </div>
+
+            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                <li class="ms-4"><a class="text-body-secondary" href="https://cloudtrack.elice.io/explore"><img style="width: 20px; height: 20px" src="/images/홈.png"/></a></li>
+                <li class="ms-4"><a class="text-body-secondary" href="https://kdt-gitlab.elice.io/cloud_track/class_05/web_project2/team06/hifive/yeodam"><img style="width: 20px; height: 20px" src="/images/깃랩.png"></a></li>
+                <li class="ms-4"><a class="text-body-secondary" href="https://www.notion.so/elice-track/c71ee142b54c44c9bcde14855b43f207"><img style="width: 20px; height: 20px" src="/images/노션.png"/></a></li>
+                <li class="ms-4"><a class="text-body-secondary" href="https://www.erdcloud.com/d/bWefMgQuTxkCnzwPd"><img style="width: 20px; height: 20px" src="/images/설계.png"/></a></li>
+            </ul>
+        </footer>
+    </div>
+
+    <script>
+        function removeFromWishlist(itemId) {
+            fetch(`/api/wishes/${itemId}`, {
+                method: 'DELETE',
             })
-        })
-            .then(response => {
-                if (response.ok) {
-                    if (confirm('상품이 장바구니에 담겼습니다. 장바구니로 이동하시겠습니까?')) {
-                        window.location.href = '/carts';
-                    }
-                }
-            });
-    }
-</script>
+                .then(() => window.location.reload());
+        }
+    </script>
 </body>
 </html>
