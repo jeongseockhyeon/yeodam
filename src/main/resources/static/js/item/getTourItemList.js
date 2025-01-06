@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
             tourList.innerHTML = ""; // 기존 데이터 비우기
             cursorId = null; // 커서 초기화
             cursorPrice = null;
+            cursorRate = null;
+            cursorReviewCount = null;
         }
 
         // 로딩 중 표시
@@ -127,11 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     cursorId = data.content[data.content.length - 1].id;
 
                     // hasNext 값이 false인 경우 스크롤 이벤트를 제거하여 더 이상 조회하지 않음
-                    if (!data.hasNext) {
+                    if (data.last) {
                         window.removeEventListener("scroll", handleScroll);
                     }
-                } else {
-                    window.removeEventListener("scroll", handleScroll);
                 }
                 isFetching = false;
             })
@@ -195,5 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("applyFiltersBtn").addEventListener("click", () => {
         saveFilterState(); // 필터 상태 저장
         fetchToursWithPagination(true);
+        window.addEventListener("scroll", handleScroll);
     });
 });
