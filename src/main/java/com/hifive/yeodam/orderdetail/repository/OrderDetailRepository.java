@@ -24,10 +24,15 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "join fetch od.item " +
             "join fetch od.order o " +
             "join fetch o.payment p " +
-            "where od.status in :detailsStatus " +
+            "where od.status in :detailStatus " +
             "and o.status != :status " +
             "and o.user = :user ")
-    Slice<OrderDetail> findOrderByDetailStatus(List<OrderDetailStatus> detailsStatus, OrderStatus status, User user, Pageable pageable);
+    Slice<OrderDetail> findOrderDetailsPending(List<OrderDetailStatus> detailStatus, OrderStatus status, User user, Pageable pageable);
+
+    @Query("select od from OrderDetail od " +
+            "where od.status in(:detailStatus) " +
+            "and od.order.user =:user")
+    Slice<OrderDetail> findOrderDetailsCancelComplete(List<OrderDetailStatus> detailStatus, User user);
 
     @Query("select case when count(od) > 0 then true else false end " +
             "from OrderDetail od " +
@@ -40,7 +45,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
 
     @Query("select od from OrderDetail od " +
             "join fetch od.item i " +
-            "join fetch od.reservation r " +
             "where i.id = :itemId " +
             "and od.order.orderUid = :orderUid")
     Optional<OrderDetail> findByItemOrderUid(Long itemId, String orderUid);
