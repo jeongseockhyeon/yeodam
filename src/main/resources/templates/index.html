@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -11,81 +10,109 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .navbar {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* 스크롤 버튼 스타일 */
+        .scroll-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
 
+        .scroll-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <div class="header-area">
-        <div th:replace="~{fragments/header :: header}"></div>
-    </div>
-    <!-- 네비게시션 바 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/tours">여행</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">티켓</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">프로모션</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">이벤트</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/survey">가이드 매칭</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 지역 카드 -->
-    <div class="container mt-5">
-        <h2>인기 관광지</h2>
-        <div class="row d-flex justify-content-start">
-            <div class="col-12 col-md-3 mb-4">
-                <div class="card position-relative" data-region="제주">
-                    <img src="/images/jeju.jpg" class="card-img-top" alt="제주" style="width: 300px; height: 300px;" onclick="redirectToToursPage(this)">
-                    <div class="position-absolute top-0 start-0 m-3 text-black font-weight-bold" style="font-size: 1.5rem;">제주</div>
-                </div>
-            </div>
-            <div class="col-12 col-md-3 mb-4">
-                <div class="card position-relative" data-region="부산">
-                    <img src="/images/busan.jpg" class="card-img-top" alt="부산" style="width: 300px; height: 300px;" onclick="redirectToToursPage(this)">
-                    <div class="position-absolute top-0 start-0 m-3 text-black font-weight-bold" style="font-size: 1.5rem;">부산</div>
-                </div>
-            </div>
-            <div class="col-12 col-md-3 mb-4">
-                <div class="card position-relative" data-region="서울">
-                    <img src="/images/seoul.jpg" class="card-img-top" alt="서울" style="width: 300px; height: 300px;" onclick="redirectToToursPage(this)">
-                    <div class="position-absolute top-0 start-0 m-3 text-black font-weight-bold" style="font-size: 1.5rem;">서울</div>
-                </div>
-            </div>
-            <div class="col-12 col-md-3 mb-4">
-                <div class="card position-relative" data-region="강원도">
-                    <img src="/images/gangwon.jpg" class="card-img-top" alt="강원도" style="width: 300px; height: 300px;" onclick="redirectToToursPage(this)">
-                    <div class="position-absolute top-0 start-0 m-3 text-black font-weight-bold" style="font-size: 1.5rem;">강원도</div>
-                </div>
-            </div>
+<div class="header-area">
+    <div th:replace="~{fragments/header :: header}"></div>
+</div><br>
+<!-- 네비게이션 바 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container d-flex align-items-center">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/tours">여행</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">티켓</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">프로모션</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">이벤트</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/survey">가이드 매칭</a>
+                </li>
+            </ul>
         </div>
     </div>
-    <script>
-        function redirectToToursPage(imageElement) {
-            // 카드의 data-region 속성 값 가져오기
-            const region = imageElement.closest('.card').getAttribute('data-region');
+</nav>
 
-            // 선택된 지역을 로컬스토리지에 저장
-            localStorage.setItem('selectedRegion', region);
+<!-- 지역 카드 -->
+<div class="container mt-5">
+    <h3 class="mb-4">인기 관광지</h3>
+    <div class="row d-flex justify-content-start">
+        <div class="col-12 col-md-3 mb-4">
+            <div class="card position-relative" data-region="제주">
+                <img src="/images/jeju.jpg" class="card-img-top img-fluid" alt="제주" style="height: 300px; object-fit: cover;" onclick="redirectToToursPage(this)">
+                <div class="position-absolute top-0 start-0 m-3 text-white" style="font-size: 2rem; font-weight: bold;">제주</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-4">
+            <div class="card position-relative" data-region="부산">
+                <img src="/images/busan.jpg" class="card-img-top img-fluid" alt="부산" style="height: 300px; object-fit: cover;" onclick="redirectToToursPage(this)">
+                <div class="position-absolute top-0 start-0 m-3 text-white" style="font-size: 2rem; font-weight: bold;">부산</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-4">
+            <div class="card position-relative" data-region="서울">
+                <img src="/images/seoul.jpg" class="card-img-top img-fluid" alt="서울" style="height: 300px; object-fit: cover;" onclick="redirectToToursPage(this)">
+                <div class="position-absolute top-0 start-0 m-3 text-white" style="font-size: 2rem; font-weight: bold;">서울</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 mb-4">
+            <div class="card position-relative" data-region="강원도">
+                <img src="/images/gangwon.jpg" class="card-img-top img-fluid" alt="강원" style="height: 300px; object-fit: cover;" onclick="redirectToToursPage(this)">
+                <div class="position-absolute top-0 start-0 m-3 text-white" style="font-size: 2rem; font-weight: bold;">강원</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer-area">
+    <div th:replace="~{fragments/footer.html::footer}"></div>
+</div>
 
-            // 페이지 이동
-            window.location.href = "/tours"; // 페이지 이동
-        }
-    </script>
+<script>
+    function redirectToToursPage(imageElement) {
+        // 카드의 data-region 속성 값 가져오기
+        const region = imageElement.closest('.card').getAttribute('data-region');
+
+        // 선택된 지역을 로컬스토리지에 저장
+        localStorage.setItem('selectedRegion', region);
+
+        // 페이지 이동
+        window.location.href = "/tours"; // 페이지 이동
+    }
+</script>
 </body>
 </html>
