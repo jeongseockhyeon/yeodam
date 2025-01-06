@@ -118,6 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 답변하기 버튼
                 const answerButton = document.createElement("button");
                 answerButton.className = "answer-button";
+                answerButton.id = `answer-button-${inquiry.id}`;
                 answerButton.textContent = "답변하기";
                 answerButton.addEventListener("click", () => showAnswerForm(inquiry.id));
 
