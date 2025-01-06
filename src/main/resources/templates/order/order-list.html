@@ -65,7 +65,7 @@
     </th:block>
     <th:block th:each="after : ${orderDetailsResponse.getAfterResponse().content}">
         <div class="custom-card">
-            <img th:src="${after.imgPath}" alt="Item Image" class="card-img">
+            <img th:src="${after.imgPath}" alt="Item Image" class="custom-card-img">
             <div class="card-content">
                 <h3 th:text="${after.orderStatus} ? '이용완료' : '취소'">이용완료</h3>
                 <hr/>

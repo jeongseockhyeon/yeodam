@@ -44,8 +44,8 @@ public class OrderDetail {
     @Enumerated(STRING)
     private OrderDetailStatus status;
 
-    @JoinColumn(name = "reservation_id")
-    @OneToOne(fetch = LAZY)
+    @Setter
+    @OneToOne(fetch = LAZY, mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private Reservation reservation;
 
     @Setter
@@ -53,7 +53,7 @@ public class OrderDetail {
     private Review review;
 
     @Builder
-    public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
+    public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
         setItem(item);
         this.count = count;
         this.price = price;
@@ -61,7 +61,6 @@ public class OrderDetail {
         this.bookerPhone = bookerPhone;
         this.message = message;
         this.status = PENDING;
-        this.reservation = reservation;
     }
 
     private void setItem(Item item) {
@@ -69,12 +68,16 @@ public class OrderDetail {
         item.getOrderDetails().add(this);
     }
 
-    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
-        return new OrderDetail(item, count, price, bookerName, bookerPhone, message, reservation);
+    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
+        return new OrderDetail(item, count, price, bookerName, bookerPhone, message);
     }
 
     public int getTotalPrice() {
         return getPrice() * getCount();
+    }
+
+    public void deleteReservation() {
+        this.reservation = null;
     }
 
     public void changeStatus(OrderDetailStatus status) {

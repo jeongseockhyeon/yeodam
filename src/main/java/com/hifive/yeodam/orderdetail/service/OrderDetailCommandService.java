@@ -42,8 +42,8 @@ public class OrderDetailCommandService {
         List<OrderDetail> orderDetails = new ArrayList<>();
 
         orderRequests.forEach(orderRequest -> {
-            Reservation reservation = buildReservation(orderRequest);
-            OrderDetail orderDetail = buildOrderDetail(orderRequest, reservation);
+            OrderDetail orderDetail = buildOrderDetail(orderRequest);
+            Reservation reservation = buildReservation(orderRequest, orderDetail);
 
             orderDetails.add(orderDetail);
 
@@ -68,7 +68,7 @@ public class OrderDetailCommandService {
         orderDetailRepository.updateStatusBulk(OrderStatus.COMPLETED, ids);
     }
 
-    private OrderDetail buildOrderDetail(orderRequest request, Reservation reservation) {
+    private OrderDetail buildOrderDetail(orderRequest request) {
 
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() -> new CustomException(ITEM_NOT_FOUND));
@@ -76,8 +76,6 @@ public class OrderDetailCommandService {
         if (item.getStock() <= 0) {
             throw new CustomException(NOT_ENOUGH_STOCK);
         }
-
-        item.removeStock();
 
         validateOrderMessage(request);
 
@@ -88,11 +86,10 @@ public class OrderDetailCommandService {
                 .bookerName(request.getBookerName())
                 .bookerPhone(request.getPhoneNumber())
                 .message(request.getOrderMessage())
-                .reservation(reservation)
                 .build();
     }
 
-    private Reservation buildReservation(orderRequest request) {
+    private Reservation buildReservation(orderRequest request, OrderDetail orderDetail) {
 
         Guide guide = guideRepository.findById(request.getGuideId())
                 .orElseThrow(() -> new CustomException(GUIDE_NOT_FOUND));
@@ -101,6 +98,7 @@ public class OrderDetailCommandService {
 
         return Reservation.builder()
                 .guide(guide)
+                .orderDetail(orderDetail)
                 .reservationStartDate(request.getStartDate())
                 .reservationEndDate(request.getEndDate())
                 .build();

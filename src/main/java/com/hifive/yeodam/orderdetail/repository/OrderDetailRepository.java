@@ -36,7 +36,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "and od.status = :status " +
             "and (r.startDate between :startDate and :endDate " +
             "or r.endDate between :startDate and :endDate)")
-    boolean isGuideAvailable(Long guideId,OrderDetailStatus status ,LocalDate startDate, LocalDate endDate);
+    boolean isGuideAvailable(Long guideId, OrderDetailStatus status, LocalDate startDate, LocalDate endDate);
 
     @Query("select od from OrderDetail od " +
             "join fetch od.item i " +
@@ -52,7 +52,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "where od.status != :status " +
             "and od.item.id = :itemId " +
             "and od.item.seller.companyId = :sellerId")
-    Page<OrderDetail> findAllBySeller(OrderDetailStatus status,Long sellerId, Long itemId, Pageable pageable);
+    Page<OrderDetail> findAllBySeller(OrderDetailStatus status, Long sellerId, Long itemId, Pageable pageable);
 
     @Query("select od " +
             "from OrderDetail od " +

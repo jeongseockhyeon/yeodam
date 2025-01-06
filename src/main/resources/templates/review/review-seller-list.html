@@ -11,6 +11,12 @@
 <body>
 <div class="header-area">
     <div th:replace="~{fragments/header-noSearch :: header}"></div>
+</div><br>
+<div class="container">
+<div style="text-align: left;">
+    <a href="/sellers/myPage" class="btn btn-outline-secondary">
+        &larr; 뒤로가기
+    </a>
 </div>
 <h1 class="text-center" th:text="${response.content.size() >0 ? '리뷰상품 목록' : '리뷰상품 목록이 없습니다.'}">리뷰상품 목록</h1>
 <div class="container mt-5" th:if="${response.content.size() > 0}">
@@ -58,6 +64,7 @@
             </ul>
         </nav>
     </div>
+</div>
 </div>
 </body>
 </html>
