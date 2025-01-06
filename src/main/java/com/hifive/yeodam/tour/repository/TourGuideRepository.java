@@ -15,6 +15,9 @@ public interface TourGuideRepository extends JpaRepository<TourGuide, Long> {
     void deleteByTourAndGuide(Tour tour, Guide guide);
 
     @Modifying
-    @Query("DELETE FROM TourGuide tg WHERE tg.guide.id = :guideId")
+    @Query("DELETE FROM TourGuide tg WHERE tg.guide.guideId = :guideId")
     void deleteByGuideId(Long guideId);
+
+    @Query("SELECT tg.guide.guideId FROM TourGuide tg JOIN tg.guide g WHERE g.seller.companyId = :companyId")
+    List<Long> findGuideIdsByCompanyId(Long companyId);
 }
