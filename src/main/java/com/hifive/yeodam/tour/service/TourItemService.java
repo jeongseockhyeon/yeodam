@@ -238,6 +238,8 @@ public class TourItemService {
         return new SliceImpl<>(tourItemResDtoList, sellerTours.getPageable(), sellerTours.hasNext());
     }
 
+    /**/
+
     /*상품 내 가이드 예약 일정 조회*/
     @Transactional(readOnly = true)
     public List<ReservationInTourResDto> findReservationByGuide(Long guideId){

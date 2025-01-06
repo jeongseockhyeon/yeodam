@@ -93,4 +93,18 @@ public class GuideService {
             guideRepository.delete(guide);
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<GuideResDto> getGuideByCompanyFilteringExisting(Auth auth) {
+        Seller seller = sellerService.getSellerByAuth(auth);
+        List<Guide> guides = guideRepository.findBySellerCompanyId(seller.getCompanyId());
+
+        // 이미 tourGuide 테이블에 등록된 가이드 아이디를 조회
+        List<Long> existingGuideIds = tourGuideRepository.findGuideIdsByCompanyId(seller.getCompanyId());
+
+        return guides.stream()
+                .filter(guide -> !existingGuideIds.contains(guide.getGuideId())) // tourGuide에 등록되지 않은 가이드만 필터링
+                .map(GuideResDto::new)
+                .toList();
+    }
 }

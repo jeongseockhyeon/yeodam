@@ -56,4 +56,10 @@ public class GuideApiController {
         Guide guide = guideService.getGuideById(id);
         return ResponseEntity.ok(guide);
     }
+
+    //다른 상품에 등록되어있는 가이드인지 필터링 후 조회
+    @GetMapping("/list/filtering")
+    public ResponseEntity<?> getGuideListByCompanyFilteringExisting(@AuthenticationPrincipal Auth auth){
+        return ResponseEntity.ok(guideService.getGuideByCompanyFilteringExisting(auth));
+    }
 }
