@@ -118,12 +118,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sortBy) params.append("sortBy", sortBy);
         if (order) params.append("order", order);
 
-        if (sortBy === "price") {
-            if (cursorPrice !== null) params.append("cursorPrice", cursorPrice);
-        } else if (sortBy === "rate") {
-            if (cursorRate !== null) params.append("cursorRate", cursorRate);
-        } else if (sortBy === "reviews" && cursorReviewCount !== null){
-            params.append("cursorReviewCount", cursorReviewCount)
+        if (sortBy === "price" && cursorPrice !== null) {
+            params.append("cursorPrice", cursorPrice);
+        } else if (sortBy === "rate" && cursorRate !== null) {
+            params.append("cursorRate", cursorRate);
+        } else if (sortBy === "reviews" && cursorReviewCount !== null) {
+            params.append("cursorReviewCount", cursorReviewCount);
         }
         if (cursorId !== null) params.append("cursorId", cursorId);
 

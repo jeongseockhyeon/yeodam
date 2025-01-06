@@ -8,9 +8,9 @@ import com.hifive.yeodam.tour.entity.QTourCategory;
 import com.hifive.yeodam.tour.entity.Tour;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -22,6 +22,7 @@ import static org.springframework.util.StringUtils.hasText;
 
 @RequiredArgsConstructor
 @Repository
+@Slf4j
 public class TourRepositoryCustomImpl implements TourRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
@@ -58,6 +59,7 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
         String order = searchFilterDto.getOrder();
 
         Integer cursorPrice = searchFilterDto.getCursorPrice();
+        Double cursorRate = searchFilterDto.getCursorRate();
         OrderSpecifier<?> primarySort = null;
         OrderSpecifier<?> secondarySort = tour.id.desc();
 
@@ -67,12 +69,28 @@ public class TourRepositoryCustomImpl implements TourRepositoryCustom {
                 if ("asc".equals(order)) {
                     builder.and(
                             tour.price.gt(cursorPrice)
-                                    .or(tour.price.eq(cursorPrice).and(tour.id.gt(cursorId)))
+                                    .or(tour.price.eq(cursorPrice).and(tour.id.lt(cursorId)))
                     );
                 } else {
                     builder.and(
                             tour.price.lt(cursorPrice)
                                     .or(tour.price.eq(cursorPrice).and(tour.id.lt(cursorId)))
+                    );
+                }
+            }
+        } else if ("rate".equals(sortBy)) {
+            primarySort = "asc".equals(order) ? tour.rate.asc() : tour.rate.desc();
+
+            if (cursorRate != null && cursorId != null) {
+                if ("asc".equals(order)) {
+                    builder.and(
+                            tour.rate.gt(cursorRate)
+                                    .or(tour.rate.eq(cursorRate).and(tour.id.lt(cursorId)))
+                    );
+                } else {
+                    builder.and(
+                            tour.rate.lt(cursorRate)
+                                    .or(tour.rate.eq(cursorRate).and(tour.id.lt(cursorId)))
                     );
                 }
             }
