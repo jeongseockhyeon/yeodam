@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.toggle-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
-            let card = btn.closest('.card');
-            let info = btn.closest('.card').nextElementSibling;
+            let card = btn.closest('.custom-card');
+            let info = btn.closest('.custom-card').nextElementSibling;
             if (info && info.classList.contains('info')) {
                 if (info.classList.contains('info-close')) {
                     info.classList.remove('info-close');

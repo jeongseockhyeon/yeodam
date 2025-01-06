@@ -67,16 +67,17 @@ function validateCheckBox() {
 function validateFields() {
     const textFields = document.querySelectorAll('input[type="text"]');
 
+    let hasError = false;
     textFields.forEach((field) => {
         if (!field.value.trim()) {
             field.style.borderColor = 'red';
             field.focus();
-            return true;
         } else {
             field.style.borderColor = 'rgb(221, 221, 221)';
-            return false;
+            hasError = true;
         }
     });
+    return hasError;
 }
 
 window.addEventListener("load", () => {
