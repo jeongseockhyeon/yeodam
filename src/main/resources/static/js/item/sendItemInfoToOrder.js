@@ -18,8 +18,8 @@ function handleReserveButtonClick() {
     }
 
     // 시작 날짜와 종료 날짜를 간단한 형식으로 변환
-    const startDate = event.start.toISOString().split('T')[0]; // YYYY-MM-DD 형식
-    const endDate = event.end.toISOString().split('T')[0]; // YYYY-MM-DD 형식
+    const startDate = selectedStartDate; // YYYY-MM-DD 형식
+    const endDate = selectedEndDate; // YYYY-MM-DD 형식
 
     // 가격 가져오기
     const priceText = document.getElementById('tourPrice').textContent;
