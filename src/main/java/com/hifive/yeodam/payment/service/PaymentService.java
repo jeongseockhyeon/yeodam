@@ -75,10 +75,11 @@ public class PaymentService {
 
         Order order = findOrderByUid(request.getOrderUid());
         order.chanceOrderStatus(OrderStatus.FAILED);
+
         order.getOrderDetails()
                 .forEach(od -> {
-                    od.getItem().addStock();
                     od.changeStatus(OrderDetailStatus.FAILED);
+                    od.deleteReservation();
                 });
 
         order.getPayment().paymentFail(request.getPaymentUid());
