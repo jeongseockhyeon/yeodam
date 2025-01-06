@@ -17,7 +17,7 @@
 <div class="review-container">
 
     <div class="title-area">
-        <img src="../../static/images/icon.png" alt="여행 이미지" class="title-image">
+        <img th:href="${request.imagePath}" alt="여행 이미지" class="title-image">
         <div class="title" th:text="${request.itemName}">[제주] 일일 투어</div>
     </div>
 
