@@ -69,8 +69,7 @@
     padding: 10px;
     margin-bottom: 10px;
     height: 200px;
-    width: 800px;
-    max-width: 800px;
+    width: 100%;
     resize: none;
     box-sizing: border-box;
 
