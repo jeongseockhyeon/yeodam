@@ -1,3 +1,6 @@
+.list-body{
+    overflow-x: hidden;
+}
 .container {
     display: flex;
     gap: 0; /* 간격 없애기 */
