@@ -156,6 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         window.removeEventListener("scroll", handleScroll);
                     }
                 }
+                if(data.content.length === 0){
+                    window.removeEventListener("scroll", handleScroll);
+                }
                 isFetching = false;
             })
             .catch((error) => {
