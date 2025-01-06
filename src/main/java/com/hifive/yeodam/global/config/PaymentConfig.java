@@ -1,4 +1,4 @@
-package com.hifive.yeodam;
+package com.hifive.yeodam.global.config;
 
 import com.siot.IamportRestClient.IamportClient;
 import org.springframework.beans.factory.annotation.Value;
