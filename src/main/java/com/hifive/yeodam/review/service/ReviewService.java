@@ -192,6 +192,11 @@ public class ReviewService {
     }
 
     private ItemDetailReviewResponse getItemDetailReviewResponse(Page<Review> findReviews) {
+        if (findReviews.getContent().isEmpty()) {
+            ItemDetailReviewResponse.builder()
+                    .reviews(new ArrayList<>())
+                    .build();
+        }
 
         List<ItemDetailReviewResponse.Review> reviews = findReviews.stream()
                 .map(review ->

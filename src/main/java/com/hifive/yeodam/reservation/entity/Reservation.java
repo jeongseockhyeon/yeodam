@@ -1,5 +1,6 @@
 package com.hifive.yeodam.reservation.entity;
 
+import com.hifive.yeodam.orderdetail.domain.OrderDetail;
 import com.hifive.yeodam.seller.entity.Guide;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -27,15 +28,25 @@ public class Reservation {
     @JoinColumn(name = "guide_id")
     private Guide guide;
 
+    @JoinColumn(name = "orderDeatil_id")
+    @OneToOne(fetch = LAZY)
+    private OrderDetail orderDetail;
+
     private LocalDate startDate; //예약 시작일
 
     private LocalDate endDate; //예약 종료일
 
     @Builder
-    public Reservation(Guide guide, LocalDate reservationStartDate, LocalDate reservationEndDate) {
+    public Reservation(Guide guide, LocalDate reservationStartDate, LocalDate reservationEndDate, OrderDetail orderDetail) {
         this.guide = guide;
         this.startDate = reservationStartDate;
         this.endDate = reservationEndDate;
+        setOrderDetail(orderDetail);
+    }
+
+    private void setOrderDetail(OrderDetail orderDetail) {
+        this.orderDetail = orderDetail;
+        orderDetail.setReservation(this);
     }
 
     public int getRemainingDay() {

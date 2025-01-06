@@ -47,7 +47,7 @@ public class OrderTestController {
                 LocalDate.parse(endDate)
         );
         AddOrderRequest addOrderRequest = new AddOrderRequest(List.of(orderRequests));
-        model.addAttribute("addOrderRequest",addOrderRequest);
+        model.addAttribute("addOrderRequest", addOrderRequest);
         return "order/order-form";
     }
 }
