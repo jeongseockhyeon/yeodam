@@ -30,6 +30,12 @@ public class InitData {
         private final EntityManager em;
 
         public void initDb() {
+
+            Auth findAuth = em.find(Auth.class, 1L);
+            if (findAuth != null) {
+                return;
+            }
+
             Auth auth = Auth.builder()
                     .role(RoleType.NONE)
                     .build();
