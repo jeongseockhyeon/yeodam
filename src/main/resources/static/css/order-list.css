@@ -12,7 +12,7 @@
     margin: 0;
 }
 
-.card {
+.custom-card {
     display: flex;
     align-items: center;
     background-color: white;
@@ -21,7 +21,7 @@
     margin: 10px 0;
 }
 
-.card-img {
+.custom-card-img {
     width: 150px;
     height: 100px;
     object-fit: cover;
