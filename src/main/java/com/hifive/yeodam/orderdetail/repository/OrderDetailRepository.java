@@ -8,7 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -51,4 +53,17 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "and od.item.id = :itemId " +
             "and od.item.seller.companyId = :sellerId")
     Page<OrderDetail> findAllBySeller(OrderDetailStatus status,Long sellerId, Long itemId, Pageable pageable);
+
+    @Query("select od " +
+            "from OrderDetail od " +
+            "where od.order.status = :orderStatus " +
+            "and od.status =: orderDetailStatus " +
+            "and od.reservation.startDate <: currentDate")
+    List<OrderDetail> findPastReservationDetails(OrderStatus orderStatus, OrderDetailStatus orderDetailStatus, LocalDate currentDate);
+
+    @Modifying
+    @Query("update OrderDetail od " +
+            "set od.status = :status " +
+            "where od.id in :ids")
+    void updateStatusBulk(@Param("status") OrderStatus status, @Param("ids") List<Long> ids);
 }
