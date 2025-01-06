@@ -15,11 +15,11 @@ public class PaymentController {
     @GetMapping("/{orderUid}/success")
     public String successForm(@PathVariable String orderUid, Model model) {
         model.addAttribute("orderUid", orderUid);
-        return "/payment/success-form";
+        return "payment/success-form";
     }
 
     @GetMapping("/{orderUid}/fail")
     public String failPayment() {
-        return "/payment/fail-form";
+        return "payment/fail-form";
     }
 }
