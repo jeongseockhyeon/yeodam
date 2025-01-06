@@ -59,9 +59,6 @@
             <div th:text="${#authentication.principal.Username}" class="mt-1 text-secondary">이메일</div>
         </div>
     </div>
-    <div class="d-flex align-items-center">
-        <button type="button" id="cancelDeleteBtn" class="btn btn-outline-success mx-3">계정 복구</button>
-    </div>
 </div>
 <div class="custom-links">
     <div class="link-box"><a href="/admins/category-manage" class="text-decoration-none">카테고리 관리</a></div>
@@ -72,7 +69,9 @@
     <div class="link-box"><a href="/admins/edit" class="text-decoration-none">수정하기</a></div>
 </div>
 
-
+<div class="footer-area">
+    <div th:replace="~{fragments/footer.html::footer}"></div>
+</div>
 <script src="/js/bootstrap.min.js"></script>
 
 </body>
