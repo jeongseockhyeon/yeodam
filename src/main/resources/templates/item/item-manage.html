@@ -17,6 +17,11 @@
     <div th:replace="~{fragments/header-noSearch :: header}"></div>
 </div>
 <div class="container">
+    <div style="text-align: left;">
+        <a href="/sellers/myPage" class="btn btn-outline-secondary">
+            &larr; 뒤로가기
+        </a>
+    </div>
     <h1>여행 상품 목록</h1>
     <a href="/tours/add">
         <button class="add-button">추가</button>
@@ -35,6 +40,9 @@
         <tbody>
         </tbody>
     </table>
+</div>
+<div class="footer-area">
+    <div th:replace="~{fragments/footer.html::footer}"></div>
 </div>
 <script src = "/js/item/getTourItemListBySeller.js"></script>
 <script src = "/js/item/tourDelete.js"></script>
