@@ -40,6 +40,9 @@ public class OrderQueryService {
                         .bookerName(od.getBookerName())
                         .phoneNumber(od.getBookerPhone())
                         .orderMessage(od.getMessage())
+                        .startDate(od.getReservation().getStartDate())
+                        .endDate(od.getReservation().getEndDate())
+                        .guideId(od.getReservation().getGuide().getGuideId())
                         .build())
                 .toList());
     }
