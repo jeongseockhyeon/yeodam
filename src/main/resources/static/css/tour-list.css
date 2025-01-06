@@ -82,6 +82,7 @@
 }
 
 .tour-card img {
+    margin-right: 16px;
     width: 350px;
     height: 350px;
     object-fit: cover;
