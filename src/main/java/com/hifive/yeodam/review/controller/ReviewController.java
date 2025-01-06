@@ -38,7 +38,7 @@ public class ReviewController {
 
     @GetMapping("/users/reviews")
     public String reviewPage() {
-        return "/review/review-user-list";
+        return "review/review-user-list";
     }
 
     @GetMapping("/sellers/items/reviews")
