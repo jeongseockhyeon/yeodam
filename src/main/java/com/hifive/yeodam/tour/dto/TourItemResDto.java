@@ -32,6 +32,8 @@ public class TourItemResDto {
 
     private final double rate;
 
+    private final int reviewCount;
+
     private final List<CategoryResDto> categoryResDtoList = new ArrayList<>();
     private final List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
     private final List<ItemImgResDto> itemImgResDtoList = new ArrayList<>();
@@ -60,6 +62,8 @@ public class TourItemResDto {
         for(ItemImage itemImage : tour.getItemImages()){
             this.itemImgResDtoList.add(new ItemImgResDto(itemImage));
         }
+
+        this.reviewCount = tour.getReviews().size();
 
     }
 }
