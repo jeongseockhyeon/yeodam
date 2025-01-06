@@ -19,7 +19,6 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class OrderFormController {
 
-    private final OrderQueryService orderQueryService;
     private final OrderDetailQueryService orderDetailQueryService;
     private final ItemService itemService;
 
@@ -33,13 +32,6 @@ public class OrderFormController {
                 .findOrderDetails(beforeLimit, afterLimit, principal));
 
         return "order/order-list";
-    }
-
-    @GetMapping("/orders/{orderUid}/continue")
-    public String retryOrder(@PathVariable String orderUid, Model model) {
-        AddOrderRequest addOrderRequest = orderQueryService.changeToAddOrderRequest(orderUid);
-        model.addAttribute("addOrderRequest", addOrderRequest);
-        return "order/order-form";
     }
 
     @GetMapping("/sellers/items/orders")
