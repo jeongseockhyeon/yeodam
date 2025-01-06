@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
@@ -61,7 +62,7 @@ public class ReviewService {
                 .rate(rate)
                 .build();
 
-        if (images.size() > 0) {
+        if (images.size() > 0 && StringUtils.hasText(images.getFirst().getOriginalFilename())) {
             images.forEach(image -> {
                 String imgPath = imageService.upload(image);
                 ReviewImage reviewImage = ReviewImage.builder()
@@ -84,6 +85,7 @@ public class ReviewService {
 
         if (user.equals(review.getUser())) {
             reviewRepository.deleteById(reviewId);
+            return;
         }
 
         throw new CustomException(REVIEW_NOT_DELETE);

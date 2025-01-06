@@ -16,11 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import static com.hifive.yeodam.global.exception.CustomErrorCode.SELLER_NOT_FOUND;
 import static com.hifive.yeodam.global.exception.CustomErrorCode.USER_NOT_FOUND;
+import static com.hifive.yeodam.order.domain.OrderStatus.COMPLETED;
 import static com.hifive.yeodam.order.domain.OrderStatus.FAILED;
 import static com.hifive.yeodam.order.dto.response.OrderDetailsResponse.AfterOrderResponse;
 import static com.hifive.yeodam.order.dto.response.OrderDetailsResponse.BeforeOrderResponse;
@@ -45,11 +47,11 @@ public class OrderDetailQueryService {
 
         //이용전 내역 찾아옴
         SliceImpl<BeforeOrderResponse> beforeOrderResponse =
-                getOrderResponses(user, beforePageable, List.of(PENDING), BeforeOrderResponse::new);
+                getBeforeOrderResponse(user, beforePageable, List.of(PENDING));
 
         //이용후, 취소 내역 찾아옴
         SliceImpl<AfterOrderResponse> afterOrderResponse =
-                getOrderResponses(user, afterPageable, List.of(USED, CANCELED), AfterOrderResponse::new);
+                getAfterOrderResponse(user, afterPageable, List.of(USED, CANCELED));
 
         return new OrderDetailsResponse(beforeOrderResponse, afterOrderResponse);
     }
@@ -71,13 +73,22 @@ public class OrderDetailQueryService {
                 od.getStatus()));
     }
 
-    private <T> SliceImpl<T> getOrderResponses(User user, Pageable pageable, List<OrderDetailStatus> statuses,
-                                               Function<OrderDetail, T> responseMapper) {
+    private SliceImpl<BeforeOrderResponse> getBeforeOrderResponse(User user, Pageable pageable, List<OrderDetailStatus> statuses) {
 
-        Slice<OrderDetail> page = orderDetailRepository.findOrderByDetailStatus(statuses, FAILED, user, pageable);
+        Slice<OrderDetail> page = orderDetailRepository.findOrderDetailsPending(statuses, FAILED, user, pageable);
 
-        List<T> responses = page.stream()
-                .map(responseMapper)
+        List<BeforeOrderResponse> responses = page.stream()
+                .map(BeforeOrderResponse::new)
+                .toList();
+
+        return new SliceImpl<>(responses, pageable, page.hasNext());
+    }
+
+    private SliceImpl<AfterOrderResponse> getAfterOrderResponse(User user, Pageable pageable, List<OrderDetailStatus> statuses) {
+        Slice<OrderDetail> page = orderDetailRepository.findOrderDetailsCancelComplete(statuses, user);
+
+        List<AfterOrderResponse> responses = page.stream()
+                .map(AfterOrderResponse::new)
                 .toList();
 
         return new SliceImpl<>(responses, pageable, page.hasNext());
