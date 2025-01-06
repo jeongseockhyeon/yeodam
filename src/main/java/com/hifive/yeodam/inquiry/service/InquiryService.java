@@ -40,7 +40,7 @@ public class InquiryService {
 
     @Transactional
     public List<InquiryResponse> getInquiryByAuth(Auth auth) {
-        List<Inquiry> inquiries = inquiryRepository.findByAuthId(auth.getId());
+        List<Inquiry> inquiries = inquiryRepository.findByAuthIdOrderByIdDesc(auth.getId());
         return inquiries.stream()
                 .map(InquiryResponse::new)
                 .toList();
@@ -61,7 +61,7 @@ public class InquiryService {
 
     @Transactional
     public List<InquiryResponse> getInquiriesByItemIdsExcludingSeller(List<Long> itemIds, Auth auth) {
-        List<Inquiry> inquiries = inquiryRepository.findByItemIdIn(itemIds);
+        List<Inquiry> inquiries = inquiryRepository.findByItemIdInOrderByIdDesc(itemIds);
         return inquiries.stream()
                 .filter(inquiry -> !inquiry.getAuth().getId().equals(auth.getId()))
                 .map(InquiryResponse::new)
@@ -98,7 +98,7 @@ public class InquiryService {
 
     public void changeAuth(Auth auth) {
         Auth delete = authRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("해당 Auth에 연결된 Seller가 없습니다."));
-        List<Inquiry> inquiries = inquiryRepository.findByAuthId(auth.getId());
+        List<Inquiry> inquiries = inquiryRepository.findByAuthIdOrderByIdDesc(auth.getId());
         for(Inquiry inquiry : inquiries) {
             inquiry.changeAuth(delete);
         }
