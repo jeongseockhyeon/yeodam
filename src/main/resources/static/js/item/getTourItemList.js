@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                     cursorId = data.content[data.content.length - 1].id;
 
-                    // hasNext 값이 false인 경우 스크롤 이벤트를 제거하여 더 이상 조회하지 않음
+                    // last 값이 true 인 경우 스크롤 이벤트를 제거하여 더 이상 조회하지 않음
                     if (data.last) {
                         window.removeEventListener("scroll", handleScroll);
                     }
