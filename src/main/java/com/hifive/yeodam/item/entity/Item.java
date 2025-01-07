@@ -87,9 +87,9 @@ public abstract class Item {
     }
 
     public void updateRate(double rate, int totalCount) {
-        double totalRate = this.rate + rate;
-        totalCount++;
-        this.rate = Math.round(totalRate / totalCount * 10) / 10.0;  // 소수점 첫째 자리로 반올림
+        int newTotalCount = totalCount + 1;
+        double newAverage = (this.rate * totalCount + rate) / newTotalCount;
+        this.rate = Math.round(newAverage * 10) / 10.0;
     }
 
     public abstract void updateSubItem(String region,String period,Integer maximum);
