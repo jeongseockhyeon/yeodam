@@ -19,11 +19,25 @@
 <img src="https://img.shields.io/badge/thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white">
 
 ## ERD
-----------
+------
 
 ![image](/uploads/10bf0caa122776e65be40905430b2a8a/image.png)
 
 
 ## 와이어프레임
------------
+------
 
+![image](/uploads/0a03ecb6d2851c5b50dd509cddd98816/image.png)
+
+
+## 주요 기능
+
+### 회원
+
+### 판매자
+
+### 상품
+
+### 장바구니
+
+### 주문
