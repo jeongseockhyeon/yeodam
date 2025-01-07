@@ -21,7 +21,9 @@
 ## ERD
 ----------
 
+![image](/uploads/10bf0caa122776e65be40905430b2a8a/image.png)
 
 
 ## 와이어프레임
 -----------
+
