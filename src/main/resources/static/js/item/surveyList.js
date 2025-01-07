@@ -11,6 +11,13 @@ let selectedThemes = []; // 테마 다중 선택
 
 const MAX_SELECTIONS = 3;
 
+// 로컬스토리지 초기화 함수
+function clearLocalStorageForSelections() {
+    localStorage.removeItem("selectedRegion");
+    localStorage.removeItem("selectedPeriod");
+    localStorage.removeItem("selectedThemes");
+}
+
 // 선택값 처리 함수 (단일 선택)
 function toggleSelectionSingle(option, currentSelection, list, containerId) {
     const container = document.getElementById(containerId);
@@ -134,4 +141,7 @@ function goToTourList() {
 }
 
 // 페이지 로드 시 로컬 스토리지 값으로 상태 초기화
-document.addEventListener("DOMContentLoaded", loadSelectionsFromLocalStorage);
+document.addEventListener("DOMContentLoaded",()=> {
+    clearLocalStorageForSelections()
+    loadSelectionsFromLocalStorage();
+});

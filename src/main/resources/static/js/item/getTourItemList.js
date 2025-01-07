@@ -26,21 +26,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // 필터 상태 저장
     function saveFilterState() {
         const filters = {
-            period: document.getElementById("tourPeriod").value,
-            region: document.getElementById("tourRegion").value,
             sortBy: document.getElementById("sortBy").value,
             order: document.getElementById("sortOrder").value,
             minPrice: document.getElementById("minPrice").value,
             maxPrice: document.getElementById("maxPrice").value,
         };
         localStorage.setItem("filters", JSON.stringify(filters));
+        localStorage.setItem("selectedRegion", document.getElementById("tourRegion").value);
+        localStorage.setItem("selectedPeriod",document.getElementById("tourPeriod").value)
     }
 
     // 필터 상태 복원
     function restoreFilterState() {
         const savedFilters = JSON.parse(localStorage.getItem("filters")) || {};
-        document.getElementById("tourPeriod").value = savedFilters.period || "";
-        document.getElementById("tourRegion").value = savedFilters.region || "";
+        document.getElementById("tourPeriod").value = localStorage.getItem("selectedPeriod") || "";
+        document.getElementById("tourRegion").value =  localStorage.getItem("selectedRegion") || "";
         document.getElementById("sortBy").value = savedFilters.sortBy || "";
         document.getElementById("sortOrder").value = savedFilters.order || "";
 
@@ -99,11 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (selectedCategories.length > 0) params.append("categories", selectedCategories.join(","));
 
-        const period = document.getElementById("tourPeriod").value;
-        if (period) params.append("period", period);
 
-        const region = document.getElementById("tourRegion").value;
-        if (region) params.append("region", region);
 
         const minPrice = document.getElementById("minPrice").value;
         const maxPrice = document.getElementById("maxPrice").value;
@@ -134,11 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hideLoadingIndicator(); // 로딩 중 표시 제거
                 renderTours(data.content);
 
-                // 로컬 스토리지 비우기
-                localStorage.removeItem("selectedRegion");
-                localStorage.removeItem("selectedThemes");
-                localStorage.removeItem("selectedPeriod");
-
+                localStorage.removeItem("selectedThemes")
 
                 if (data.content.length > 0) {
                     // cursorId 및 정렬 기준에 따라 값 갱신

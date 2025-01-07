@@ -18,7 +18,7 @@ function fetchAndDisplayReservations(guideId) {
             const events = reservations.map(reservation => ({
                 title: '예약 불가',
                 start: reservation.startDate,
-                end: new Date(new Date(reservation.endDate).getTime() + 24 * 60 * 60 * 1000),
+                end: new Date(new Date(reservation.endDate).getTime()),
                 backgroundColor: '#dc3545',
                 borderColor: '#dc3545',
                 rendering: 'background',
@@ -92,16 +92,18 @@ function initializeCalendar(data) {
                 return; // 클릭 이벤트 처리하지 않음
             }
 
-
-
-            selectedStartDate = new Date(info.date);
+            let markedStartDate = new Date(info.date);
             const days = parseInt(data.tourPeriod.replace("일", "").trim());
-            selectedEndDate = new Date(selectedStartDate);
-            selectedEndDate.setDate(selectedStartDate.getDate() + days - 1);
+            let markedEndDate = new Date(markedStartDate);
+            markedEndDate.setDate(markedStartDate.getDate() + days - 1)
+
+
+            selectedStartDate = formatLocalDate(new Date(markedStartDate.getTime()));
+            selectedEndDate = formatLocalDate(new Date(markedEndDate.getTime()));
 
             // localStorage에 날짜 저장
-            localStorage.setItem('selectedStartDate', formatLocalDate(selectedStartDate),);
-            localStorage.setItem('selectedEndDate', formatLocalDate(new Date(selectedEndDate.getTime() + 24 * 60 * 60 * 1000)));
+            localStorage.setItem('selectedStartDate', selectedStartDate);
+            localStorage.setItem('selectedEndDate', selectedEndDate);
 
 
             console.log('localStorage 저장 직후 확인:', {
@@ -136,8 +138,8 @@ function initializeCalendar(data) {
             // 새로운 예약 선택 추가
             calendar.addEvent({
                 title: '예약 선택',
-                start: formatLocalDate(selectedStartDate),
-                end: formatLocalDate(new Date(selectedEndDate.getTime() + 24 * 60 * 60 * 1000)),
+                start: formatLocalDate(markedStartDate),
+                end: formatLocalDate(new Date(markedEndDate.getTime() + 24 * 60 * 60 * 1000)),
                 backgroundColor: '#28a745',
                 borderColor: '#28a745',
             });
