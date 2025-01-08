@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="icon" href="/images/favicon.png" />
     <title>로그인</title>
 
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
@@ -21,6 +23,9 @@
 
         <div class="login-container mb-4">
             <form th:action="@{/login}" method="post">
+                <!-- 장바구니 redirectUrl용-->
+                <input type="hidden" name="redirectUrl" th:value="${param.redirectUrl}" />
+
                 <div class="mb-4">
                     <input type="email" class="form-control" name="email" placeholder="이메일을 입력하세요" required />
                 </div>
@@ -43,6 +48,10 @@
         </div>
 
     </div>
-
+    <script> //로그인 시도 플래그 설정
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            localStorage.setItem('syncCartAfterLogin', 'true');
+        });
+    </script>
 </body>
 </html>

@@ -42,11 +42,7 @@ public class WishService {
     @Transactional(readOnly = true)
     public List<WishDto> getWish(Long authId) {
         User user = getUserByAuthId(authId);
-
         List<Wish> wishItems = wishRepository.findByUserOrderByCreatedAtDesc(user);
-        if (wishItems.isEmpty()) {
-            throw new CustomException(CustomErrorCode.WISH_NOT_FOUND);
-        }
 
         return wishItems.stream()
                 .map(WishDto::from)

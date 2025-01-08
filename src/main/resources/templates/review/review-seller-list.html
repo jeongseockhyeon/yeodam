@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+        lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/images/favicon.png" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../static/css/style.css">
+    <title>상품</title>
+</head>
+<body>
+<div class="header-area">
+    <div th:replace="~{fragments/header-noSearch :: header}"></div>
+</div><br>
+<div class="container">
+<div style="text-align: left;">
+    <a href="/sellers/myPage" class="btn btn-outline-secondary">
+        &larr; 뒤로가기
+    </a>
+</div>
+<h1 class="text-center" th:text="${response.content.size() >0 ? '리뷰상품 목록' : '리뷰상품 목록이 없습니다.'}">리뷰상품 목록</h1>
+<div class="container mt-5" th:if="${response.content.size() > 0}">
+    <table class="table table-hover table-bordered text-center">
+        <thead class="table-header table-light">
+        <tr>
+            <th>NO</th>
+            <th>상품명</th>
+            <th>평점</th>
+            <th>리뷰 수</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="review, reviewStat : ${response.content}">
+            <td th:text="${reviewStat.count}"></td>
+            <td>
+                <a th:href="@{/sellers/items/{itemId}/reviews(itemId=${review.itemId})}" class="text-decoration-none"
+                   th:text="${review.itemName}"></a>
+            </td>
+            <td th:text="${review.rate}"></td>
+            <td th:text="${review.count}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이지 버튼 -->
+    <div class="d-flex justify-content-center mt-4" th:if="${response.content.size() > 0}">
+        <nav>
+            <ul class="pagination">
+                <!-- 이전 페이지 -->
+                <li class="page-item" th:classappend="${response.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{|/sellers/items/reviews?offset=${response.number - 1}|}">이전</a>
+                </li>
+
+                <!-- 페이지 번호 -->
+                <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, response.totalPages - 1)}"
+                    th:classappend="${pageNum == response.number} ? 'active'">
+                    <a class="page-link" th:href="@{|/sellers/items/reviews?offset=${pageNum}|}" th:text="${pageNum + 1}"></a>
+                </li>
+
+                <!-- 다음 페이지 -->
+                <li class="page-item" th:classappend="${response.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{|/sellers/items/reviews?osffet=${response.number + 1}|}">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</div>
+<div class="footer-area">
+    <div th:replace="~{fragments/footer.html::footer}"></div>
+</div>
+</body>
+</html>

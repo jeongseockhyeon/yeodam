@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 매칭</title>
+    <link rel="stylesheet" href="/css/survey.css">
+</head>
+<body>
+<div class="container">
+    <div class="step active" id="step-region">
+        <div class="title">어느 지역으로의 여행을 원하시나요?</div>
+        <div class="subtitle">* 여행하고 싶은 지역을 하나 선택해주세요.</div>
+        <div class="options" id="region-options"></div>
+        <div class="arrow" onclick="nextStep()">→</div>
+    </div>
+
+    <div class="step" id="step-theme">
+        <div class="title">어느 테마의 여행을 원하시나요?</div>
+        <div class="subtitle">* 최대 3개까지 선택 가능합니다.</div>
+        <div class="options" id="theme-options"></div>
+        <div class="arrow" onclick="prevStep()">←</div>
+        <div class="arrow" onclick="nextStep()">→</div>
+    </div>
+
+    <div class="step" id="step-period">
+        <div class="title">며칠 동안 여행하실 예정이신가요?</div>
+        <div class="subtitle">* 여행하고 싶은 기간을 하나 선택해주세요,</div>
+        <div class="options" id="period-options"></div>
+        <div class="arrow" onclick="prevStep()">←</div>
+        <div class="arrow" onclick="goToTourList()">→</div>
+    </div>
+</div>
+
+<script src="/js/item/surveyList.js"></script>
+</body>
+</html>

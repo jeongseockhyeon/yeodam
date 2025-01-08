@@ -1,8 +1,14 @@
 package com.hifive.yeodam.user.service;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.cart.entity.Cart;
+import com.hifive.yeodam.cart.repository.CartRepository;
 import com.hifive.yeodam.global.exception.CustomErrorCode;
 import com.hifive.yeodam.global.exception.CustomException;
+import com.hifive.yeodam.order.domain.Order;
+import com.hifive.yeodam.order.repository.OrderRepository;
+import com.hifive.yeodam.review.domain.Review;
+import com.hifive.yeodam.review.repository.ReviewRepository;
 import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.user.dto.UserResponse;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
@@ -23,6 +29,9 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
+    private final ReviewRepository reviewRepository;
 
     public UserResponse addUser(JoinRequest request, Auth auth) {
 
@@ -78,9 +87,9 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateUser(Long id, UserUpdateRequest request) {
+    public UserResponse updateUser(Long authId, UserUpdateRequest request) {
 
-        Optional<User> optionalUser = userRepository.findById(id);
+        Optional<User> optionalUser = userRepository.findByAuthId(authId);
         User user = optionalUser.orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         user.update(request.getName(), request.getNickname(), request.getPhone());
@@ -103,5 +112,33 @@ public class UserService {
         User user = optionalUser.orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
 
         return new UserResponse(user);
+    }
+
+    public void deleteUserContent(Auth auth) {
+
+        // 삭제할 유저 찾기
+        User deleteUser = userRepository.findByAuthId(auth.getId())
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+
+        // 할당할 임의의 유저
+        User anonymousUser = userRepository.findById(1L)
+                .orElseThrow(() -> new CustomException(CustomErrorCode.USER_NOT_FOUND));
+
+        // 장바구니 삭제
+        List<Cart> deleteCarts = cartRepository.findByAuthWithItemsAndImages(auth);
+        cartRepository.deleteAll(deleteCarts);
+
+        // 리뷰 삭제, 리뷰 이미지는 자동 삭제
+        List<Review> deleteReviews = reviewRepository.findAllByUserId(deleteUser.getId());
+        reviewRepository.deleteAll(deleteReviews);
+
+        // 주문에 임의의 유저 할당
+        List<Order> findOrders = orderRepository.findByUserId(deleteUser.getId());
+        for (Order order : findOrders) {
+            order.updateUser(anonymousUser);
+        }
+
+        // 유저 삭제
+        userRepository.delete(deleteUser);
     }
 }

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>판매자 문의 내역</title>
+    <link rel="icon" href="/images/favicon.png" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <style>
+        .inquiry-box {
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .inquiry-itemName {
+            color: blue;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .inquiry-itemName:hover {
+            color: darkblue;
+            text-decoration: underline;
+        }
+        .inquiry-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .inquiry-content {
+            margin-bottom: 10px;
+        }
+        .answer-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .answer-status.pending {
+            color: #dc3545;
+        }
+        .answer-button {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .answer-button:hover {
+            background-color: #218838;
+        }
+        .answer-form {
+            margin-top: 15px;
+            display: none;
+        }
+        .answer-form input,
+        .answer-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .answer-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .answer-form button:hover {
+            background-color: #0056b3;
+        }.toggle-answer-button {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .toggle-answer-button:hover {
+            background-color: #218838;
+        }
+        .answer-container {
+            background-color: #f1f3f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .answer-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .answer-content {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div style="text-align: left;">
+        <a href="/sellers/myPage" class="btn btn-outline-secondary">
+            &larr; 뒤로가기
+        </a>
+    </div>
+    <div class="container">
+        <h1 class="mt-4 text-center">문의 내역</h1><br>
+        <div id="inquiry-list" class="inquiry-list"></div>
+        <div id="empty-message" class="empty-message" style="display: none;">문의 내역이 없습니다.</div>
+    </div>
+</div>
+
+<script src="/js/inquiry/sellerInquiries.js"></script>
+
+</body>
+</html>

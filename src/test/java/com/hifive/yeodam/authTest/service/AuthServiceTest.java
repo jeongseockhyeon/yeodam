@@ -7,13 +7,11 @@ import com.hifive.yeodam.user.dto.JoinRequest;
 import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.auth.repository.AuthRepository;
 import com.hifive.yeodam.user.dto.UserUpdateRequest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -22,7 +20,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -167,11 +164,49 @@ public class AuthServiceTest {
         assertThat(result.getPassword()).isNotNull();
     }
 
+    @Test
+    public void 만료날짜설정실패_인증존재하지않음() throws Exception{
+        //given
+        LocalDate ld = LocalDate.now();
+        doReturn(Optional.empty()).when(authRepository).findById(-1L);
+
+        //when
+        CustomException result = assertThrows(CustomException.class, () -> target.updateExpiration(auth(), ld));
+
+        //then
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.AUTH_NOT_FOUND);
+    }
+
+    @Test
+    public void 만료기간설정되었는지확인실패_인증존재하지않음() throws Exception{
+        //given
+        doReturn(Optional.empty()).when(authRepository).findById(auth().getId());
+
+        //when
+        CustomException result = assertThrows(CustomException.class, () -> target.checkExpired(auth()));
+
+        //then
+        assertThat(result.getCustomErrorCode()).isEqualTo(CustomErrorCode.AUTH_NOT_FOUND);
+    }
+
+    @Test
+    public void 만료기간설정되었는지확인성공() throws Exception{
+        //given
+        doReturn(Optional.of(auth())).when(authRepository).findById(auth().getId());
+
+        //when
+        boolean result = target.checkExpired(auth());
+
+        //then
+        assertThat(result).isEqualTo(auth().getExpirationDate() != null);
+    }
+
     private Auth auth() {
         return Auth.builder()
                 .id(-1L)
                 .email(email)
                 .password(password)
+                .expirationDate(null)
                 .build();
     }
 }

@@ -43,7 +43,7 @@ class GuideServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER);
+        auth = new Auth(1L, "email@email.com", "password", RoleType.SELLER, null);
         seller = new Seller(1L, auth, "Company", "Owner", "Company Bio", "01012345678");
         guide = new Guide(null, seller, "Name", LocalDate.of(2002, 2, 25), "M", "01012345678", "Guide Bio");
     }

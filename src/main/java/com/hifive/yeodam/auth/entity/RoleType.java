@@ -10,17 +10,8 @@ public enum RoleType {
     ADMIN("ROLE_ADMIN"),
     USER("ROLE_USER"),
     SELLER("ROLE_SELLER"),
-    ;
+    NONE("ROLE_NONE");
 
     private final String value;
 
-    public static RoleType fromValue(String v) {
-        for (RoleType roleType : RoleType.values()) {
-            if (roleType.getValue().equals(v)) {
-                return roleType;
-            }
-        }
-
-        throw new IllegalArgumentException("Invalid role value: " + v);
-    }
 }

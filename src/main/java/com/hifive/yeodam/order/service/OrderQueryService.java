@@ -4,6 +4,7 @@ import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.order.dto.request.AddOrderRequest;
 import com.hifive.yeodam.order.repository.OrderRepository;
+import com.hifive.yeodam.seller.repository.SellerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import static com.hifive.yeodam.global.exception.CustomErrorCode.ORDER_NOT_FOUND
 public class OrderQueryService {
 
     private final OrderRepository orderRepository;
+    private final SellerRepository sellerRepository;
 
     //재결제시 사용
     @Transactional(readOnly = true)
@@ -38,6 +40,9 @@ public class OrderQueryService {
                         .bookerName(od.getBookerName())
                         .phoneNumber(od.getBookerPhone())
                         .orderMessage(od.getMessage())
+                        .startDate(od.getReservation().getStartDate())
+                        .endDate(od.getReservation().getEndDate())
+                        .guideId(od.getReservation().getGuide().getGuideId())
                         .build())
                 .toList());
     }

@@ -30,6 +30,10 @@ public class TourItemResDto {
 
     private final boolean active;
 
+    private final double rate;
+
+    private final int reviewCount;
+
     private final List<CategoryResDto> categoryResDtoList = new ArrayList<>();
     private final List<GuideInTourResDto> guideInTourResDtos = new ArrayList<>();
     private final List<ItemImgResDto> itemImgResDtoList = new ArrayList<>();
@@ -43,6 +47,7 @@ public class TourItemResDto {
         this.tourPrice = tour.getPrice();
         this.maximum = tour.getMaximum();
         this.active = tour.isActive();
+        this.rate = tour.getRate();
 
         for(TourCategory tourCategory : tour.getTourCategories()){
             CategoryResDto categoryResDto = new CategoryResDto(tourCategory.getCategory());
@@ -57,6 +62,8 @@ public class TourItemResDto {
         for(ItemImage itemImage : tour.getItemImages()){
             this.itemImgResDtoList.add(new ItemImgResDto(itemImage));
         }
+
+        this.reviewCount = tour.getReviews().size();
 
     }
 }

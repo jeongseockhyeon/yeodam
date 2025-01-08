@@ -1,15 +1,13 @@
 package com.hifive.yeodam.cart.entity;
 
 
-import com.hifive.yeodam.global.exception.CustomErrorCode;
-import com.hifive.yeodam.global.exception.CustomException;
+import com.hifive.yeodam.auth.entity.Auth;
 import com.hifive.yeodam.item.entity.Item;
-import com.hifive.yeodam.user.entity.User;
+import com.hifive.yeodam.seller.entity.Guide;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -22,20 +20,41 @@ public class Cart {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "auth_id")
+    private Auth auth;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     private Item item;
 
-    private int count;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guide_id")
+    private Guide guide;
+
+    @Column(nullable = false)
+    private int count = 1;
+
+    @Getter @Setter
+    @Column
+    private LocalDate startDate;
+
+    @Getter @Setter
+    @Column
+    private LocalDate endDate;
 
     @Builder
-    public Cart(User user, Item item) {
-        this.user = user;
+    public Cart(Auth auth, Item item, Guide guide, LocalDate startDate, LocalDate endDate) {
+        this.auth = auth;
         this.item = item;
+        this.guide = guide;
         this.count = 1;
+        this.startDate = startDate;
+        this.endDate = endDate;
+
+        // Tour 상품만 가이드 정보 설정
+//        if (item instanceof Tour) {
+//            this.guide = guide;
+//        }
     }
 
     //동일 상품 존재 여부 확인
@@ -48,30 +67,8 @@ public class Cart {
         return !item.isReservation();
     }
 
-    //상품의 현재 가격 실시간 반환
-    public int getPrice(){
-        return item.getPrice() * count;
-    }
-
-    //장바구니에서 수량 변경
-    public void updateCount(int count) {
-        if (item.isReservation()) {
-            throw new CustomException(CustomErrorCode.CART_ITEM_COUNT_NOT_MODIFIABLE);
-        }
-        if (count <= 1) {
-            throw new CustomException(CustomErrorCode.INVALID_ITEM_COUNT);
-        }
-        this.count = count;
-    }
-
-    //로컬 연동시 수량 추가
-    public void addCount(int count) {
-        if (item.isReservation()) {
-            throw new CustomException(CustomErrorCode.CART_ITEM_COUNT_NOT_MODIFIABLE);
-        }
-        if (count <= 1) {
-            throw new CustomException(CustomErrorCode.INVALID_ITEM_COUNT);
-        }
-        this.count += count;
+    //상품의 현재 가격 반환
+    public int getTourPrice(){
+        return item.getPrice();
     }
 }

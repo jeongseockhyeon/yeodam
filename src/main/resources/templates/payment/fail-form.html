@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>주문실패</title>
+    <link rel="icon" href="/images/favicon.png" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/fail-form.css">
+    <script src="/js/payment/payment.js"></script>
     <meta charset="UTF-8">
-    <title>Title</title>
+
 </head>
 <body>
-<h2>결제실패</h2>
-<a href="/">홈으로 이동</a>
-<a onclick="retryOrder()">다시 시도</a>
+<div class="info">
+    <h2 class="text-center">결제실패</h2>
+    <p>결제에 실패하였습니다. 죄송합니다. 결제 과정에서 문제가 발생했습니다.<br>
+    홈으로 돌아가셔서 다른 방법으로 시도해 주세요.</p>
+    <a class="btn home-btn" href="/">홈으로 이동</a>
+</div>
+<div class="footer-area">
+    <div th:replace="~{fragments/footer.html::footer}"></div>
+</div>
 </body>
-<script>
-    async function retryOrder() {
-
-        let urlParams = new URLSearchParams(window.location.search);
-        let orderUid = urlParams.get('orderUid');
-        window.location.href = '/orders/' + orderUid + '/continue';
-    }
-</script>
 </html>

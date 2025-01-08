@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/images/favicon.png" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../static/css/style.css">
+    <title>주문상세</title>
+</head>
+<body>
+<div class="header-area">
+    <div th:replace="~{fragments/header-noSearch :: header}"></div>
+</div>
+<h2 class="text-center mt-5" th:text="${response.content.size() > 0 ? '주문내역' : '주문내역이 없습니다.'}">주문 내역</h2>
+<div class="container mt-5" th:if="${response.content.size() > 0}">
+    <table class="table table-hover">
+        <thead class="table-light">
+        <tr>
+            <th>NO</th>
+            <th>주문번호</th>
+            <th>시작일</th>
+            <th>종료일</th>
+            <th>주문상태</th>
+            <th>취소</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order, orderStat: ${response.content}">
+            <td th:text="${orderStat.count}"></td>
+            <td th:text="${order.orderUid}"></td>
+            <td th:text="${order.startDate}"></td>
+            <td th:text="${order.endDate}"></td>
+            <td>
+                <p th:switch="${order.status.name}">
+                    <span th:case="'PENDING'">예약확정</span>
+                    <span th:case="'USED'">사용완료</span>
+                    <span th:case="'CANCELED'">취소</span>
+                </p>
+            </td>
+            <td>
+                <button class="btn btn-sm" onclick="cancelOrder(this)"
+                        th:attr="data-order-uid=${order.orderUid}"
+                        th:classappend="${order.status.name} == 'PENDING'? 'btn-danger' : 'btn-secondary disabled'">취소
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-center mt-4" th:if="${response.content.size() > 0}">
+    <nav>
+        <ul class="pagination">
+            <!-- 이전 페이지 -->
+            <li class="page-item" th:classappend="${response.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?offset=${response.number - 1}|}">이전</a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, response.totalPages - 1)}"
+                th:classappend="${pageNum == response.number} ? 'active'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?offset=${pageNum}|}"
+                   th:text="${pageNum + 1}"></a>
+            </li>
+
+            <!-- 다음 페이지 -->
+            <li class="page-item" th:classappend="${response.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/sellers/items/${response.content.getFirst().itemId}/orders?osffet=${response.number + 1}|}">다음</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div class="footer-area">
+    <div th:replace="~{fragments/footer.html::footer}"></div>
+</div>
+<script>
+    function cancelOrder(btn) {
+
+        if (!confirm("정말 취소하시겠습니까?")) {
+            return;
+        }
+
+        let orderUid = btn.getAttribute('data-order-uid');
+
+        const request = {
+            orderUid: orderUid
+        }
+
+        fetch(`/api/orders/${orderUid}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request),
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('주문이 성공적으로 취소되었습니다.');
+                    location.reload();
+                }
+                console.log(response.json());
+                alert('주문 취소에 실패했습니다.');
+            })
+    }
+</script>
+</body>
+</html>

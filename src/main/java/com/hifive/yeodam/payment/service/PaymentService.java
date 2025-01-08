@@ -4,6 +4,7 @@ import com.hifive.yeodam.global.exception.CustomException;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.order.domain.OrderStatus;
 import com.hifive.yeodam.order.repository.OrderRepository;
+import com.hifive.yeodam.orderdetail.domain.OrderDetailStatus;
 import com.hifive.yeodam.payment.domain.Payment;
 import com.hifive.yeodam.payment.domain.PaymentStatus;
 import com.hifive.yeodam.payment.dto.PaymentOrderUidResponse;
@@ -74,8 +75,12 @@ public class PaymentService {
 
         Order order = findOrderByUid(request.getOrderUid());
         order.chanceOrderStatus(OrderStatus.FAILED);
+
         order.getOrderDetails()
-                .forEach(od -> od.getItem().addStock());
+                .forEach(od -> {
+                    od.changeStatus(OrderDetailStatus.FAILED);
+                    od.deleteReservation();
+                });
 
         order.getPayment().paymentFail(request.getPaymentUid());
     }

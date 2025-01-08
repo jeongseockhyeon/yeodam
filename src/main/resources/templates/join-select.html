@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>회원가입</title>
+
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+
+    .custom-card {
+      width: 250px;
+      height: 250px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      margin: 0 40px;
+    }
+
+    .custom-icon {
+      width: 100px;
+      height: 100px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="d-flex flex-column align-items-center justify-content-center vh-100">
+    <a href="/"><img src="/images/logo.png" class="mb-3" alt="로고" width="446" height="129"></a>
+
+    <div class="d-flex justify-content-center align-items-center mb-5">
+      <a th:href="@{/users/join}" class="text-decoration-none text-dark">
+        <div class="custom-card d-flex flex-column justify-content-center align-items-center">
+          <img th:src="@{/images/icon.png}" class="custom-icon" alt="유저">
+          <b>여행자 등록</b>
+        </div>
+      </a>
+      <a th:href="@{/sellers/join}" class="text-decoration-none text-dark">
+        <div class="custom-card d-flex flex-column justify-content-center align-items-center">
+          <img th:src="@{/images/icon.png}" class="custom-icon" alt="유저">
+          <b>파트너 등록</b>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

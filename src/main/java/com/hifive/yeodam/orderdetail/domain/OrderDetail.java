@@ -3,6 +3,7 @@ package com.hifive.yeodam.orderdetail.domain;
 import com.hifive.yeodam.item.entity.Item;
 import com.hifive.yeodam.order.domain.Order;
 import com.hifive.yeodam.reservation.entity.Reservation;
+import com.hifive.yeodam.review.domain.Review;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,28 +44,40 @@ public class OrderDetail {
     @Enumerated(STRING)
     private OrderDetailStatus status;
 
-    @JoinColumn(name = "reservation_id")
-    @OneToOne(fetch = LAZY)
+    @Setter
+    @OneToOne(fetch = LAZY, mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private Reservation reservation;
 
+    @Setter
+    @OneToOne(mappedBy = "orderDetail")
+    private Review review;
+
     @Builder
-    public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
-        this.item = item;
+    public OrderDetail(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
+        setItem(item);
         this.count = count;
         this.price = price;
         this.bookerName = bookerName;
         this.bookerPhone = bookerPhone;
         this.message = message;
         this.status = PENDING;
-        this.reservation = reservation;
     }
 
-    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message, Reservation reservation) {
-        return new OrderDetail(item, count, price, bookerName, bookerPhone, message, reservation);
+    private void setItem(Item item) {
+        this.item = item;
+        item.getOrderDetails().add(this);
+    }
+
+    public static OrderDetail create(Item item, int count, int price, String bookerName, String bookerPhone, String message) {
+        return new OrderDetail(item, count, price, bookerName, bookerPhone, message);
     }
 
     public int getTotalPrice() {
         return getPrice() * getCount();
+    }
+
+    public void deleteReservation() {
+        this.reservation = null;
     }
 
     public void changeStatus(OrderDetailStatus status) {

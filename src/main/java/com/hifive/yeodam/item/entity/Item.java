@@ -1,6 +1,8 @@
 package com.hifive.yeodam.item.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hifive.yeodam.orderdetail.domain.OrderDetail;
+import com.hifive.yeodam.review.domain.Review;
 import com.hifive.yeodam.seller.entity.Seller;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,6 +43,12 @@ public abstract class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ItemImage> itemImages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "item")
+    private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item")
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+
     public Item(Seller seller,
                 String itemName,
                 String description,
@@ -77,5 +85,17 @@ public abstract class Item {
     public void removeStock() {
         this.stock -= 1;
     }
-    public abstract void updateSubItem(String region,String period,int maximum);
+
+    public void updateRate(double rate, int totalCount) {
+        int newTotalCount = totalCount + 1;
+        double newAverage = (this.rate * totalCount + rate) / newTotalCount;
+        this.rate = Math.round(newAverage * 10) / 10.0;
+    }
+
+    public abstract void updateSubItem(String region,String period,Integer maximum);
+
+    public void changeSeller(Seller seller) {
+        this.seller = seller;
+    }
+
 }

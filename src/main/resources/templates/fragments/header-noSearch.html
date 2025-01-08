@@ -1,0 +1,56 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>header</title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header th:fragment="header" class="d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <a th:href="@{/}"><img class="custom-logo" src="/images/logo.png" alt="로고"></a>
+    </div>
+    <div class="user-menu">
+        <!-- 장바구니 -->
+        <th:block sec:authorize="isAnonymous() or hasRole('ROLE_USER')">
+            <a href="/carts" class="cart-icon">
+                <i class="bi bi-cart2"></i>
+            </a>
+        </th:block>
+
+        <th:block sec:authorize="isAnonymous()">
+            <!-- 비로그인 상태 -->
+            <button class="btn login-btn" onclick="location.href='/login'">로그인</button>
+            <button class="btn join-btn" onclick="location.href='/join'">회원가입</button>
+        </th:block>
+
+        <!-- 로그인 상태 -->
+        <th:block sec:authorize="isAuthenticated()">
+            <!-- 일반 유저일 경우 장바구니와 찜 목록 모두 표시 -->
+            <th:block sec:authorize="hasRole('ROLE_USER')">
+                <a href="/wishes" class="wish-icon">
+                    <i class="bi bi-heart"></i>
+                </a>
+                <button class="btn" onclick="location.href='/users/myPage'">유저 마이페이지</button>
+            </th:block>
+
+            <!-- 판매자일 경우 -->
+            <th:block sec:authorize="hasRole('ROLE_SELLER')">
+                <button class="btn" onclick="location.href='/sellers/myPage'">판매자 마이페이지</button>
+            </th:block>
+
+            <!-- 관리자일 경우 -->
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <button class="btn" onclick="location.href='/admins/manage'">관리자 페이지</button>
+            </th:block>
+
+            <button class="btn" onclick="location.href='/logout'">로그아웃</button>
+        </th:block>
+    </div>
+</header>
+</body>
+</html>

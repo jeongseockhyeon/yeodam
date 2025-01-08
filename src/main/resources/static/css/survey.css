@@ -1,0 +1,65 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.container {
+    width: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+.step {
+    display: none;
+}
+.step.active {
+    display: block;
+}
+.title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.subtitle {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 20px;
+}
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+.arrow {
+    margin-top: 20px;
+    font-size: 20px;
+    cursor: pointer;
+}
+button.option {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s; /* 부드러운 전환 효과 */
+}
+
+/* 호버 상태 */
+button.option:hover {
+    background-color: #f0f0f0; /* 호버 시 밝은 배경색 */
+    border-color: #aaa; /* 호버 시 테두리 색상 변경 */
+}
+
+/* 선택된 상태 */
+button.option.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+}

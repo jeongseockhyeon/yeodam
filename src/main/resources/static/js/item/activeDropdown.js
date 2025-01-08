@@ -3,23 +3,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     dropdowns.forEach((dropdown) => {
         const button = dropdown.querySelector(".dropdown-btn");
-        button.addEventListener("click", () => {
-            // 다른 열려있는 드롭다운 닫기
-            dropdowns.forEach((otherDropdown) => {
-                if (otherDropdown !== dropdown) {
-                    otherDropdown.classList.remove("active");
-                }
-            });
+        button.addEventListener("click", (event) => {
+            // 현재 드롭다운이 이미 활성화되어 있으면 active 클래스를 제거
+            const isActive = dropdown.classList.contains("active");
+
 
             // 현재 드롭다운 활성화/비활성화
-            dropdown.classList.toggle("active");
-        });
-    });
+            if (!isActive) {
+                dropdown.classList.add("active");
+            } else {
+                dropdown.classList.remove("active");
+            }
 
-    // 드롭다운 외부 클릭 시 닫기
-    document.addEventListener("click", (event) => {
-        if (!event.target.closest(".dropdown")) {
-            dropdowns.forEach((dropdown) => dropdown.classList.remove("active"));
-        }
+            // 클릭 이벤트가 부모로 전파되지 않도록 방지 (document의 클릭 이벤트를 방지)
+            event.stopPropagation();
+        });
     });
 });

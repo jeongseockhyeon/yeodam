@@ -2,7 +2,10 @@ package com.hifive.yeodam.user.entity;
 
 import com.hifive.yeodam.auth.entity.Auth;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -29,7 +32,7 @@ public class User {
 
     private String phone;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "auth_id")
     private Auth auth;
 

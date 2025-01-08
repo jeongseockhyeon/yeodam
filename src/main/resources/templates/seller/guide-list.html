@@ -2,65 +2,68 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Guides List</title>
+    <link rel="icon" href="/images/favicon.png" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <title>소속 가이드 관리</title>
     <style>
         body {
             text-align: center;
         }
         .guide-list {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
+            justify-items: center;
         }
         .guide-card {
-            width: 500px;
-            padding: 20px;
+            width: 300px;
+            height: 190px;
+            padding: 15px;
             border: 2px solid #ccc;
             border-radius: 15px;
             text-align: left;
             position: relative;
-        }
-        .guide-card div {
-            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .guide-card .info {
             margin-bottom: 10px;
         }
-        .guide-card .phone {
-            display: block;
-            margin-top: 10px;
-        }
-        .button-container {
+        .guide-card .button-container {
             position: absolute;
             top: 10px;
             right: 10px;
         }
-        .button-container button {
-            margin-left: 5px;
-        }
     </style>
 </head>
 <body>
-<h1>Guides List</h1>
-<div class="guide-list">
-    <div>
-        <button onclick="window.location.href='/guides/join'">가이드 추가</button>
+<div class="container mt-4">
+    <div style="text-align: left;">
+        <a href="/sellers/myPage" class="btn btn-outline-secondary">
+            &larr; 뒤로가기
+        </a>
     </div>
-    <div th:each="guide : ${guides}" class="guide-card">
-        <div class="info">
-            <span th:text="${guide.name}">Name</span> |
-            <span th:text="${guide.gender}">Gender</span> |
-            <span th:text="${guide.phone}">Phone</span>
-        </div>
-        <div class="button-container">
-            <a th:href="'/guides/edit/' + ${guide.id}">
-                <button>수정</button>
-            </a>
-            <form th:action="@{'/guides/delete/' + ${guide.id}}" method="post" onsubmit="return confirm('삭제하시겠습니까?');">
-                <input type="hidden" name="_method" value="delete">
-                <button type="submit">삭제</button>
-            </form>
+    <h1 class="mb-4">소속 가이드 관리</h1>
+    <div class="text-center mb-4">
+        <button class="btn btn-primary" onclick="window.location.href='/guides/join'">가이드 추가</button>
+    </div>
+    <div class="guide-list">
+        <div th:each="guide : ${guides}" class="guide-card">
+            <div class="info">
+                <strong th:text="${guide.name}">Name</strong> (
+                <span th:if="${guide.gender == 'M'}" class="text-primary">♂</span>
+                <span th:if="${guide.gender == 'F'}" class="text-danger">♀</span> )<br>
+                <span th:text="${guide.phone}" class="mb-2 mt-2 d-block">Phone</span>
+                <span th:text="${guide.bio}" class="mb-3 d-block">Bio</span>
+            </div>
+            <div class="button-container">
+                <a th:href="'/guides/edit/' + ${guide.id}" class="btn btn-warning btn-sm">수정</a>
+                <form th:action="@{'/guides/delete/' + ${guide.id}}" method="post" onsubmit="return confirm('삭제하시겠습니까?');" style="display: inline;">
+                    <input type="hidden" name="_method" value="delete">
+                    <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

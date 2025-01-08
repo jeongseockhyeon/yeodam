@@ -63,9 +63,8 @@ public class CategoryService {
                 .orElseThrow(() -> new CustomException(CustomErrorCode.CATEGORY_NOT_FOUND));
 
         targetCategory.updateCategory(categoryReqDto.getCategoryName());
-        Category updatedCategory = categoryRepository.save(targetCategory);
 
-        return new CategoryResDto(updatedCategory);
+        return new CategoryResDto(targetCategory);
     }
     /*카테고리 삭제*/
     public void deleteCategory(Long id) {

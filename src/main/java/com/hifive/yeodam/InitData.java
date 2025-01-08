@@ -1,101 +1,68 @@
 package com.hifive.yeodam;
 
 import com.hifive.yeodam.auth.entity.Auth;
+import com.hifive.yeodam.auth.entity.RoleType;
 import com.hifive.yeodam.seller.entity.Guide;
-import com.hifive.yeodam.tour.entity.Tour;
+import com.hifive.yeodam.seller.entity.Seller;
 import com.hifive.yeodam.user.entity.User;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-
-/* 테스트용 더미 데이터 추후 삭제 예정*/
 @Component
 @RequiredArgsConstructor
 public class InitData {
 
-    private final InitUser initUser;
-    private final InitUser.InitItem initItem;
-    private final InitUser.InitGuide guide;
+    private final InitAuth initAuth;
 
     @PostConstruct
     public void init() {
-        initUser.initDb();
-        initItem.initDb();
-        guide.initDb();
+        initAuth.initDb();
     }
 
     @Component
     @Transactional
     @RequiredArgsConstructor
-    static class InitUser {
+    static class InitAuth {
 
         private final EntityManager em;
-        private final PasswordEncoder passwordEncoder;
 
         public void initDb() {
+
+            Auth findAuth = em.find(Auth.class, 1L);
+            if (findAuth != null) {
+                return;
+            }
+
             Auth auth = Auth.builder()
-                    .email("123@a.com")
-                    .password(passwordEncoder.encode("1234"))
+                    .role(RoleType.NONE)
                     .build();
 
             em.persist(auth);
 
             User user = User.builder()
-                    .name("홍길동")
-                    .nickname("길동이")
-                    .phone("1234-1234")
+                    .name("알수없음")
                     .auth(auth)
                     .build();
 
             em.persist(user);
-        }
 
-        @Component
-        @Transactional
-        @RequiredArgsConstructor
-        static class InitItem {
+            Seller seller = Seller.builder()
+                    .companyName("알수없음")
+                    .auth(auth)
+                    .build();
 
-            private final EntityManager em;
+            em.persist(seller);
 
-            public void initDb() {
-                Tour tour = Tour.builder()
-                        .itemName("제주도 푸른밤")
-                        .price(100)
-                        .stock(1)
-                        .build();
+            Guide guide = Guide.builder()
+                    .name("알수없음")
+                    .seller(seller)
+                    .build();
 
-                em.persist(tour);
-            }
-        }
-
-        @Component
-        @Transactional
-        @RequiredArgsConstructor
-        static class InitGuide {
-
-            private final EntityManager em;
-
-            public void initDb() {
-                Guide guideA = Guide.builder()
-                        .bio("ㅎㅇ")
-                        .birth(LocalDate.now())
-                        .name("가이드1")
-                        .build();
-
-                Guide guideB = Guide.builder()
-                        .bio("ㅎㅇ")
-                        .birth(LocalDate.now())
-                        .name("가이드2")
-                        .build();
-
-                em.persist(guideA);
-                em.persist(guideB);
-            }
+            em.persist(guide);
         }
     }
+
 }

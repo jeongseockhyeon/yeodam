@@ -52,7 +52,7 @@ public class OrderCommandService {
 
         orderDetails.forEach(od -> {
             od.changeStatus(OrderDetailStatus.CANCELED);
-            od.getItem().addStock();
+            od.deleteReservation();
         });
 
         order.chanceOrderStatus(CANCELED);

@@ -1,9 +1,6 @@
 package com.hifive.yeodam;
 
-import com.hifive.yeodam.auth.entity.Auth;
-import com.hifive.yeodam.auth.entity.RoleType;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +13,7 @@ public class HomeController {
     @GetMapping("/join")
     public String joinView() {
 
-        return "joinSelect";
+        return "join-select";
     }
 
     // 로그인 페이지 보기
@@ -35,12 +32,17 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String home(Authentication authentication, Model model) {
-        if (authentication != null && authentication.getAuthorities() != null) {
-            Auth auth = (Auth) authentication.getPrincipal();
-            RoleType role = auth.getRole();
-            model.addAttribute("role", role.toString());
-        }
+    public String home() {
         return "index";
+    }
+
+    @GetMapping("/survey")
+    public String survey() {
+        return "survey";
+    }
+
+    @GetMapping("/access-denied")
+    public String accessDeniedPage() {
+        return "error/access-denied";
     }
 }

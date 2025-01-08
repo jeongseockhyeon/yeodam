@@ -1,67 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>MyPage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title th:text="${seller.companyName} + '님 페이지'">마이페이지</title>
+
+    <link rel="icon" href="/images/favicon.png" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0 70px;
-        }
-        .profile {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        .profile-left {
-            display: flex;
-            align-items: center;
-        }
-        .circle {
+        .custom-circle {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             background-color: #ccc;
             margin-right: 20px;
         }
-        .company-info {
-            display: flex;
-            align-items: center;
-        }
-        .company-name {
-            font-weight: bold;
-            font-size: 18px;
-            margin-right: 10px;
-        }
-        .divider {
-            margin-right: 10px;
-        }
-        .owner {
-            font-size: 16px;
-            color: #888;
-        }
-        .bio {
-            margin-top: 5px;
-            color: #555;
-        }
-        .logout {
-            margin-left: auto;
-        }
-        .logout button {
-            background: none;
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .links {
+
+        .custom-links {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             padding: 20px;
         }
+
         .link-box {
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -70,40 +35,98 @@
             background-color: #f9f9f9;
             cursor: pointer;
         }
+
         .link-box a {
-            text-decoration: none;
             color: #333;
         }
-        .link-box:hover {
-            background-color: #e6e6e6;
-        }
+
     </style>
 </head>
-<body>
-<h1>MyPage</h1>
-<div class="profile">
-    <div class="profile-left">
-        <div class="circle"></div>
+<body style="padding: 0 300px">
+<div class="header-area">
+    <div th:replace="~{fragments/header :: header}"></div>
+</div><br>
+
+<div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+    <div class="d-flex align-items-center">
+        <div class="custom-circle"></div>
         <div>
-            <div class="company-info">
-                <span class="company-name" th:text="${seller.companyName}"></span>
-                <span class="divider">|</span>
-                <span class="owner" th:text="${seller.owner}"></span>
+            <div class="d-flex align-items-center">
+                <span th:text="${seller.companyName}" class="fw-bold fs-5 me-3">회사 이름</span>
+                <span class="me-3">|</span>
+                <span th:text="${seller.owner}" class="text-muted">소유자</span>
             </div>
-            <div class="bio" th:text="${seller.bio}"></div>
+            <div th:text="${seller.bio}" class="mt-1 text-secondary">설명</div>
         </div>
     </div>
-    <form class="logout" action="/logout" method="post">
-        <button type="submit">로그아웃</button>
-    </form>
+    <th:block sec:authorize="${#authentication.principal.expirationDate != null}">
+        <div class="d-flex align-items-center" >
+            <button type="button" id="cancelDeleteBtn" class="btn btn-outline-success mx-3" data-bs-toggle="modal" data-bs-target="#recoverModal">계정 복구</button>
+        </div>
+    </th:block>
 </div>
-<div class="links">
-    <div class="link-box"><a href="/item/manage">상품 목록</a></div>
-    <div class="link-box"><a href="#">예약 현황</a></div>
-    <div class="link-box"><a href="#">문의 내역</a></div>
-    <div class="link-box"><a href="#">리뷰 관리</a></div>
-    <div class="link-box"><a th:href="'/sellers/edit/' + ${seller.companyId}">업체 정보 수정</a></div>
-    <div class="link-box"><a href="/sellers/guide-list">소속 가이드 관리</a></div>
+<div class="custom-links">
+    <div class="link-box"><a href="/item/manage" class="text-decoration-none">상품 목록</a></div>
+    <div class="link-box"><a href="/sellers/items/orders" class="text-decoration-none">예약 현황</a></div>
+    <div class="link-box"><a href="/inquiries/seller" class="text-decoration-none">문의 내역</a></div>
+    <div class="link-box"><a href="/sellers/items/reviews" class="text-decoration-none">리뷰 관리</a></div>
+    <div class="link-box"><a th:href="'/sellers/edit/' + ${seller.companyId}" class="text-decoration-none">업체 정보 수정</a></div>
+    <div class="link-box"><a href="/sellers/guide-list" class="text-decoration-none">소속 가이드 관리</a></div>
 </div>
+<th:block sec:authorize="${#authentication.principal.expirationDate == null}">
+    <div class="d-flex justify-content-center mt-3" >
+        <button type="button" id="showDeleteBtn" class="btn btn-link text-muted p-0" data-bs-toggle="modal" data-bs-target="#exampleModal">계정 탈퇴</button>
+    </div>
+</th:block>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteModalLabel">탈퇴 약관</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                개인정보와 소속가이드는 <b><span id="year"></span>년 <span id="month"></span>월 <span id="day"></span>일</b>에 완전 삭제됩니다.
+                <br><br>
+                30일 이내에 로그인하여 계정을 복구할 수 있습니다.
+                <br>
+                <b>이후에는 계정 복구가 불가능합니다.</b>
+                <br><br>
+                그래도 탈퇴하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="deleteBtn" class="btn btn-secondary">탈퇴</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recover Modal -->
+<div class="modal fade" id="recoverModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="recoverModalLabel">복구 성공</h1>
+            </div>
+            <div class="modal-body">
+                계정을 <b>복구</b>하였습니다.
+                <br>
+                다시 로그인해주세요.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/logout'">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer-area">
+    <div th:replace="~{fragments/footer.html::footer}"></div>
+</div>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/auth/deleteAuth.js"></script>
+<script src="/js/auth/cancelDeleteAuth.js"></script>
 </body>
 </html>

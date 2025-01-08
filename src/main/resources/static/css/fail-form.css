@@ -1,0 +1,42 @@
+.info {
+    width: 70%;
+    height: 40%;
+    background: #F8F8F8;
+    border-radius: 12px;
+    padding: 5%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+span {
+    font-weight: bold;
+}
+
+.home-btn {
+    width: 150px;
+    height: 40px;
+    font-weight: bold;
+    background-color: #ffffff;
+}
+
+.home-btn:hover {
+    background-color: #cecece;
+}
+
+.order-btn {
+    width: 150px;
+    height: 40px;
+    background-color: black;
+    color: white;
+}
+
+.order-btn:hover {
+    background-color: #53575d;
+    color: white;
+}

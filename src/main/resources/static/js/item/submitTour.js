@@ -1,24 +1,29 @@
+let selectedGuides = [];
+let selectedGuideNames = [];
+let selectedImages = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     const guideSelect = document.getElementById("guideSelect");
     const selectedGuidesText = document.getElementById("selectedGuidesText");
     const tourImagesInput = document.getElementById("tourImages");
     const previewContainer = document.getElementById("previewContainer");
 
-    let selectedGuides = [];
-    let selectedGuideNames = [];
-    let selectedImages = [];
+
 
     // 가이드 선택 이벤트
     guideSelect.addEventListener("change", () => {
         const selectedOptions = Array.from(guideSelect.selectedOptions);
         const newGuideIds = selectedOptions.map(option => parseInt(option.value));
-        const newGuideNames = selectedOptions.map(option => option.textContent);
 
-        newGuideIds.forEach((id, index) => {
+        newGuideIds.forEach(id => {
             if (!selectedGuides.includes(id)) {
                 selectedGuides.push(id);
-                selectedGuideNames.push(newGuideNames[index]);
             }
+        });
+
+        selectedGuideNames = selectedGuides.map(id => {
+            const option = guideSelect.querySelector(`option[value="${id}"]`);
+            return option ? option.textContent : "";
         });
 
         updateSelectedGuidesText();
@@ -57,9 +62,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 이미지 선택 이벤트
+// 이미지 선택 이벤트
     tourImagesInput.addEventListener("change", () => {
         const files = Array.from(tourImagesInput.files);
+
+        // 업로드된 이미지 수 체크
+        if (selectedImages.length + files.length > 5) {
+            alert("최대 5개의 이미지만 업로드할 수 있습니다.");
+            return;
+        }
+
         selectedImages = [...selectedImages, ...files].filter((file, index, self) =>
             index === self.findIndex(f => f.name === file.name)
         );
@@ -85,10 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "삭제";
             deleteButton.className = "remove-image";
-            deleteButton.style.position = "absolute";
-            deleteButton.style.top = "5px";
-            deleteButton.style.right = "5px";
-
 
             deleteButton.onclick = () => {
                 // 업로드된 파일에서 제거
@@ -104,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // FormData 생성 및 전송
     document.getElementById("submitBtn").addEventListener("click", () => {
+        console.log(selectedGuides);
         if (!validationFormData()) return;
 
         const selectedCategories = Array.from(
@@ -133,17 +142,54 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "POST",
             body: formData,
         })
-            .then(response => {
-                if (!response.ok) throw new Error("HTTP error " + response.status);
+            .then(async response => {
+                if (!response.ok) {
+                    throw await response.json(); // 에러 메시지 JSON 객체 반환
+                }
                 return response.json();
             })
             .then(data => {
                 alert("상품이 성공적으로 등록되었습니다!");
                 window.location.href = "/item/manage";
             })
-            .catch(error => {
-                alert("등록 중 오류가 발생했습니다.");
-                console.error("Error:", error);
+            .catch(errorMessages => {
+                // 에러 메시지가 객체 형태인지 확인
+                if (errorMessages && typeof errorMessages === "object") {
+                    // 기존 에러 메시지 초기화
+                    document.querySelectorAll(".error-message").forEach(el => el.remove());
+
+                    // 에러 메시지 동적 표시 로직
+                    Object.entries(errorMessages).forEach(([field, errorMessage]) => {
+                        const inputField = document.querySelector(`[name="${field}"], #${field}`);
+                        if (inputField) {
+                            const errorElement = document.createElement("p");
+
+                            // 에러 메시지 스타일 및 내용 설정
+                            errorElement.textContent = errorMessage;
+                            errorElement.classList.add("error-message");
+                            errorElement.style.color = "red";
+
+                            // 기존 에러 메시지가 있는 경우 제거
+                            const existingError = inputField.nextElementSibling;
+                            if (existingError && existingError.classList.contains("error-message")) {
+                                existingError.remove();
+                            }
+
+                            // 파일 업로드 필드의 경우, 미리보기 영역 아래에 에러 메시지 삽입
+                            if (inputField.type === "file") {
+                                const previewContainer = document.getElementById("previewContainer");
+                                previewContainer.appendChild(errorElement);
+                            } else {
+                                // 필드 바로 아래에 에러 메시지 삽입
+                                inputField.insertAdjacentElement("afterend", errorElement);
+                            }
+                        } else {
+                            console.warn(`Field "${field}" not found in the form.`);
+                        }
+                    });
+                } else {
+                    console.error("Unexpected error response:", errorMessages);
+                }
             });
     });
 });

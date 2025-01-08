@@ -24,9 +24,8 @@ document.getElementById("previewContainer").addEventListener("click", (event) =>
 
 
 document.getElementById("submitBtn").addEventListener("click", () => {
-    if (!validationFormData()) {
-        return;
-    }
+    if (!updateValidationFormData()) return;
+
 
     // 선택된 카테고리
     const selectedCategories = Array.from(

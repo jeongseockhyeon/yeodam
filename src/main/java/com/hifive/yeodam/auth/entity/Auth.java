@@ -1,12 +1,16 @@
 package com.hifive.yeodam.auth.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Getter
@@ -23,15 +27,26 @@ public class Auth implements UserDetails {
     @Column(updatable = false ,unique = true)
     private String email;
 
-    @Setter
     private String password;
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
+    private LocalDate expirationDate;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        Collection<GrantedAuthority> collection = new ArrayList<>();
+
+        collection.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+
+                return role.getValue();
+            }
+        });
+
+        return collection;
     }
 
     @Override
@@ -61,5 +76,10 @@ public class Auth implements UserDetails {
 
     public void update(String password) {
         this.password = password;
+    }
+
+    public void
+    update(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
     }
 }
